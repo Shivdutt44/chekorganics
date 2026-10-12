@@ -267,6 +267,7 @@
       return (
         '<a class="igg__tile" href="product.html?p=' + encodeURIComponent(v.products[0]) + '" data-video="' + i + '" aria-label="' + esc("Play video: " + (p ? p.title : "product video")) + '">' +
         '<img src="' + esc(thumb(v.poster, 420)) + '" alt="" loading="lazy" decoding="async">' +
+        '<span class="igg__center">' + IG_WHITE + "</span>" +
         '<span class="igg__play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>' + (v.duration ? fmtTime(v.duration) : "") + "</span>" +
         (p ? '<span class="igg__name">' + esc(p.title) + "</span>" : "") +
         "</a>"

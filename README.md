@@ -194,6 +194,31 @@ Locally: `cd .build && npm i && IG_ACCESS_TOKEN=… node fetch-instagram.mjs`.
 Never commit the token. Long-lived tokens expire after about 60 days, so generate a new one and
 update the secret before then. A failed run leaves the last good feed in place and prints why.
 
+## Buy Now on product cards (`quickbuy.js`)
+
+Each card's "Add" button is a gold **Buy Now**. One tap puts the product in the bag and opens
+the site's checkout page (`checkout.html`), the same destination as the product page's Buy Now.
+
+- A product not yet in the bag goes in with quantity 1. If it's already there, its quantity is
+  kept, so a second tap never doubles it.
+- Other items already in the bag stay there.
+- The checkout page is prefetched on hover or touch, so it opens instantly.
+- Sold-out products show "Sold out".
+- The browser Back button never leaves a spinner stuck.
+- "Add to bag" is still available from the image hover on desktop and on the product page.
+
+## Wishlist (`wishlist.js`)
+
+- **Header:** a heart icon with a count opens the wishlist drawer. Each saved product shows a
+  live price and stock from the store, with Add to bag (switches to the bag drawer) and Remove.
+  There's also an empty state.
+- **Product cards:** a heart on every card image (home rails, shop grid, related products).
+  Tapping it saves or unsaves the product without leaving the page. Cards rendered later by the
+  live catalog sync get a heart automatically.
+- **Product page:** an "Add to wishlist" / "Saved to wishlist" button in the buy box.
+- The wishlist is saved in this browser (`localStorage` key `chek_wishlist_v1`) and stays in
+  sync across open tabs. It isn't linked to a Shopify customer account.
+
 ## Cart & checkout
 
 The bag is a local preview (localStorage). **Checkout happens on the real Shopify store.** The

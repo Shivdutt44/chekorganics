@@ -432,6 +432,21 @@ html.vviewer-lock, html.vviewer-lock body { overflow: hidden; }
 .igp__badge svg { display: block; width: 100%; height: 100%; }
 .igg__ig { position: absolute; top: 12px; right: 12px; z-index: 1; width: 24px; height: 24px; color: #fff; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55)); }
 .igg__ig svg { display: block; width: 100%; height: 100%; }
+/* centred Instagram logo on video tiles: white glyph, transparent background */
+.igg__center {
+  position: absolute; top: 50%; left: 50%; z-index: 1;
+  width: clamp(40px, 3.8vw, 54px); height: clamp(40px, 3.8vw, 54px);
+  transform: translate(-50%, -50%);
+  color: #fff; opacity: 0.95;
+  /* thin dark edge + soft shadow keep the white logo readable even on white text banners in a frame */
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.5)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+  transition: transform 0.35s var(--ease), opacity 0.35s;
+  pointer-events: none;
+}
+.igg__tile:hover .igg__center { opacity: 1; }
+.igg__center svg { display: block; width: 100%; height: 100%; }
+.igg__tile:hover .igg__center, .igg__tile:focus-visible .igg__center { transform: translate(-50%, -50%) scale(1.1); }
+@media (prefers-reduced-motion: reduce) { .igg__tile:hover .igg__center { transform: translate(-50%, -50%); } }
 .igg__end {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.7rem;
   padding: 1rem; text-align: center; color: var(--forest);
@@ -510,4 +525,134 @@ html.vviewer-lock, html.vviewer-lock body { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .story.is-open { animation: none; }
   .igg__tile:hover img, .igs:hover .igs__ring { transform: none; }
+}
+
+/* ==========================================================================
+   Wishlist (wishlist.js): card hearts · header button · product button · drawer
+   ========================================================================== */
+.wl-heart { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; transition: fill 0.25s, stroke 0.25s, transform 0.3s var(--ease); }
+.is-on > .wl-heart { fill: var(--gold); stroke: var(--gold); }
+
+/* heart on product card images */
+.card__wish {
+  position: absolute; top: 10px; right: 10px; z-index: 3;
+  width: 40px; height: 40px; border-radius: 50%; padding: 0;
+  display: grid; place-items: center;
+  border: 1px solid var(--line); background: rgba(255, 253, 248, 0.92); color: var(--forest);
+  backdrop-filter: blur(6px); box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), background 0.25s;
+}
+.card__wish .wl-heart { width: 20px; height: 20px; }
+.card__wish:hover { transform: scale(1.08); background: #fff; }
+/* saved: forest circle with a gold heart (brand palette) */
+.card__wish.is-on { background: var(--forest); border-color: var(--forest); color: var(--gold-2); box-shadow: 0 8px 18px -10px rgba(16, 53, 31, 0.8); }
+.card__wish.is-on .wl-heart { fill: var(--gold-2); stroke: var(--gold-2); }
+.card__wish.is-on:hover { background: var(--forest-2); }
+.card__wish:active { transform: scale(0.92); }
+.card__wish.pop .wl-heart, .pdp-wish.pop .wl-heart { animation: wlPop 0.45s var(--ease); }
+@keyframes wlPop { 0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); } }
+
+/* header */
+.wl-btn .wl-heart { width: 19px; height: 19px; }
+
+/* product page */
+.pdp-wish { display: inline-flex; align-items: center; gap: 0.5rem; }
+.pdp-wish .wl-heart { width: 18px; height: 18px; }
+.pdp-wish.is-on { border-color: var(--gold); color: var(--forest); background: rgba(194, 154, 69, 0.12); }
+
+/* drawer */
+html.wl-lock, html.wl-lock body { overflow: hidden; }
+.wl-scrim { position: fixed; inset: 0; z-index: 101; background: rgba(8, 20, 13, 0.5); backdrop-filter: blur(3px); opacity: 0; visibility: hidden; transition: opacity 0.35s, visibility 0s linear 0.35s; }
+.wl-scrim.is-open { opacity: 1; visibility: visible; transition-delay: 0s; }
+.wl-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 102;
+  width: min(420px, 100%); display: flex; flex-direction: column;
+  background: var(--cream); box-shadow: -30px 0 60px -40px rgba(0, 0, 0, 0.6);
+  transform: translateX(100%); visibility: hidden;
+  transition: transform 0.45s var(--ease), visibility 0s linear 0.45s;
+}
+.wl-drawer.is-open { transform: none; visibility: visible; transition: transform 0.45s var(--ease), visibility 0s; }
+.wl-drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.4rem; border-bottom: 1px solid var(--line); }
+.wl-drawer__head h3 { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 1.3rem; }
+.wl-drawer__head h3 .wl-heart { fill: var(--gold); stroke: var(--gold); width: 20px; height: 20px; }
+.wl-drawer__head span { font-family: var(--font-body); font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+.wl-drawer__body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 1rem 1.4rem; display: grid; gap: 0.8rem; align-content: start; }
+.wl-drawer__note { margin: 0; padding: 0.9rem 1.4rem calc(0.9rem + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); font-size: 0.76rem; color: var(--muted); text-align: center; }
+.wl-item { display: grid; grid-template-columns: 76px 1fr; gap: 0.9rem; align-items: center; padding: 0.7rem; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); }
+.wl-item__img { display: block; width: 76px; height: 76px; border-radius: 12px; background: radial-gradient(75% 75% at 50% 35%, #fff 0%, var(--sand) 100%); overflow: hidden; }
+.wl-item__img img { width: 100%; height: 100%; object-fit: contain; padding: 6%; }
+.wl-item__body { min-width: 0; display: grid; gap: 0.3rem; }
+.wl-item__name { font-weight: 600; font-size: 0.9rem; color: var(--forest); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.wl-item__price .price { font-size: 0.95rem; }
+.wl-item__price s { margin-left: 0.35rem; color: var(--muted); font-size: 0.85em; }
+.wl-item__gone { font-size: 0.8rem; color: #a4341f; }
+.wl-item__actions { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.2rem; }
+.wl-item__actions .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.wl-item__remove { border: none; background: none; padding: 0.4rem 0; min-height: 36px; font-size: 0.8rem; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.wl-item__remove:hover { color: var(--forest); }
+.wl-empty { display: grid; justify-items: center; gap: 1rem; text-align: center; padding: 3rem 1rem; color: var(--muted); }
+.wl-empty .wl-heart { width: 54px; height: 54px; stroke: var(--gold); stroke-width: 1.2; }
+.wl-empty p { margin: 0; line-height: 1.6; }
+.wl-empty b { color: var(--forest); font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; }
+
+/* toast */
+.wl-toast {
+  position: fixed; left: 50%; bottom: calc(var(--ui-bottom, 0px) + 24px); z-index: 120;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 1.2rem; border-radius: 999px; background: var(--forest); color: var(--cream);
+  font-size: 0.86rem; box-shadow: var(--shadow-lg);
+  transform: translate(-50%, 160%); opacity: 0; pointer-events: none;
+  transition: transform 0.45s var(--ease), opacity 0.3s;
+}
+.wl-toast.is-on { transform: translate(-50%, 0); opacity: 1; }
+.wl-toast .wl-heart { width: 16px; height: 16px; fill: var(--gold-2); stroke: var(--gold-2); }
+
+@media (max-width: 640px) {
+  .card__wish { top: 8px; right: 8px; width: 36px; height: 36px; }
+  .card__wish .wl-heart { width: 18px; height: 18px; }
+  .pdp-wish { flex: 1 1 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card__wish.pop .wl-heart, .pdp-wish.pop .wl-heart { animation: none; }
+  .wl-drawer, .wl-scrim, .wl-toast { transition: none; }
+}
+@media print { .card__wish, .wl-drawer, .wl-scrim, .wl-toast { display: none !important; } }
+
+/* ==========================================================================
+   Buy Now on product cards (quickbuy.js)
+   ========================================================================== */
+.qb-btn { position: relative; white-space: nowrap; }
+.qb-btn:disabled:not(.is-busy) { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.qb-btn.is-busy { cursor: progress; opacity: 1; }
+.qb-btn.is-busy .qb-btn__label { visibility: hidden; }
+.qb-btn.is-busy::after {
+  content: ""; position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px;
+  border-radius: 50%; border: 2px solid rgba(37, 25, 10, 0.25); border-top-color: #25190a;
+  animation: qbSpin 0.7s linear infinite;
+}
+@keyframes qbSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .qb-btn.is-busy::after { animation-duration: 2s; } }
+@media (max-width: 640px) {
+  /* two-column cards: price on top, full-width Buy Now underneath */
+  .card__foot { flex-wrap: wrap; gap: 0.55rem; }
+  .card__foot .price { flex: 1 1 100%; }
+  .card__foot .qb-btn { flex: 1 1 100%; justify-content: center; padding-inline: 0.6rem; }
+}
+
+/* small phones: header icons (wishlist, account, bag) + brand must fit */
+@media (max-width: 400px) {
+  .header__actions { gap: 0.4rem; }
+  .header .icon-btn { width: 38px; height: 38px; }
+  .header .icon-btn svg, .header .icon-btn .wl-heart { width: 18px; height: 18px; }
+}
+@media (max-width: 360px) {
+  .header__inner { gap: 0.5rem; }
+  .header .icon-btn { width: 36px; height: 36px; }
+  .brand { gap: 0.45rem; }
+  .brand__mark { width: 34px; height: 34px; }
+  .brand__name { font-size: 0.92rem; letter-spacing: 0.04em; }
+}
+@media (max-width: 340px) {
+  /* tiniest phones: Account stays reachable from the bottom navigation */
+  body.has-bnav .header .acct-btn { display: none; }
 }
