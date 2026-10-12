@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#3DDC84">
+  <!-- Antennae -->
+  <line x1="6.5" y1="3" x2="8.5" y2="6.5" stroke="#3DDC84" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="17.5" y1="3" x2="15.5" y2="6.5" stroke="#3DDC84" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- Head dome -->
+  <path d="M4.5 13a7.5 7.5 0 0 1 15 0H4.5z"/>
+  <!-- Eyes -->
+  <circle cx="8" cy="9.8" r="0.9" fill="#0b100d"/>
+  <circle cx="16" cy="9.8" r="0.9" fill="#0b100d"/>
+  <!-- Torso -->
+  <rect x="4.5" y="14" width="15" height="7.5" rx="2"/>
+  <!-- Left arm -->
+  <rect x="1.8" y="14" width="2" height="6" rx="1"/>
+  <!-- Right arm -->
+  <rect x="20.2" y="14" width="2" height="6" rx="1"/>
+</svg>

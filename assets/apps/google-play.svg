@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 135 40" width="135" height="40">
+  <defs>
+    <linearGradient id="gpBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.1"/>
+    </linearGradient>
+    <linearGradient id="gpG1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00C3FF"/>
+      <stop offset="100%" stop-color="#0086F8"/>
+    </linearGradient>
+    <linearGradient id="gpG2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF334B"/>
+      <stop offset="100%" stop-color="#E5233B"/>
+    </linearGradient>
+    <linearGradient id="gpG3" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#00D775"/>
+      <stop offset="100%" stop-color="#00B060"/>
+    </linearGradient>
+    <linearGradient id="gpG4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD600"/>
+      <stop offset="100%" stop-color="#FFA000"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Button Card -->
+  <rect x="0.5" y="0.5" width="134" height="39" rx="7" fill="#0c110d" stroke="url(#gpBorder)" stroke-width="1"/>
+
+  <!-- Google Play Colored Triangle Icon -->
+  <g transform="translate(10, 8)">
+    <!-- Cyan/Blue base -->
+    <path d="M1.2 1.4C0.8 1.9 0.5 2.5 0.5 3.3v17.4c0 .8.3 1.4.7 1.9l10-10L1.2 1.4z" fill="url(#gpG1)"/>
+    <!-- Yellow right triangle -->
+    <path d="M14.7 15.9l-3.5-3.3 3.5-3.3.1.1 4.1 2.3c1.2.7 1.2 1.8 0 2.5l-4.1 2.3-.1-.6z" fill="url(#gpG4)"/>
+    <!-- Red bottom triangle -->
+    <path d="M11.2 12.6L1.2 22.6c.4.4 1 .5 1.7.1l11.8-6.8-3.5-3.3z" fill="url(#gpG2)"/>
+    <!-- Green top triangle -->
+    <path d="M11.2 12.6l3.5-3.3L2.9 2.5C2.2 2.1 1.6 2.2 1.2 2.6l10 10z" fill="url(#gpG3)"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="36" y="14" fill="#a5adab" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="7.5" font-weight="600" letter-spacing="0.08em">GET IT ON</text>
+  <text x="36" y="27.5" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="-0.01em">Google Play</text>
+</svg>

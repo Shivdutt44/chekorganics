@@ -944,6 +944,65 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
 }
 
+/* Footer Download App Section */
+.footer__apps {
+  margin-top: 1.6rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+.footer__apps-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+.footer__apps-title {
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gold-2);
+  font-family: var(--font-body);
+}
+.footer__apps-os {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.45rem;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.footer__apps-os img {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+.footer__app-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.footer__app-btn {
+  display: inline-block;
+  text-decoration: none;
+  border-radius: 7px;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  line-height: 0;
+}
+.footer__app-btn img {
+  height: 36px;
+  width: auto;
+  display: block;
+  border-radius: 7px;
+}
+.footer__app-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(223, 192, 138, 0.5);
+}
+
 /* ---------------------------- page hero (inner) ------------------------ */
 .page-hero {
   background: linear-gradient(160deg, var(--forest) 0%, #0b2717 100%);
