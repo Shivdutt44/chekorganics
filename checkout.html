@@ -2,634 +2,147 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Secure Checkout — CHEKORGANICS (Route to Roots)</title>
-<meta name="description" content="Secure checkout for authentic Ayurvedic wellness and organic Noni formulations from CHEKORGANICS. AYUSH certified, 100% natural, farm to bottle.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Checkout — CHEKORGANICS</title>
+<meta name="description" content="Continue to secure checkout on chekorganics.com.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#faf6ee">
 <link rel="icon" type="image/jpeg" sizes="32x32" href="assets/brand/favicon-32.jpg">
 <link rel="apple-touch-icon" sizes="512x512" href="assets/brand/apple-touch-icon.jpg">
+<link rel="preconnect" href="https://www.chekorganics.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>
+  /* Checkout handoff: the order is placed and paid on the real Shopify checkout */
+  body.handoff { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; background: var(--cream); }
+  .handoff__card { width: min(100%, 460px); background: var(--paper); border: 1px solid var(--line); border-radius: 24px; padding: 32px 26px; text-align: center; box-shadow: var(--shadow-md); }
+  .handoff__logo { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 18px; box-shadow: var(--shadow-sm); }
+  .handoff h1 { font-size: clamp(1.4rem, 5vw, 1.8rem); margin: 0 0 10px; color: var(--forest); }
+  .handoff p { margin: 0 0 18px; color: var(--muted); font-size: 0.95rem; line-height: 1.55; }
+  .handoff__spinner { width: 34px; height: 34px; margin: 6px auto 18px; border-radius: 50%; border: 3px solid var(--sand); border-top-color: var(--leaf); animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .handoff__list { list-style: none; margin: 0 0 18px; padding: 0; text-align: left; display: grid; gap: 8px; }
+  .handoff__list li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 12px; background: var(--cream); font-size: 0.88rem; }
+  .handoff__list li.is-out { color: #a4341f; }
+  .handoff__actions { display: grid; gap: 10px; }
+  .handoff__actions .btn { justify-content: center; }
+  .handoff__pay { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 18px; font-size: 0.72rem; color: var(--muted); }
+  .handoff__pay span { border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { .handoff__spinner { animation-duration: 2.4s; } }
+</style>
 </head>
-<body class="checkout-page">
+<body class="handoff">
 
-<!-- Top minimal security banner -->
-<div class="checkout-topbar">
-  <div class="container checkout-topbar__inner">
-    <span>🔒 256-Bit SSL Encrypted &amp; RBI Compliant Checkout</span>
-    <span class="checkout-topbar__support">Need help? WhatsApp: <b>+91 98765 43210</b></span>
-  </div>
-</div>
+<main class="handoff__card" aria-live="polite">
+  <img class="handoff__logo" src="assets/brand/logo-mark.webp" alt="CHEKORGANICS" width="64" height="64">
 
-<!-- Checkout Header -->
-<header class="checkout-header">
-  <div class="container checkout-header__inner">
-    <a class="brand" href="index.html" aria-label="CHEKORGANICS home">
-      <img class="brand__mark" src="assets/brand/logo.webp" alt="CHEKORGANICS logo">
-      <span>
-        <span class="brand__name">CHEKORGANICS</span>
-        <span class="brand__tag">Route to Roots</span>
-      </span>
-    </a>
+  <section data-state="loading">
+    <div class="handoff__spinner" role="presentation"></div>
+    <h1>Taking you to secure checkout…</h1>
+    <p>Your bag is being moved to the official CHEKORGANICS store, where you can pay by UPI, card or cash on delivery.</p>
+  </section>
 
-    <!-- Step Breadcrumb -->
-    <div class="checkout-steps">
-      <span class="step step--done"><span class="step__num">✓</span> Bag</span>
-      <span class="step__divider">›</span>
-      <span class="step step--active" id="crumb-shipping"><span class="step__num">2</span> Shipping</span>
-      <span class="step__divider">›</span>
-      <span class="step" id="crumb-payment"><span class="step__num">3</span> Payment</span>
+  <section data-state="empty" hidden>
+    <h1>Your bag is empty</h1>
+    <p>Add a few rituals to your bag, then come back to check out.</p>
+    <div class="handoff__actions"><a class="btn btn--primary" href="shop.html">Shop the apothecary</a></div>
+  </section>
+
+  <section data-state="review" hidden>
+    <h1>A few items need attention</h1>
+    <p data-review-msg></p>
+    <ul class="handoff__list" data-review-list></ul>
+    <div class="handoff__actions">
+      <a class="btn btn--primary" data-continue href="#">Continue to checkout</a>
+      <a class="btn btn--ghost" href="shop.html">Back to shop</a>
     </div>
+  </section>
 
-    <div class="checkout-header__back">
-      <a class="link-back" href="shop.html">← Return to shop</a>
+  <section data-state="error" hidden>
+    <h1>We couldn't reach the store</h1>
+    <p>Check your internet connection and try again. Your bag is saved.</p>
+    <div class="handoff__actions">
+      <button class="btn btn--primary" type="button" data-retry>Try again</button>
+      <a class="btn btn--ghost" href="index.html">Back to home</a>
     </div>
-  </div>
-</header>
+  </section>
 
-<!-- Mobile Order Summary Accordion -->
-<div class="mobile-summary-toggle" id="mobile-summary-toggle">
-  <div class="container mobile-summary-toggle__inner">
-    <div class="mobile-summary-toggle__left">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
-      <span id="mobile-toggle-text">Show order summary</span>
-      <span class="toggle-arrow">▾</span>
-    </div>
-    <div class="mobile-summary-toggle__price" id="mobile-summary-total">₹0</div>
-  </div>
-</div>
-
-<!-- Main Checkout Container -->
-<main class="checkout-wrap">
-  <div class="container">
-    <div class="checkout-grid" id="checkout-main-grid">
-
-      <!-- LEFT COLUMN: Forms -->
-      <div class="checkout-main">
-
-        <!-- Express UPI Checkout -->
-        <div class="express-checkout">
-          <div class="express-checkout__label">Express Checkout with UPI</div>
-          <div class="express-checkout__grid">
-            <button type="button" class="express-btn express-btn--gpay" data-express-pay="gpay" title="Pay with Google Pay">
-              <img src="assets/payments/gpay.svg" alt="Google Pay" height="28">
-            </button>
-            <button type="button" class="express-btn express-btn--phonepe" data-express-pay="phonepe" title="Pay with PhonePe">
-              <img src="assets/payments/phonepe.svg" alt="PhonePe" height="28">
-            </button>
-            <button type="button" class="express-btn express-btn--paytm" data-express-pay="paytm" title="Pay with Paytm">
-              <img src="assets/payments/paytm.svg" alt="Paytm" height="28">
-            </button>
-            <button type="button" class="express-btn express-btn--upi" data-express-pay="upi" title="Any UPI App">
-              <img src="assets/payments/upi.svg" alt="UPI" height="28">
-            </button>
-          </div>
-          <div class="express-checkout__divider">
-            <span>OR ENTER SHIPPING DETAILS</span>
-          </div>
-        </div>
-
-        <form id="checkout-form" class="checkout-form" autocomplete="on">
-
-          <!-- Section 1: Contact Information -->
-          <div class="checkout-section">
-            <div class="checkout-section__head">
-              <h3>1. Contact Information</h3>
-              <span class="checkout-section__note">Have an account? <a href="#" id="login-guest-btn">Log in</a></span>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group form-group--grow">
-                <label for="cust-mobile">Mobile Number (for SMS &amp; delivery updates) *</label>
-                <div class="input-with-prefix">
-                  <span class="prefix">+91</span>
-                  <input type="tel" id="cust-mobile" name="mobile" placeholder="98765 43210" pattern="[6-9][0-9]{9}" maxlength="10" required>
-                </div>
-              </div>
-              <div class="form-group form-group--grow">
-                <label for="cust-email">Email Address (for invoice &amp; tracking) *</label>
-                <input type="email" id="cust-email" name="email" placeholder="you@example.com" required>
-              </div>
-            </div>
-
-            <label class="custom-checkbox">
-              <input type="checkbox" id="cust-whatsapp" checked>
-              <span class="checkbox-indicator"></span>
-              <span class="checkbox-label">
-                <span class="wa-badge">WhatsApp</span> Send dispatch alerts &amp; tracking link to my WhatsApp
-              </span>
-            </label>
-          </div>
-
-          <!-- Section 2: Delivery Address -->
-          <div class="checkout-section">
-            <div class="checkout-section__head">
-              <h3>2. Delivery Address</h3>
-              <span class="badge badge--soft">Delivering across India</span>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group form-group--grow">
-                <label for="cust-name">Full Name *</label>
-                <input type="text" id="cust-name" name="name" placeholder="e.g. Shivdutt Sharma" required>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group form-group--grow">
-                <label for="addr-flat">Flat, House no., Building, Apartment *</label>
-                <input type="text" id="addr-flat" name="address1" placeholder="Flat 402, Green Meadows" required>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group form-group--grow">
-                <label for="addr-street">Area, Colony, Street, Sector, Village *</label>
-                <input type="text" id="addr-street" name="address2" placeholder="Main Road, Near Ayurvedic Hospital" required>
-              </div>
-              <div class="form-group">
-                <label for="addr-landmark">Landmark (Optional)</label>
-                <input type="text" id="addr-landmark" name="landmark" placeholder="Near City Mall">
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="addr-pincode">PIN Code * <span class="pin-hint" id="pin-hint"></span></label>
-                <input type="text" id="addr-pincode" name="pincode" placeholder="e.g. 500001" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" required>
-              </div>
-              <div class="form-group form-group--grow">
-                <label for="addr-city">City / District *</label>
-                <input type="text" id="addr-city" name="city" placeholder="Hyderabad" required>
-              </div>
-              <div class="form-group form-group--grow">
-                <label for="addr-state">State *</label>
-                <select id="addr-state" name="state" required>
-                  <option value="">Select State</option>
-                  <option value="Andhra Pradesh">Andhra Pradesh</option>
-                  <option value="Assam">Assam</option>
-                  <option value="Bihar">Bihar</option>
-                  <option value="Chandigarh">Chandigarh</option>
-                  <option value="Chhattisgarh">Chhattisgarh</option>
-                  <option value="Delhi">Delhi NCR</option>
-                  <option value="Goa">Goa</option>
-                  <option value="Gujarat">Gujarat</option>
-                  <option value="Haryana">Haryana</option>
-                  <option value="Himachal Pradesh">Himachal Pradesh</option>
-                  <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                  <option value="Jharkhand">Jharkhand</option>
-                  <option value="Karnataka">Karnataka</option>
-                  <option value="Kerala">Kerala</option>
-                  <option value="Madhya Pradesh">Madhya Pradesh</option>
-                  <option value="Maharashtra">Maharashtra</option>
-                  <option value="Odisha">Odisha</option>
-                  <option value="Punjab">Punjab</option>
-                  <option value="Rajasthan">Rajasthan</option>
-                  <option value="Tamil Nadu">Tamil Nadu</option>
-                  <option value="Telangana" selected>Telangana</option>
-                  <option value="Uttar Pradesh">Uttar Pradesh</option>
-                  <option value="Uttarakhand">Uttarakhand</option>
-                  <option value="West Bengal">West Bengal</option>
-                  <option value="Other">Other Union Territory</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row form-row--inline">
-              <span class="label-inline">Save Address As:</span>
-              <div class="pill-group" id="addr-type-group">
-                <button type="button" class="pill-btn is-active" data-addr-type="Home">🏠 Home</button>
-                <button type="button" class="pill-btn" data-addr-type="Work">💼 Work / Office</button>
-                <button type="button" class="pill-btn" data-addr-type="Other">📍 Other</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 3: Shipping Method -->
-          <div class="checkout-section">
-            <div class="checkout-section__head">
-              <h3>3. Delivery Method</h3>
-              <span class="badge badge--green">Dispatched from Telangana Farm</span>
-            </div>
-
-            <div class="shipping-options">
-              <label class="shipping-option is-selected" id="ship-standard-card">
-                <input type="radio" name="shipping_method" value="standard" checked>
-                <span class="shipping-option__radio"></span>
-                <div class="shipping-option__info">
-                  <div class="shipping-option__title">
-                    <b>Standard Herbal Courier (Delhivery / Bluedart)</b>
-                    <span class="shipping-option__price" id="ship-standard-price">FREE</span>
-                  </div>
-                  <p class="shipping-option__desc" id="ship-standard-desc">Delivered in 3–5 business days · AYUSH safe tamper-proof packaging</p>
-                </div>
-              </label>
-
-              <label class="shipping-option" id="ship-express-card">
-                <input type="radio" name="shipping_method" value="express">
-                <span class="shipping-option__radio"></span>
-                <div class="shipping-option__info">
-                  <div class="shipping-option__title">
-                    <b>Express Air Priority (Blue Dart Air / Speed Post)</b>
-                    <span class="shipping-option__price">₹149</span>
-                  </div>
-                  <p class="shipping-option__desc">Guaranteed priority dispatch within 12 hours · Delivered in 1–2 business days</p>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <!-- Section 4: Payment Method -->
-          <div class="checkout-section">
-            <div class="checkout-section__head">
-              <h3>4. Payment Method</h3>
-              <span class="checkout-section__note">All transactions 100% encrypted</span>
-            </div>
-
-            <div class="payment-accordion">
-
-              <!-- OPTION 1: UPI -->
-              <div class="payment-method is-active" data-pay-method="upi">
-                <label class="payment-method__head">
-                  <input type="radio" name="payment_choice" value="upi" checked>
-                  <span class="payment-method__radio"></span>
-                  <div class="payment-method__label">
-                    <b>UPI (Google Pay, PhonePe, Paytm, QR)</b>
-                    <span class="tag-popular">Fastest &amp; Zero Fee</span>
-                  </div>
-                  <div class="payment-icons">
-                    <img src="assets/payments/gpay.svg" alt="Google Pay" height="22">
-                    <img src="assets/payments/phonepe.svg" alt="PhonePe" height="22">
-                    <img src="assets/payments/paytm.svg" alt="Paytm" height="22">
-                    <img src="assets/payments/upi.svg" alt="UPI" height="22">
-                  </div>
-                </label>
-
-                <div class="payment-method__body" id="pay-body-upi">
-                  <div class="upi-box">
-                    <div class="upi-tabs">
-                      <button type="button" class="upi-tab-btn is-active" data-upi-mode="qr">Instant Dynamic QR</button>
-                      <button type="button" class="upi-tab-btn" data-upi-mode="id">Enter UPI ID</button>
-                    </div>
-
-                    <!-- Mode A: Instant QR -->
-                    <div class="upi-panel" id="upi-panel-qr">
-                      <div class="upi-qr-display">
-                        <div class="upi-qr-code" id="upi-qr-box">
-                          <!-- dynamic QR rendered here -->
-                          <div class="qr-canvas-placeholder">
-                            <div class="qr-pattern"></div>
-                            <div class="qr-center-logo">🌿</div>
-                          </div>
-                        </div>
-                        <div class="upi-qr-info">
-                          <p class="upi-qr-title">Scan &amp; Pay using any UPI App</p>
-                          <div class="upi-apps-row">
-                            <span>Google Pay</span> · <span>PhonePe</span> · <span>Paytm</span> · <span>CRED</span>
-                          </div>
-                          <div class="upi-amount-pill">
-                            Amount: <b id="upi-qr-amount">₹0</b>
-                          </div>
-                          <p class="upi-note">VPA: <code>chekorganics@icici</code> (Verified Merchant)</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Mode B: Enter UPI ID -->
-                    <div class="upi-panel" id="upi-panel-id" style="display:none">
-                      <div class="form-row">
-                        <div class="form-group form-group--grow">
-                          <label for="upi-id-input">Enter Your UPI ID / VPA</label>
-                          <div class="upi-input-wrap">
-                            <input type="text" id="upi-id-input" placeholder="e.g. yourname@okhdfcbank, 9876543210@paytm">
-                            <button type="button" class="btn btn--sm btn--primary" id="btn-verify-upi">Verify</button>
-                          </div>
-                          <span class="upi-verify-feedback" id="upi-verify-feedback"></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- OPTION 2: Cash on Delivery -->
-              <div class="payment-method" data-pay-method="cod">
-                <label class="payment-method__head">
-                  <input type="radio" name="payment_choice" value="cod">
-                  <span class="payment-method__radio"></span>
-                  <div class="payment-method__label">
-                    <b>Cash on Delivery (COD)</b>
-                    <span class="tag-cod">Available</span>
-                  </div>
-                  <div class="payment-icons">
-                    <img src="assets/payments/cod.svg" alt="Cash on Delivery" height="22">
-                  </div>
-                </label>
-
-                <div class="payment-method__body" id="pay-body-cod" style="display:none">
-                  <div class="cod-box">
-                    <div class="cod-icon">📦</div>
-                    <div class="cod-text">
-                      <b>Pay ₹<span class="cod-amount-val">0</span> upon delivery</b>
-                      <p>You can pay cash or scan delivery agent's UPI QR at your doorstep. We will send an SMS verification before dispatch to ensure smooth delivery.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- OPTION 3: Credit / Debit Card -->
-              <div class="payment-method" data-pay-method="card">
-                <label class="payment-method__head">
-                  <input type="radio" name="payment_choice" value="card">
-                  <span class="payment-method__radio"></span>
-                  <div class="payment-method__label">
-                    <b>Credit / Debit Card</b>
-                  </div>
-                  <div class="payment-icons">
-                    <img src="assets/payments/visa.svg" alt="Visa" height="22">
-                    <img src="assets/payments/mastercard.svg" alt="Mastercard" height="22">
-                    <img src="assets/payments/rupay.svg" alt="RuPay" height="22">
-                  </div>
-                </label>
-
-                <div class="payment-method__body" id="pay-body-card" style="display:none">
-                  <div class="card-box">
-                    <div class="form-row">
-                      <div class="form-group form-group--grow">
-                        <label for="card-number">Card Number</label>
-                        <div class="card-input-wrap">
-                          <input type="text" id="card-number" placeholder="4532  ••••  ••••  ••••" maxlength="19" inputmode="numeric">
-                          <span class="card-type-indicator" id="card-type-indicator">💳</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label for="card-exp">Expiry (MM/YY)</label>
-                        <input type="text" id="card-exp" placeholder="MM/YY" maxlength="5" inputmode="numeric">
-                      </div>
-                      <div class="form-group">
-                        <label for="card-cvv">CVV / CVC</label>
-                        <input type="password" id="card-cvv" placeholder="•••" maxlength="4" inputmode="numeric">
-                      </div>
-                      <div class="form-group form-group--grow">
-                        <label for="card-name">Name on Card</label>
-                        <input type="text" id="card-name" placeholder="Name as printed">
-                      </div>
-                    </div>
-                    <p class="card-secure-note">🔒 Card details are processed via RBI-compliant 256-bit AES encryption. We do not store your CVV.</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- OPTION 4: Net Banking -->
-              <div class="payment-method" data-pay-method="netbanking">
-                <label class="payment-method__head">
-                  <input type="radio" name="payment_choice" value="netbanking">
-                  <span class="payment-method__radio"></span>
-                  <div class="payment-method__label">
-                    <b>Net Banking (All Major Indian Banks)</b>
-                  </div>
-                  <div class="payment-icons">
-                    <span class="pay-icon">HDFC</span>
-                    <span class="pay-icon">SBI</span>
-                    <span class="pay-icon">ICICI</span>
-                    <span class="pay-icon">Axis</span>
-                  </div>
-                </label>
-
-                <div class="payment-method__body" id="pay-body-netbanking" style="display:none">
-                  <div class="nb-box">
-                    <p class="nb-title">Popular Banks:</p>
-                    <div class="nb-grid">
-                      <label class="nb-btn"><input type="radio" name="nb_bank" value="HDFC"><span>HDFC Bank</span></label>
-                      <label class="nb-btn"><input type="radio" name="nb_bank" value="SBI"><span>State Bank of India</span></label>
-                      <label class="nb-btn"><input type="radio" name="nb_bank" value="ICICI" checked><span>ICICI Bank</span></label>
-                      <label class="nb-btn"><input type="radio" name="nb_bank" value="Axis"><span>Axis Bank</span></label>
-                      <label class="nb-btn"><input type="radio" name="nb_bank" value="Kotak"><span>Kotak Mahindra</span></label>
-                      <label class="nb-btn"><input type="radio" name="nb_bank" value="PNB"><span>Punjab National Bank</span></label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- Final Place Order Button -->
-          <div class="checkout-actions">
-            <button type="submit" class="btn btn--primary btn--block btn--checkout-submit" id="btn-place-order">
-              <span class="lock-icon">🔒</span>
-              <span id="btn-place-order-text">Place Order · ₹0</span>
-            </button>
-            <p class="checkout-guarantee-note">
-              🛡️ <b>CHEKORGANICS Buyer Protection</b>: 100% Genuine Ayurvedic Formulations · 7-Day Easy Replacement · Safe &amp; Contactless Delivery
-            </p>
-          </div>
-
-        </form>
-
-        <!-- Trust Badges Row -->
-        <div class="checkout-assurances">
-          <div class="c-assurance">
-            <span class="c-assurance__icon">🌿</span>
-            <div><b>Farm to Bottle</b><span>Organic Noni grown on our farm in Telangana</span></div>
-          </div>
-          <div class="c-assurance">
-            <span class="c-assurance__icon">🏛️</span>
-            <div><b>AYUSH Certified</b><span>Govt. of India approved therapeutic formulation</span></div>
-          </div>
-          <div class="c-assurance">
-            <span class="c-assurance__icon">🚚</span>
-            <div><b>Safe Express Courier</b><span>Tamper-proof sanitized packaging</span></div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RIGHT COLUMN: Order Summary -->
-      <aside class="checkout-sidebar" id="checkout-sidebar">
-        <div class="summary-card">
-          <div class="summary-card__head">
-            <h3>Order Summary</h3>
-            <span class="summary-card__count" id="summary-items-count">0 items</span>
-          </div>
-
-          <!-- Items list -->
-          <div class="summary-items" id="summary-items-list">
-            <!-- populated by app.js -->
-          </div>
-
-          <!-- Coupon Code Input -->
-          <div class="summary-coupon">
-            <div class="coupon-form">
-              <input type="text" id="coupon-code-input" placeholder="Discount code (e.g. WELCOME10)" autocomplete="off">
-              <button type="button" class="btn btn--sm btn--primary" id="btn-apply-coupon">Apply</button>
-            </div>
-            <div class="coupon-chips">
-              <button type="button" class="coupon-chip" data-coupon="WELCOME10">🏷️ WELCOME10 (10% OFF)</button>
-              <button type="button" class="coupon-chip" data-coupon="CHEK100">🏷️ CHEK100 (₹100 OFF)</button>
-              <button type="button" class="coupon-chip" data-coupon="AYURVEDA">🏷️ AYURVEDA (15% OFF)</button>
-            </div>
-            <div class="coupon-applied-badge" id="coupon-applied-badge" style="display:none">
-              <span class="badge-text" id="coupon-applied-text"></span>
-              <button type="button" class="coupon-remove-btn" id="btn-remove-coupon">✕</button>
-            </div>
-          </div>
-
-          <!-- Cost Calculations -->
-          <div class="summary-calc">
-            <div class="calc-row">
-              <span>Subtotal</span>
-              <span class="calc-val" id="calc-subtotal">₹0</span>
-            </div>
-            <div class="calc-row calc-row--discount" id="calc-row-discount" style="display:none">
-              <span>Promo Discount (<b id="calc-discount-code"></b>)</span>
-              <span class="calc-val text-green" id="calc-discount-val">-₹0</span>
-            </div>
-            <div class="calc-row">
-              <span>Shipping &amp; Handling</span>
-              <span class="calc-val" id="calc-shipping">Calculated</span>
-            </div>
-            <div class="calc-row calc-row--tax">
-              <span>Estimated GST (18% included)</span>
-              <span class="calc-val text-muted" id="calc-tax">₹0</span>
-            </div>
-            <div class="calc-divider"></div>
-            <div class="calc-row calc-row--total">
-              <div>
-                <b class="total-label">Total Amount to Pay</b>
-                <span class="total-note">Inclusive of all taxes</span>
-              </div>
-              <b class="calc-total" id="calc-total">₹0</b>
-            </div>
-            <div class="savings-banner" id="savings-banner" style="display:none">
-              🌿 <span id="savings-text">You are saving ₹0 on this Ayurvedic order!</span>
-            </div>
-          </div>
-
-          <!-- Sidebar Reassurance -->
-          <div class="summary-trust">
-            <div class="trust-item"><span class="check">✓</span> 100% Herbal &amp; Chemical Free</div>
-            <div class="trust-item"><span class="check">✓</span> 7-Day Hassle-Free Replacement</div>
-            <div class="trust-item"><span class="check">✓</span> Direct from Manufacturer</div>
-          </div>
-        </div>
-      </aside>
-
-    </div>
-
-    <!-- Empty Bag State (displayed if cart is empty) -->
-    <div class="checkout-empty" id="checkout-empty" style="display:none">
-      <div class="empty-box">
-        <div class="empty-icon">🌿</div>
-        <h2>Your Ayurvedic bag is currently empty</h2>
-        <p>Explore our farm-fresh Noni herbal formulations, cold-pressed oils and Ayurvedic remedies.</p>
-        <a class="btn btn--primary" href="shop.html">Explore Products</a>
-      </div>
-    </div>
-
-    <!-- ORDER CONFIRMATION VIEW (displayed when order is placed) -->
-    <div class="order-confirmation" id="order-confirmation" style="display:none">
-      <div class="order-success-card">
-        <div class="order-success-badge">
-          <div class="success-icon-animated">✓</div>
-        </div>
-        <span class="eyebrow eyebrow--center">Ayurvedic Order Confirmed</span>
-        <h2 class="order-success-title">Thank You, <span id="conf-customer-name">Customer</span>!</h2>
-        <p class="order-success-subtitle">
-          Your order <b>#<span id="conf-order-id">CHEK-00000</span></b> has been placed successfully and is being handcrafted with love at our Telangana organic farm.
-        </p>
-
-        <!-- Status Tracker Banner -->
-        <div class="order-tracker-card">
-          <div class="tracker-head">
-            <span class="tracker-status">● Order Status: <b>Confirmed &amp; Batched</b></span>
-            <span class="tracker-eta">Estimated Delivery: <b id="conf-delivery-date">In 3-4 Days</b></span>
-          </div>
-          <div class="tracker-steps">
-            <div class="t-step t-step--done"><div class="t-dot">✓</div><span>Order Placed</span></div>
-            <div class="t-step t-step--done"><div class="t-dot">●</div><span>Farm Batching</span></div>
-            <div class="t-step"><div class="t-dot"></div><span>Quality Tested</span></div>
-            <div class="t-step"><div class="t-dot"></div><span>Out for Delivery</span></div>
-          </div>
-          <p class="tracker-note" id="conf-whatsapp-note">
-            📲 We have dispatched order confirmation &amp; live tracking updates to your phone.
-          </p>
-        </div>
-
-        <div class="order-receipt-grid">
-          <!-- Left: Details -->
-          <div class="receipt-section">
-            <h4>Delivery Details</h4>
-            <div class="receipt-details" id="conf-address-box">
-              <!-- populated by app.js -->
-            </div>
-
-            <h4 style="margin-top:1.5rem">Payment Details</h4>
-            <div class="receipt-details" id="conf-payment-box">
-              <!-- populated by app.js -->
-            </div>
-          </div>
-
-          <!-- Right: Items -->
-          <div class="receipt-section">
-            <h4>Ordered Items (<span id="conf-items-count">0</span>)</h4>
-            <div class="receipt-items" id="conf-items-list">
-              <!-- populated by app.js -->
-            </div>
-            <div class="receipt-totals" id="conf-totals-box">
-              <!-- populated by app.js -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Action buttons -->
-        <div class="confirmation-actions">
-          <button type="button" class="btn btn--outline" id="btn-print-receipt">
-            🖨️ Download / Print Invoice
-          </button>
-          <a class="btn btn--primary" href="shop.html">
-            Continue Shopping
-          </a>
-        </div>
-
-        <div class="confirmation-foot">
-          <p>Questions about your order? Reach our customer care team at <b>hello@chekorganics.com</b> or call <b>+91 98765 43210</b> (Mon–Sat, 10am–6pm IST).</p>
-        </div>
-      </div>
-    </div>
-
+  <div class="handoff__pay" aria-label="Payment options at checkout">
+    <span>UPI</span><span>Cards</span><span>Net banking</span><span>Cash on delivery</span>
   </div>
 </main>
 
-<!-- GATEWAY PROCESSING OVERLAY -->
-<div class="gateway-overlay" id="gateway-overlay" aria-hidden="true" style="display:none">
-  <div class="gateway-modal">
-    <div class="gateway-spinner">
-      <div class="spinner-circle"></div>
-      <span class="spinner-leaf">🌿</span>
-    </div>
-    <h3 id="gateway-status-title">Processing Secure Payment…</h3>
-    <p id="gateway-status-desc">Connecting with Chek Organics Secure Payment Gateway. Please do not refresh or close this window.</p>
-    <div class="gateway-badges">
-      <span>🔒 256-Bit SSL Encrypted</span>
-      <span>🏛️ RBI Compliant</span>
-    </div>
-  </div>
-</div>
+<script>
+/* Hands the bag over to the real Shopify checkout on chekorganics.com.
+   The bag stores product handles; Shopify's cart permalink needs variant IDs
+   (/cart/<variantId>:<qty>,…), so each product's live data is read from
+   /products/<handle>.js (CORS-enabled). Payment, order creation and payment
+   verification all happen on Shopify's checkout — nothing is charged here. */
+(function () {
+  "use strict";
+  var LIVE = "https://www.chekorganics.com";
+  var CART_KEY = "chek_cart_v1";
 
-<footer class="footer footer--checkout">
-  <div class="container">
-    <div class="footer__bottom">
-      <span>© 2026 CHEKORGANICS · Route to Roots · All Rights Reserved</span>
-      <span>100% Secure Checkout powered by CHEKORGANICS Direct E-Commerce Gateway</span>
-    </div>
-  </div>
-</footer>
+  function show(state) {
+    document.querySelectorAll("[data-state]").forEach(function (s) { s.hidden = s.getAttribute("data-state") !== state; });
+  }
+  function readCart() {
+    try {
+      var c = JSON.parse(localStorage.getItem(CART_KEY)) || {};
+      return Object.keys(c).map(function (h) { return { handle: h, qty: Math.max(1, Math.min(99, parseInt(c[h], 10) || 0)) }; })
+        .filter(function (x) { return x.handle && parseInt(c[x.handle], 10) > 0; });
+    } catch (e) { return []; }
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function variantFor(item) {
+    return fetch(LIVE + "/products/" + encodeURIComponent(item.handle) + ".js", { credentials: "omit", cache: "no-store" })
+      .then(function (r) {
+        if (r.status === 404) return { item: item, missing: true };
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json().then(function (p) {
+          var vs = p.variants || [];
+          var v = vs.filter(function (x) { return x.available; })[0] || null;
+          return { item: item, title: p.title, variant: v, soldOut: !v };
+        });
+      });
+  }
 
-<script src="data.js"></script>
-<script src="app.js"></script>
+  function go() {
+    var items = readCart();
+    if (!items.length) return show("empty");
+    show("loading");
+    Promise.all(items.map(variantFor)).then(function (res) {
+      var ok = res.filter(function (r) { return r.variant; });
+      var bad = res.filter(function (r) { return !r.variant; });
+      var url = ok.length ? LIVE + "/cart/" + ok.map(function (r) { return r.variant.id + ":" + r.item.qty; }).join(",") : null;
+      if (!bad.length && url) {
+        window.location.replace(url);
+        return;
+      }
+      // some products are sold out or no longer in the store: say so, let the shopper decide
+      document.querySelector("[data-review-msg]").textContent = ok.length
+        ? "These items can't be ordered right now. You can continue with the rest of your bag."
+        : "None of the items in your bag can be ordered right now.";
+      document.querySelector("[data-review-list]").innerHTML = res.map(function (r) {
+        var name = r.title || r.item.handle.replace(/-/g, " ");
+        var note = r.variant ? "× " + r.item.qty : r.missing ? "No longer available" : "Sold out";
+        return '<li class="' + (r.variant ? "" : "is-out") + '"><span>' + esc(name) + "</span><span>" + esc(note) + "</span></li>";
+      }).join("");
+      var cont = document.querySelector("[data-continue]");
+      cont.hidden = !url;
+      if (url) cont.href = url;
+      show("review");
+    }).catch(function () {
+      show("error");
+    });
+  }
+
+  document.querySelector("[data-retry]").addEventListener("click", go);
+  go();
+})();
+</script>
 </body>
 </html>

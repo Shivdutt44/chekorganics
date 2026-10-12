@@ -158,14 +158,27 @@ Instagram isn't scraped. Instagram requires a login and its terms forbid scrapin
 shows up here once the same video is uploaded to Shopify, either in the homepage video widget
 or as product media, and the script is re-run.
 
-## Instagram feed (homepage)
+## Instagram-style profile, stories & feed (homepage)
 
-`instagram.js` shows the latest posts from @chekorganics in a grid (6 columns on desktop, 3×3 on
-phones). Reels and carousels are marked with an icon, and each tile opens the post on Instagram.
-The data is `instagram.json` plus WebP thumbnails in `assets/instagram/`. Both are generated from
-the **official Instagram API** by `.build/fetch-instagram.mjs`, because Instagram image links
-expire. Until a feed exists, the section shows only its heading and the Follow button, never
-placeholder posts.
+`instagram.js` renders the section like the Instagram app's profile page:
+
+- **Profile header:** avatar, @chekorganics, Follow (opens Instagram), Message (`ig.me`
+  direct message) and bio. Stats show only real numbers: the shoppable video count, plus
+  posts and followers once Instagram is connected.
+- **Story highlights:** one circle per collection (Haircare, Superfoods, Eye Care…), built from
+  the brand's product videos in `videos.js`. Tapping a circle opens a full-screen story player
+  with progress bars. Tap right or left to move between stories, press and hold to pause, swipe
+  sideways to change highlight, swipe down or press Esc to close. Videos auto-advance, and the
+  product card at the bottom has a live price and Add to bag. Watched highlights turn grey,
+  remembered in localStorage.
+- **Feed:** a **Posts** tab (Instagram posts from `instagram.json`; each opens on Instagram)
+  and a **Videos** tab (the 14 product videos; each opens in the story player). Without an
+  Instagram feed, only the Videos tab appears.
+
+`instagram.json` and the WebP thumbnails and profile photo in `assets/instagram/` come from the
+**official Instagram API** via `.build/fetch-instagram.mjs`, because Instagram image links
+expire. Nothing is shown from Instagram until the account is connected, and no placeholder
+posts or counts are ever invented.
 
 **Connect the account (one time):**
 
@@ -183,9 +196,19 @@ update the secret before then. A failed run leaves the last good feed in place a
 
 ## Cart & checkout
 
-The bag is a local preview (localStorage). **Checkout** hands off to the real store with a
-proper Shopify permalink: `chekorganics.com/cart/<variantId>:<qty>`, so a click-through
-cart actually works on the live site.
+The bag is a local preview (localStorage). **Checkout happens on the real Shopify store.** The
+bag's "Proceed to Checkout" and the product page's "Buy Now" open `checkout.html`, a small
+handoff page. It looks up each product's live variant ID (`/products/<handle>.js`) and redirects
+to Shopify's cart permalink `chekorganics.com/cart/<variantId>:<qty>,…`. Payment (UPI and
+dynamic QR, cards, net banking, COD), payment verification and the order itself are all
+handled by Shopify, and orders appear in Shopify admin.
+
+- Permalinks need **variant** IDs. A product ID returns `410 Gone`.
+- Sold-out or removed products are listed before continuing, and the rest of the bag can still
+  check out.
+- If the store can't be reached, the page shows Try again and the bag is kept.
+- This static site never takes payment and never asks for card details. Customers pay only on
+  Shopify's checkout.
 
 ## Regenerating the data
 
