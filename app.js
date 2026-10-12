@@ -466,6 +466,12 @@
 
   /* ---------------------------------------------------------- delegation */
   document.addEventListener("click", e => {
+    const cartBtn = e.target.closest("[data-open-cart]");
+    if (cartBtn) {
+      e.preventDefault();
+      openDrawer();
+      return;
+    }
     const btn = e.target.closest("[data-add]");
     if (btn && btn.id !== "pdp-add" && !btn.hasAttribute("data-sticky-add")) { e.preventDefault(); Cart.add(btn.dataset.add, 1); }
   });
@@ -478,6 +484,9 @@
       onScroll();
       window.addEventListener("scroll", onScroll, { passive: true });
     }
+    $$("[data-open-cart]").forEach(btn => {
+      btn.addEventListener("click", e => { e.preventDefault(); openDrawer(); });
+    });
     const burger = $("[data-burger]"), mnav = $(".mobile-nav");
     if (burger && mnav) {
       burger.addEventListener("click", () => mnav.classList.add("is-open"));
