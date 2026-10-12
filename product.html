@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Product — CHEKORGANICS</title>
 <meta name="description" content="CHEKORGANICS Ayurvedic product — farm-grown Noni, AYUSH certified, chemical free.">
-<link rel="icon" href="assets/brand/logo-mark.webp">
+<link rel="icon" type="image/jpeg" sizes="32x32" href="assets/brand/favicon-32.jpg">
+<link rel="apple-touch-icon" sizes="512x512" href="assets/brand/apple-touch-icon.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -41,6 +42,7 @@
       <a href="index.html#story">Our Story</a>
     </nav>
     <div class="header__actions">
+      <span class="sync-pill" id="sync-pill" aria-live="polite"><span class="dot"></span> Loading live catalog…</span>
       <button class="icon-btn" type="button" data-open-cart aria-label="Open shopping bag">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
         <span class="cart-count" data-cart-count style="display:none">0</span>
@@ -126,6 +128,30 @@
         <a class="link-arrow" href="shop.html">Shop all <span>→</span></a>
       </div>
       <div class="grid-products" id="related-grid"></div>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="recent-wrap" hidden>
+    <div class="container">
+      <div class="section-head">
+        <div class="section-head__text">
+          <span class="eyebrow">Recently viewed</span>
+          <h2>Pick up where you left off.</h2>
+        </div>
+      </div>
+      <div class="grid-products" id="recent-grid"></div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="guarantee">
+        <div class="guarantee__item"><b>AYUSH certified</b><span>Govt. of India approved formulations</span></div>
+        <div class="guarantee__item"><b>Farm to bottle</b><span>Noni grown on our own Telangana farm</span></div>
+        <div class="guarantee__item"><b>Chemical free</b><span>100% natural · cruelty free · vegan</span></div>
+        <div class="guarantee__item"><b>Free shipping</b><span>Domestic orders above ₹3,000</span></div>
+        <div class="guarantee__item"><b>Easy returns</b><span>7-day hassle-free replacement</span></div>
+      </div>
     </div>
   </section>
 </main>

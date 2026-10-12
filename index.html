@@ -7,8 +7,9 @@
 <meta name="description" content="Discover CHEKORGANICS – a holistic range of Ayurvedic skincare, haircare and wellness products made with organic, farm-sourced Noni. AYUSH certified, handmade and rooted in traditional Indian wisdom.">
 <meta property="og:title" content="CHEKORGANICS — Ayurvedic Skincare, Haircare &amp; Wellness">
 <meta property="og:description" content="AYUSH certified, handmade, farm-grown Noni wellness. Route to Roots.">
-<meta property="og:image" content="assets/brand/logo-mark.webp">
-<link rel="icon" href="assets/brand/logo-mark.webp">
+<meta property="og:image" content="assets/brand/og-share.png">
+<link rel="icon" type="image/jpeg" sizes="32x32" href="assets/brand/favicon-32.jpg">
+<link rel="apple-touch-icon" sizes="512x512" href="assets/brand/apple-touch-icon.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -53,6 +54,7 @@
     </nav>
 
     <div class="header__actions">
+      <span class="sync-pill" id="sync-pill" aria-live="polite"><span class="dot"></span> Loading live catalog…</span>
       <a class="btn btn--primary btn--sm header__cta" href="shop.html">Shop now</a>
       <button class="icon-btn" type="button" data-open-cart aria-label="Open shopping bag">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
@@ -81,32 +83,66 @@
 <main>
 
   <!-- hero -->
-  <section class="hero">
-    <div class="hero__media">
-      <picture>
-        <source media="(max-width: 760px)" srcset="assets/brand/hero-mobile.webp">
-        <img src="assets/brand/hero-desktop.webp" alt="CHEKORGANICS Ayurvedic wellness range" fetchpriority="high">
-      </picture>
+  <section class="hero" id="hero">
+    <div class="hero__media hero__stage">
+      <div class="hero__slide is-active" data-slide="0">
+        <picture>
+          <source media="(max-width: 960px)" srcset="assets/brand/hero-1-mobile.webp" type="image/webp">
+          <img src="assets/brand/hero-1-desktop.webp" alt="CHEKORGANICS Noni wellness range on our Telangana farm" width="1920" height="800" fetchpriority="high">
+        </picture>
+      </div>
+      <div class="hero__slide" data-slide="1">
+        <picture>
+          <source media="(max-width: 960px)" srcset="assets/brand/hero-2-mobile.webp" type="image/webp">
+          <img src="assets/brand/hero-2-desktop.webp" alt="Ashyukavach Organic Noni Sun Defence Cream SPF 30+" width="1920" height="800" loading="lazy">
+        </picture>
+      </div>
     </div>
 
     <div class="container">
-      <div class="hero__inner">
-        <span class="hero__badge">
-          <img src="assets/brand/badge-ayush.webp" alt="">
-          AYUSH certified · Farm grown in Telangana
-        </span>
-        <h1>Ayurveda that begins <em>at the root</em>, not the shelf.</h1>
-        <p class="hero__sub">Handcrafted Noni rituals for hair, skin and inner wellness — grown on our own farm, formulated with 5,000 years of Indian wisdom, and left completely free of chemicals.</p>
-        <div class="hero__cta">
-          <a class="btn btn--gold" href="shop.html">Shop the apothecary</a>
-          <a class="btn btn--light" href="#story">Meet the founder</a>
+      <div class="hero__panels">
+        <div class="hero__inner hero__panel is-active" data-panel="0">
+          <span class="hero__badge">
+            <img src="assets/brand/badge-ayush.webp" alt="">
+            AYUSH certified · Farm grown in Telangana
+          </span>
+          <h1>Ayurveda that begins <em>at the root</em>, not the shelf.</h1>
+          <p class="hero__sub">Handcrafted Noni rituals for hair, skin and inner wellness — grown on our own farm, formulated with 5,000 years of Indian wisdom, and left completely free of chemicals.</p>
+          <div class="hero__cta">
+            <a class="btn btn--gold" href="shop.html">Shop the apothecary</a>
+            <a class="btn btn--light" href="#story">Meet the founder</a>
+          </div>
         </div>
-        <div class="hero__stats">
-          <div class="hero__stat"><b>10,000+</b><span>Happy customers</span></div>
-          <div class="hero__stat"><b>38</b><span>Ayurvedic formulas</span></div>
-          <div class="hero__stat"><b>4.8/5</b><span>From 27 reviews</span></div>
-          <div class="hero__stat"><b>100%</b><span>Chemical free</span></div>
+
+        <div class="hero__inner hero__panel" data-panel="1">
+          <span class="hero__badge">
+            <img src="assets/brand/badge-2.webp" alt="">
+            New launch · Ashyukavach SPF 30+
+          </span>
+          <h1>Indian summers, <em>meet your match.</em></h1>
+          <p class="hero__sub">Broad-spectrum Ayurvedic sun defence with Noni extract and natural minerals. No white cast, no chemicals — just calm, protected skin from ₹350.</p>
+          <div class="hero__cta">
+            <a class="btn btn--gold" href="product.html?p=chekorganics-ashyukavach-organic-noni-sun-defence-cream-spf-30-natural-ayurvedic-sunscreen-broad-spectrum-protection">Shop SPF 30+ · ₹350</a>
+            <a class="btn btn--light" href="shop.html">See all 38 products</a>
+          </div>
         </div>
+      </div>
+
+      <div class="hero__stats">
+        <div class="hero__stat"><b>10,000+</b><span>Happy customers</span></div>
+        <div class="hero__stat"><b>38</b><span>Ayurvedic formulas</span></div>
+        <div class="hero__stat"><b>4.8/5</b><span>From 27 reviews</span></div>
+        <div class="hero__stat"><b>100%</b><span>Chemical free</span></div>
+      </div>
+
+      <div class="hero__nav">
+        <button class="hero__arrow" type="button" data-hero-prev aria-label="Previous slide">←</button>
+        <div class="hero__dots">
+          <button class="hero__dot is-active" type="button" data-hero-dot="0" aria-label="Slide 1: Route to Roots"></button>
+          <button class="hero__dot" type="button" data-hero-dot="1" aria-label="Slide 2: Ashyukavach SPF 30+"></button>
+        </div>
+        <button class="hero__arrow" type="button" data-hero-next aria-label="Next slide">→</button>
+        <span class="hero__pausehint">Autoplays every 6.5s</span>
       </div>
     </div>
 
@@ -308,6 +344,19 @@
       <div class="reviews" id="review-grid"></div>
       <div style="text-align:center;margin-top:2.5rem">
         <a class="btn btn--light" href="https://www.chekorganics.com/pages/reviews" target="_blank" rel="noopener">More testimonials</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- guarantee strip (CRO) -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="guarantee reveal">
+        <div class="guarantee__item"><b>AYUSH certified</b><span>Govt. of India approved</span></div>
+        <div class="guarantee__item"><b>Farm to bottle</b><span>Own Noni plantation, Telangana</span></div>
+        <div class="guarantee__item"><b>Chemical free</b><span>Natural · cruelty free · vegan</span></div>
+        <div class="guarantee__item"><b>Free shipping</b><span>Orders above ₹3,000</span></div>
+        <div class="guarantee__item"><b>10,000+ customers</b><span>4.8/5 from 27 reviews</span></div>
       </div>
     </div>
   </section>
