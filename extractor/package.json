@@ -1,0 +1,7 @@
+{
+  "name": "shopify-store-extractor",
+  "private": true,
+  "type": "module",
+  "description": "Browser-only Shopify store extractor (static, GitHub Pages friendly). package.json exists only so Node runs the tests as ES modules.",
+  "scripts": { "test": "node --test tests/" }
+}

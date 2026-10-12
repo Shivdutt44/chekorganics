@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https: data: blob:; connect-src https:; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Store Extractor — Shopify public data to JSON, CSV &amp; Excel</title>
+<meta name="description" content="Extract a Shopify store's public products, variants, collections, pages and images in your browser, and export them as JSON, CSV, Excel or ZIP.">
+<link rel="icon" type="image/jpeg" sizes="32x32" href="../assets/brand/favicon-32.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="extractor.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top__inner">
+    <a class="brand" href="./">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M5 21c0-9 5-15 15-17-1 10-6 15-13 15l-2 2Zm3-5c3-1 6-4 8-8-3 2-6 5-8 8Z"/></svg>
+      </span>
+      <span>Store Extractor</span>
+    </a>
+    <span class="top__tag">Runs in your browser · no server · no tracking</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <p class="eyebrow">Shopify public data</p>
+    <h1>Extract a store's catalog in&nbsp;one click</h1>
+    <p class="hero__lede">Products, variants, collections, pages and images from any Shopify store's public JSON feeds. Export to JSON, CSV, Excel or a ZIP with an image manifest.</p>
+  </section>
+
+  <div id="restore" class="notice notice--info" hidden>
+    <span>Your last extraction (<b data-restore-label></b>) is saved in this browser.</span>
+    <span class="notice__actions">
+      <button type="button" class="btn btn--sm" data-action="restore">Open it</button>
+      <button type="button" class="btn btn--sm btn--ghost" data-action="forget">Forget</button>
+    </span>
+  </div>
+
+  <!-- ===================================================== input -->
+  <section class="card" aria-labelledby="h-store">
+    <h2 id="h-store" class="card__title"><span class="step">1</span> Store URL</h2>
+    <form id="store-form" class="url-row" novalidate>
+      <label class="sr-only" for="store-url">Store URL</label>
+      <input id="store-url" name="url" type="text" inputmode="url" autocomplete="url" spellcheck="false"
+             placeholder="https://example.com or store-name.myshopify.com" required>
+      <button type="button" class="btn btn--ghost" data-action="validate">Validate store</button>
+      <button type="submit" class="btn btn--gold" data-action="start">Start extraction</button>
+    </form>
+    <p id="url-error" class="field-error" role="alert" hidden></p>
+    <div id="validation" class="validation" hidden></div>
+  </section>
+
+  <!-- ===================================================== options -->
+  <section class="card" aria-labelledby="h-content">
+    <h2 id="h-content" class="card__title"><span class="step">2</span> What to extract</h2>
+    <div class="chips" role="group" aria-label="Content types">
+      <label class="chip chip--all"><input type="checkbox" data-type="all" checked><span>All content</span></label>
+      <label class="chip"><input type="checkbox" data-type="products" checked><span>Products &amp; variants</span></label>
+      <label class="chip"><input type="checkbox" data-type="collections" checked><span>Collections</span></label>
+      <label class="chip"><input type="checkbox" data-type="pages" checked><span>Pages</span></label>
+      <label class="chip"><input type="checkbox" data-type="images" checked><span>Images</span></label>
+    </div>
+    <div class="chips chips--off" aria-label="Not available in browser mode">
+      <span class="chip chip--disabled" title="Needs storefront HTML, which browsers can't read cross-origin">Banners &amp; posters</span>
+      <span class="chip chip--disabled" title="Blog pages and feeds aren't readable cross-origin">Blogs &amp; articles</span>
+      <span class="chip chip--disabled" title="sitemap.xml isn't readable cross-origin">Sitemap URLs</span>
+      <span class="chip chip--disabled" title="SEO meta and JSON-LD live in page HTML">SEO &amp; JSON-LD</span>
+      <span class="chips__note">Need a server-side proxy. <a href="#limits">Why?</a></span>
+    </div>
+
+    <details class="advanced">
+      <summary>Advanced settings</summary>
+      <div class="advanced__grid">
+        <label class="toggle"><input type="checkbox" id="opt-enrich" checked>
+          <span><b>Image alt text &amp; barcodes</b><small>1 extra request per product (products/{handle}.js)</small></span></label>
+        <label class="toggle"><input type="checkbox" id="opt-refs" checked>
+          <span><b>Map products to collections</b><small>1+ request per collection</small></span></label>
+        <label class="field"><span>Requests per second</span>
+          <input type="number" id="opt-rps" min="1" max="8" step="1" value="3"></label>
+        <label class="field"><span>Parallel requests</span>
+          <input type="number" id="opt-conc" min="1" max="6" step="1" value="3"></label>
+        <label class="field"><span>Max feed pages (× 250 items)</span>
+          <input type="number" id="opt-pages" min="1" max="400" step="1" value="100"></label>
+        <label class="field"><span>Retries per request</span>
+          <input type="number" id="opt-retries" min="0" max="6" step="1" value="3"></label>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===================================================== progress -->
+  <section id="progress" class="card" aria-labelledby="h-progress" hidden>
+    <div class="progress__head">
+      <h2 id="h-progress" class="card__title"><span class="step">3</span> Progress</h2>
+      <span id="status-pill" class="pill">Idle</span>
+    </div>
+    <div class="bar" role="progressbar" aria-labelledby="h-progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="bar__fill" id="bar-fill"></div>
+    </div>
+    <p class="stage" id="stage-label" aria-live="polite">—</p>
+    <dl class="stats" id="stats">
+      <div><dt>Requests</dt><dd data-stat="requests">0</dd></div>
+      <div><dt>Items found</dt><dd data-stat="discovered">0</dd></div>
+      <div><dt>Processed</dt><dd data-stat="processed">0</dd></div>
+      <div><dt>Extracted</dt><dd data-stat="extracted">0</dd></div>
+      <div><dt>Images</dt><dd data-stat="images">0</dd></div>
+      <div><dt>Failed</dt><dd data-stat="failed">0</dd></div>
+      <div><dt>Retries</dt><dd data-stat="retries">0</dd></div>
+      <div><dt>Elapsed</dt><dd data-stat="elapsed">0s</dd></div>
+    </dl>
+    <div class="progress__actions">
+      <button type="button" class="btn btn--ghost" data-action="cancel" hidden>Cancel</button>
+      <button type="button" class="btn btn--ghost" data-action="retry" hidden>Run again</button>
+    </div>
+    <details class="log"><summary>Activity log</summary><ol id="log"></ol></details>
+  </section>
+
+  <!-- ===================================================== results -->
+  <section id="results" class="card" aria-labelledby="h-results" hidden>
+    <h2 id="h-results" class="card__title"><span class="step">4</span> Results</h2>
+    <div id="summary" class="summary"></div>
+    <div id="coverage" class="coverage"></div>
+
+    <div class="exports">
+      <h3>Download</h3>
+      <div class="exports__row">
+        <button type="button" class="btn btn--gold" data-export="zip">ZIP · everything</button>
+        <button type="button" class="btn" data-export="json">Full JSON</button>
+        <button type="button" class="btn" data-export="xlsx">Excel (.xlsx)</button>
+        <span class="split">
+          <select id="export-type" aria-label="Dataset">
+            <option value="products">Products</option>
+            <option value="variants">Variants</option>
+            <option value="collections">Collections</option>
+            <option value="pages">Pages</option>
+            <option value="images">Images</option>
+            <option value="errors">Errors</option>
+          </select>
+          <button type="button" class="btn" data-export="type-json">JSON</button>
+          <button type="button" class="btn" data-export="type-csv">CSV</button>
+        </span>
+      </div>
+      <div class="exports__images">
+        <label class="toggle"><input type="checkbox" id="zip-images">
+          <span><b>Include image files in the ZIP</b><small>Downloads public images from Shopify's CDN, checks type &amp; size, skips duplicates</small></span></label>
+        <label class="field field--inline"><span>Max images</span><input type="number" id="zip-max" min="1" max="2000" value="200"></label>
+        <label class="field field--inline"><span>Max width (px)</span><input type="number" id="zip-width" min="200" max="5000" step="100" value="2048"></label>
+      </div>
+      <p id="export-status" class="export-status" aria-live="polite"></p>
+    </div>
+
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="Search title, handle, URL, SKU…" aria-label="Search results">
+      <select id="filter" aria-label="Filter" hidden></select>
+      <span class="toolbar__count" id="count"></span>
+    </div>
+    <div id="list" class="list"></div>
+    <nav class="pager" id="pager" aria-label="Pagination"></nav>
+  </section>
+
+  <!-- ===================================================== limits -->
+  <section id="limits" class="card card--quiet" aria-labelledby="h-limits">
+    <h2 id="h-limits" class="card__title">What a browser can and can't read</h2>
+    <p>This page has no server. It runs on GitHub Pages, so your browser fetches the store directly, and browsers only let a page read another site's data when that site sends CORS headers. Shopify sends them for its JSON feeds, but not for storefront HTML.</p>
+    <div class="limits">
+      <div>
+        <h3>Extracted</h3>
+        <ul class="ticks">
+          <li>Products, variants, options, prices, availability, tags, SKUs</li>
+          <li>Barcodes, image alt text and product media (via <code>products/{handle}.js</code>)</li>
+          <li>Collections, collection images and the products in each collection</li>
+          <li>Pages (<code>pages.json</code>, where the store exposes it): HTML, clean text, headings, links, images</li>
+          <li>Every product, collection and page image, de-duplicated, with its source page</li>
+          <li>Store name, currency and published counts (<code>meta.json</code>), used to verify completeness</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Not readable from a browser</h3>
+        <ul class="crosses">
+          <li>Homepage hero banners, posters and other theme section images</li>
+          <li>Blogs and articles</li>
+          <li>sitemap.xml and robots.txt</li>
+          <li>SEO titles, meta descriptions, canonical URLs, JSON-LD, review widgets</li>
+          <li>Policy pages (shipping, refund, privacy, terms)</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted">These are marked <em>unavailable</em> in every export. Nothing is guessed or filled in. Reading them needs a small server-side proxy, such as a Cloudflare Worker. Requests are rate-limited and retried with backoff, and nothing is sent anywhere except the store you enter. Extracted content stays the property of the store owner.</p>
+  </section>
+</main>
+
+<footer class="foot wrap">
+  <p>Store Extractor · public Shopify data only · results stay in your browser</p>
+</footer>
+
+<template id="tpl-toast"><div class="toast" role="status"></div></template>
+</body>
+</html>
