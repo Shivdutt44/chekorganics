@@ -459,11 +459,25 @@ export function hashString(s) {
 }
 
 /* ------------------------------------------------------------ normalisers */
+/* Fallback used when no DOM is available (Node, workers). The browser UI injects
+   DOMParser-based helpers from html.js instead. */
+function attr(tag, name) {
+  const m = new RegExp(`\\s${name}\\s*=\\s*("([^"]*)"|'([^']*)'|([^\\s>]+))`, "i").exec(tag);
+  return m ? (m[2] ?? m[3] ?? m[4] ?? "").replace(/&amp;/g, "&") : null;
+}
+const stripTags = s => String(s || "").replace(/<(script|style)\b[\s\S]*?<\/(script|style)>/gi, " ").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
 const noHtml = {
-  toText: s => String(s || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
-  headings: () => [],
-  links: () => [],
-  images: () => [],
+  toText: stripTags,
+  headings: s => [...String(s || "").matchAll(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h[1-6]>/gi)].map(m => ({ level: Number(m[1]), text: stripTags(m[2]) })).filter(h => h.text),
+  links: (s, base) => [...String(s || "").matchAll(/<a\b[^>]*>/gi)].map(m => absolutize(attr(m[0], "href"), base)).filter(u => u && /^https?:/.test(u)).map(url => ({ url, text: null })),
+  images: (s, base) =>
+    [...String(s || "").matchAll(/<img\b[^>]*>/gi)]
+      .map(m => {
+        const raw = attr(m[0], "data-src") || attr(m[0], "src");
+        const url = raw && !/^data:/i.test(raw) ? absolutize(raw.replace("{width}", "1080"), base) : null;
+        return url ? { url, alt: attr(m[0], "alt")?.trim() || null, width: toNumber(attr(m[0], "width")), height: toNumber(attr(m[0], "height")) } : null;
+      })
+      .filter(Boolean),
 };
 
 export function normalizeProduct(p, { origin, extractedAt, html = noHtml, currency = null }) {

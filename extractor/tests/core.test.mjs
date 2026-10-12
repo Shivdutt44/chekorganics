@@ -317,7 +317,9 @@ describe("full extraction against a fake store", () => {
     assert.equal(r.products.length, 0);
     assert.equal(r.collections.length, 2);
     assert.equal(r.coverage.products.status, "skipped");
-    assert.ok(!store.calls.some(u => u.includes("/products.json?limit=250")), "the products feed is never paged");
+    const feedPages = store.calls.filter(u => new URL(u).pathname === "/products.json" && new URL(u).searchParams.has("page"));
+    assert.deepEqual(feedPages, [], "the products feed is never paged");
+    assert.ok(store.calls.some(u => u.includes("/collections/haircare/products.json")), "collection mapping still runs");
   });
 
   test("a failing endpoint is recorded and the rest still runs (partial)", async () => {
