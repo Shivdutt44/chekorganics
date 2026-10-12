@@ -1,0 +1,12 @@
+# build dependencies (regenerate with: cd .build && npm i)
+.build/node_modules/
+
+# runtime + verification artefacts (screenshots are committed under /screenshots)
+.build/server.log
+.build/shots/
+.build/shots2/
+.build/shots3/
+
+# OS noise
+.DS_Store
+Thumbs.db
