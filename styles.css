@@ -946,9 +946,9 @@ h1, h2, h3, h4 {
 
 /* Footer Download App Section */
 .footer__apps {
-  margin-top: 1.6rem;
-  padding-top: 1.2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  margin-bottom: 1.6rem;
+  padding-bottom: 1.3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
 }
 .footer__apps-header {
   display: flex;
