@@ -273,25 +273,38 @@
                       <button type="button" class="upi-tab-btn" data-upi-mode="id">Enter UPI ID</button>
                     </div>
 
-                    <!-- Mode A: Instant QR -->
+                    <!-- Mode A: Instant Dynamic QR -->
                     <div class="upi-panel" id="upi-panel-qr">
                       <div class="upi-qr-display">
-                        <div class="upi-qr-code" id="upi-qr-box">
-                          <!-- dynamic QR rendered here -->
-                          <div class="qr-canvas-placeholder">
-                            <div class="qr-pattern"></div>
-                            <div class="qr-center-logo">🌿</div>
+                        <div class="upi-qr-wrapper">
+                          <div class="upi-qr-code" id="upi-qr-box">
+                            <img src="assets/payments/phonepe-qr.png" alt="Official PhonePe Merchant QR Code" class="phonepe-qr-image" id="phonepe-qr-img">
+                          </div>
+                          <div class="qr-live-badge">
+                            <span class="pulse-dot"></span> Official PhonePe Merchant QR
                           </div>
                         </div>
                         <div class="upi-qr-info">
                           <p class="upi-qr-title">Scan &amp; Pay using any UPI App</p>
                           <div class="upi-apps-row">
-                            <span>Google Pay</span> · <span>PhonePe</span> · <span>Paytm</span> · <span>CRED</span>
+                            <img src="assets/payments/phonepe.svg" alt="PhonePe" height="22">
+                            <img src="assets/payments/gpay.svg" alt="Google Pay" height="20">
+                            <img src="assets/payments/paytm.svg" alt="Paytm" height="20">
+                            <img src="assets/payments/upi.svg" alt="UPI" height="20">
                           </div>
                           <div class="upi-amount-pill">
-                            Amount: <b id="upi-qr-amount">₹0</b>
+                            Amount to Pay: <b id="upi-qr-amount">₹0</b>
                           </div>
-                          <p class="upi-note">VPA: <code>chekorganics@icici</code> (Verified Merchant)</p>
+                          <div class="upi-vpa-row">
+                            <span>UPI ID: <code id="upi-vpa-text">Q20988719@ybl</code></span>
+                            <button type="button" class="btn-copy-vpa" id="btn-copy-vpa" title="Copy UPI ID">Copy</button>
+                          </div>
+                          <div class="upi-intent-wrap">
+                            <a href="#" id="upi-intent-link" class="btn btn--sm btn--upi-app" target="_blank" rel="noopener">
+                              📱 Tap to Pay on Mobile UPI App
+                            </a>
+                          </div>
+                          <p class="upi-timer-text">✅ Verified Merchant · Instant Payment Confirmation</p>
                         </div>
                       </div>
                     </div>
@@ -630,6 +643,7 @@
 </footer>
 
 <script src="data.js"></script>
+<script src="qrcode.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
