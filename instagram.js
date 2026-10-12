@@ -112,19 +112,30 @@
       });
     } else if (row) row.hidden = true;
 
+    // Instagram badge on the profile photo
+    const avatar = $(".igp__avatar", root);
+    if (avatar && !$(".igp__badge", avatar)) avatar.insertAdjacentHTML("beforeend", '<span class="igp__badge">' + igLogo() + "</span>");
+
     // header stats (real numbers only)
     paintStats(root, null);
 
+    // Prev / Next for the story row and the feed rail
+    railNav($('[data-ig-nav="stories"]', root), row);
+    const feedNav = railNav($('[data-ig-nav="feed"]', root), $("[data-ig-grid]", root));
+
     // feed tabs: Videos now, Posts once instagram.json exists
     const feedState = { tab: "videos", posts: [] };
-    renderTabs(root, feedState);
-    renderGrid(root, feedState, groups);
+    const showFeed = () => {
+      renderTabs(root, feedState);
+      renderGrid(root, feedState, groups);
+      feedNav.reset();
+    };
+    showFeed();
     $("[data-ig-tabs]", root).addEventListener("click", e => {
       const t = e.target.closest("[data-tab]");
       if (!t) return;
       feedState.tab = t.dataset.tab;
-      renderTabs(root, feedState);
-      renderGrid(root, feedState, groups);
+      showFeed();
     });
     $("[data-ig-grid]", root).addEventListener("click", e => {
       const v = e.target.closest("[data-video]");
@@ -145,8 +156,7 @@
           if (posts.length) {
             feedState.posts = posts.slice(0, 12);
             feedState.tab = "posts";
-            renderTabs(root, feedState);
-            renderGrid(root, feedState, groups);
+            showFeed();
           }
         });
     if ("IntersectionObserver" in window) {
@@ -158,6 +168,34 @@
       }, { rootMargin: "600px 0px" });
       io.observe(root);
     } else loadFeed();
+  }
+
+  /* Prev / Next buttons for a horizontal row: disabled at either end, invisible when everything fits */
+  function railNav(nav, scroller) {
+    if (!nav || !scroller) return { reset() {} };
+    const prev = $("[data-prev]", nav), next = $("[data-next]", nav);
+    const update = () => {
+      const max = scroller.scrollWidth - scroller.clientWidth;
+      nav.classList.toggle("is-idle", max <= 4);
+      prev.disabled = scroller.scrollLeft <= 4;
+      next.disabled = scroller.scrollLeft >= max - 4;
+    };
+    const step = dir => scroller.scrollBy({
+      left: dir * Math.max(160, scroller.clientWidth * 0.85),
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+    prev.addEventListener("click", () => step(-1));
+    next.addEventListener("click", () => step(1));
+    scroller.addEventListener("scroll", () => requestAnimationFrame(update), { passive: true });
+    scroller.addEventListener("load", update, true); // images change the row's width as they arrive
+    window.addEventListener("resize", update, { passive: true });
+    update();
+    return {
+      reset() {
+        scroller.scrollLeft = 0;
+        update();
+      },
+    };
   }
 
   function paintStats(root, feed) {
@@ -176,10 +214,33 @@
     if (st.posts.length) items.push(["posts", "Posts", '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/></svg>']);
     if (VIDEOS.length) items.push(["videos", "Videos", '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M3 8.5h18M8.5 3l3 5.5M14 3l3 5.5"/><path d="m10.5 12 4 2.3-4 2.3z" fill="currentColor"/></svg>']);
     tabs.innerHTML = items
-      .map(([k, label, icon]) => '<button type="button" role="tab" class="igt" data-tab="' + k + '" aria-selected="' + (st.tab === k) + '">' + icon + "<span>" + label + "</span></button>")
+      .map(([k, label, icon]) => '<button type="button" role="tab" class="chip igt' + (st.tab === k ? " is-active" : "") + '" data-tab="' + k + '" aria-selected="' + (st.tab === k) + '">' + icon + "<span>" + label + "</span></button>")
       .join("");
     tabs.hidden = !items.length;
   }
+
+  /* Instagram glyph: full-colour (gradient ids must be unique per instance) and plain white */
+  let logoSeq = 0;
+  function igLogo(cls) {
+    const id = "ig-grad-" + ++logoSeq;
+    return (
+      '<svg class="' + (cls || "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+      '<defs><radialGradient id="' + id + '" cx="30%" cy="107%" r="150%">' +
+      '<stop offset="0" stop-color="#fdf497"/><stop offset=".05" stop-color="#fdf497"/><stop offset=".45" stop-color="#fd5949"/>' +
+      '<stop offset=".6" stop-color="#d6249f"/><stop offset=".9" stop-color="#285aeb"/></radialGradient></defs>' +
+      '<rect width="24" height="24" rx="6.5" fill="url(#' + id + ')"/>' +
+      '<rect x="5" y="5" width="14" height="14" rx="4.2" fill="none" stroke="#fff" stroke-width="1.8"/>' +
+      '<circle cx="12" cy="12" r="3.3" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="16.4" cy="7.6" r="1.05" fill="#fff"/></svg>'
+    );
+  }
+  const IG_WHITE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>';
+
+  // last tile of the feed: a Follow card with the Instagram logo
+  const followCard = () =>
+    '<a class="igg__tile igg__end" href="https://www.instagram.com/chekorganics/" target="_blank" rel="noopener" aria-label="Follow @chekorganics on Instagram (opens Instagram)">' +
+    igLogo("igg__endlogo") +
+    "<b>@chekorganics</b>" +
+    '<span class="igg__endbtn">Follow on Instagram</span></a>';
 
   function renderGrid(root, st, groups) {
     const grid = $("[data-ig-grid]", root);
@@ -193,10 +254,11 @@
             '<a class="igg__tile" href="' + esc(p.permalink) + '" target="_blank" rel="noopener" aria-label="' + esc(kind + ": " + (cap.slice(0, 90) || "Instagram post") + " (opens Instagram)") + '">' +
             '<img src="' + esc(p.image) + '" alt="' + esc(cap.slice(0, 120) || "Instagram post by @chekorganics") + '" loading="lazy" decoding="async">' +
             (kind !== "Post" ? '<span class="igg__kind">' + kind + "</span>" : "") +
+            '<span class="igg__ig" title="Instagram">' + IG_WHITE + "</span>" +
             "</a>"
           );
         })
-        .join("");
+        .join("") + followCard();
       return;
     }
     grid.className = "igg igg--videos";
@@ -209,7 +271,7 @@
         (p ? '<span class="igg__name">' + esc(p.title) + "</span>" : "") +
         "</a>"
       );
-    }).join("");
+    }).join("") + followCard();
   }
 
   /* ------------------------------------------------------- story player */

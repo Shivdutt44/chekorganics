@@ -358,16 +358,24 @@
   </section>
 
   <!-- reviews -->
-  <section class="section section--dark">
+  <section class="section section--dark" id="testimonials" aria-labelledby="testimonials-title">
     <div class="container">
       <div class="reviews-head">
         <div>
           <span class="eyebrow" style="color:var(--gold-2)">Let customers speak for us</span>
-          <h2 style="font-size:clamp(1.9rem,3.6vw,3rem);margin-top:1rem;color:var(--cream)">27 reviews. One honest verdict.</h2>
+          <h2 id="testimonials-title" style="font-size:clamp(1.9rem,3.6vw,3rem);margin-top:1rem;color:var(--cream)">27 reviews. One honest verdict.</h2>
         </div>
-        <div class="score"><b>4.8</b><span>out of 5<br>average rating</span></div>
+        <div class="reviews-head__actions">
+          <div class="score"><b>4.8</b><span>out of 5<br>average rating</span></div>
+          <div class="rail-nav rail-nav--dark" data-rail="review-grid" aria-label="Testimonials slider navigation">
+            <button class="rail-btn rail-btn--dark" type="button" data-prev aria-label="Previous review">←</button>
+            <button class="rail-btn rail-btn--dark" type="button" data-next aria-label="Next review">→</button>
+          </div>
+        </div>
       </div>
-      <div class="reviews" id="review-grid"></div>
+      <div class="rail-wrap">
+        <div class="reviews rail" id="review-grid"></div>
+      </div>
       <div style="text-align:center;margin-top:2.5rem">
         <a class="btn btn--light" href="https://www.chekorganics.com/pages/reviews" target="_blank" rel="noopener">More testimonials</a>
       </div>
@@ -387,28 +395,48 @@
     </div>
   </section>
 
-  <!-- instagram: app-style profile, story highlights and feed -->
-  <section class="section section--tight" id="instagram" aria-labelledby="ig-title">
-    <div class="container">
-      <div class="igapp" id="igapp">
-        <header class="igp">
-          <a class="igp__avatar" href="https://www.instagram.com/chekorganics/" target="_blank" rel="noopener" aria-label="@chekorganics on Instagram">
-            <img data-ig-avatar src="assets/brand/logo-mark.webp" alt="" width="96" height="96">
-          </a>
-          <div class="igp__body">
-            <div class="igp__top">
-              <h2 id="ig-title" class="igp__handle">chekorganics <svg class="igp__ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="on Instagram" role="img"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></h2>
-              <div class="igp__actions">
-                <a class="igp__btn igp__btn--follow" href="https://www.instagram.com/chekorganics/" target="_blank" rel="noopener">Follow</a>
-                <a class="igp__btn" href="https://ig.me/m/chekorganics" target="_blank" rel="noopener">Message</a>
-              </div>
+  <!-- instagram: profile, story highlights and feed -->
+  <section class="section section--sand" id="instagram" aria-labelledby="ig-title">
+    <div class="container igapp" id="igapp">
+      <div class="section-head">
+        <div class="section-head__text">
+          <div class="igp">
+            <a class="igp__avatar" href="https://www.instagram.com/chekorganics/" target="_blank" rel="noopener" aria-label="@chekorganics on Instagram">
+              <img data-ig-avatar src="assets/brand/logo-mark.webp" alt="" width="64" height="64">
+            </a>
+            <div>
+              <span class="eyebrow">@chekorganics on Instagram</span>
+              <ul class="igp__stats" data-ig-stats aria-label="Profile stats"></ul>
             </div>
-            <ul class="igp__stats" data-ig-stats aria-label="Profile stats"></ul>
-            <p class="igp__bio"><b>CHEKORGANICS · Route to Roots</b><br>Ayurvedic skincare, haircare &amp; wellness 🌿 Organic, farm-sourced ingredients · AYUSH certified</p>
           </div>
-        </header>
+          <h2 id="ig-title">Follow the farm-to-formula journey.</h2>
+          <p>Stories, rituals and new launches. Tap a story to watch, then add the product to your bag right from the video.</p>
+        </div>
+        <div class="ig-cta">
+          <a class="btn btn--primary" href="https://www.instagram.com/chekorganics/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>Follow</a>
+          <a class="btn btn--ghost" href="https://ig.me/m/chekorganics" target="_blank" rel="noopener">Message</a>
+        </div>
+      </div>
+
+      <div class="ig-row">
+        <div class="ig-row__head">
+          <h3 class="ig-row__title">Story highlights</h3>
+          <div class="rail-nav" data-ig-nav="stories">
+            <button class="rail-btn" type="button" data-prev aria-label="Previous stories">←</button>
+            <button class="rail-btn" type="button" data-next aria-label="Next stories">→</button>
+          </div>
+        </div>
         <div class="igs-row" data-ig-stories aria-label="Story highlights"></div>
-        <div class="igt-bar" role="tablist" data-ig-tabs aria-label="Feed"></div>
+      </div>
+
+      <div class="ig-row">
+        <div class="ig-row__head">
+          <div class="igt-bar" role="tablist" data-ig-tabs aria-label="Feed"></div>
+          <div class="rail-nav" data-ig-nav="feed">
+            <button class="rail-btn" type="button" data-prev aria-label="Previous posts">←</button>
+            <button class="rail-btn" type="button" data-next aria-label="Next posts">→</button>
+          </div>
+        </div>
         <div class="igg" data-ig-grid aria-live="polite"></div>
       </div>
     </div>

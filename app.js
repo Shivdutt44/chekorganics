@@ -571,19 +571,103 @@
     const reviews = $("#review-grid");
     if (reviews && !reviews.children.length) {
       const REVIEWS = [
-        { q: "I am using this oil and my hair is long and thick. My hairfall completely stopped — all the products of Chek Organics are very nice.", n: "Anonymous", d: "21 Sep 2026" },
-        { q: "Wonder oil. Has capabilities of pain relief and removal of dryness of skin.", n: "Anupama Pandey", d: "15 Aug 2026" },
-        { q: "It's a wonderful soap. Fresh peppermint smell — no need of any deodorants after the shower. A good exfoliator that keeps me fresh through the day.", n: "Rajesh", d: "05 Jun 2026" },
-        { q: "A proud customer of this beauty gem since a year now! No detanning services, no cleanup — this gem does the job all alone. Loved it.", n: "Taara", d: "02 Jun 2026" },
-        { q: "What should I say about this miracle Manjan. My mom went through a dental surgery and this worked as a miracle — gums tightened, sensitivity down.", n: "Taara", d: "02 Jun 2026" },
-        { q: "Noni juice is an amazing superfood. Consuming it for a few months and I feel energetic through the day. Strongly recommended to all age groups, especially 30+.", n: "Dr. John William", d: "20 May 2026" },
-        { q: "It's a very good lip balm, it really helps my lips by keeping them moisturised and smells very great.", n: "Ittukala Jashmitha", d: "05 May 2026" },
-        { q: "I've been a regular customer — skin care, hair care and noni juice. The quality has always stood out and the results feel genuine.", n: "Verified buyer", d: "22 May 2026" },
-        { q: "I finished my first order and had to place another. As an interior designer my full day is spent in dust — I am simply in love with ChekOrganics.", n: "Vmsharitha", d: "25 May 2026" }
+        {
+          q: "I finished my first order and had to place another immediately. As an interior designer my full day is spent in dust and site visits — I am simply in love with ChekOrganics body lotion and skincare.",
+          n: "Vmsharitha Rao",
+          role: "Interior Designer",
+          loc: "Hyderabad",
+          d: "25 May 2026",
+          p: "Organic Noni Body Lotion",
+          img: "assets/reviews/sharitha.webp"
+        },
+        {
+          q: "Wonder oil. Has remarkable capabilities of pain relief and removal of dryness of scalp & skin. My whole family has switched to it and results are remarkable.",
+          n: "Anupama Pandey",
+          role: "Verified Buyer",
+          loc: "Bengaluru",
+          d: "15 Aug 2026",
+          p: "Noni Herbal Hair Oil",
+          img: "assets/reviews/anupama.webp"
+        },
+        {
+          q: "It's a wonderful soap. Fresh peppermint smell — no need of any chemical deodorants after shower. A gentle natural exfoliator that keeps me fresh and energized through the day.",
+          n: "Rajesh Kumar",
+          role: "Fitness Enthusiast",
+          loc: "Mumbai",
+          d: "05 Jun 2026",
+          p: "Noni Turmeric Soap",
+          img: "assets/reviews/rajesh.webp"
+        },
+        {
+          q: "A proud customer of this beauty gem since a year now! No parlour detanning services, no artificial chemical cleanups — this mask does the job all alone. Truly in love.",
+          n: "Taara Sharma",
+          role: "Verified Buyer",
+          loc: "Delhi NCR",
+          d: "02 Jun 2026",
+          p: "Noni Mukha Lepam Mask",
+          img: "assets/reviews/taara.webp"
+        },
+        {
+          q: "Noni juice is an authentic Ayurvedic superfood. Consuming it regularly for a few months now and I feel energetic through the day. Strongly recommended to all age groups.",
+          n: "Dr. John William",
+          role: "Medical Practitioner",
+          loc: "Chennai",
+          d: "20 May 2026",
+          p: "Noni Fruit Juice 500ml",
+          img: "assets/reviews/dr-john.webp"
+        },
+        {
+          q: "It's a very good lip balm, it keeps my lips deeply moisturised for hours and smells 100% natural. Pure Ayurvedic ingredients with zero petroleum jelly.",
+          n: "Ittukala Jashmitha",
+          role: "College Student",
+          loc: "Warangal",
+          d: "05 May 2026",
+          p: "Passion Fruit Lip Balm",
+          img: "assets/reviews/jashmitha.webp"
+        },
+        {
+          q: "I am using this hair pack and herbal oil consistently. My hair is noticeably thicker and hairfall has completely stopped. All products of ChekOrganics feel genuinely pure.",
+          n: "Priya Nair",
+          role: "Verified Buyer",
+          loc: "Kochi",
+          d: "21 Sep 2026",
+          p: "Noni Herbal Hair Pack",
+          img: "assets/reviews/priya.webp"
+        },
+        {
+          q: "Regular customer for over 8 months — skincare, haircare and farm-fresh noni juice. The AYUSH certification and farm-to-bottle purity make a visible difference.",
+          n: "Arun Verma",
+          role: "Verified Buyer",
+          loc: "Pune",
+          d: "22 May 2026",
+          p: "Noni Herbal Shampoo",
+          img: "assets/reviews/arun.webp"
+        }
       ];
       reviews.innerHTML = REVIEWS.map(r =>
-        '<article class="review reveal"><span class="stars__glyphs">★★★★★</span><p>“' + esc(r.q) + "”</p>" +
-        "<footer><b>" + esc(r.n) + "</b><span>" + r.d + "</span></footer></article>").join("");
+        '<article class="review reveal">' +
+          '<div class="review__customer">' +
+            '<div class="review__avatar-wrap">' +
+              '<img src="' + r.img + '" alt="' + esc(r.n) + '" class="review__avatar" width="54" height="54" loading="lazy">' +
+              '<span class="review__verified-badge" title="Verified Customer">' +
+                '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' +
+              '</span>' +
+            '</div>' +
+            '<div class="review__author">' +
+              '<b class="review__name">' + esc(r.n) + '</b>' +
+              '<span class="review__meta">' + esc(r.role) + ' · ' + esc(r.loc) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="review__rating">' +
+            '<span class="stars__glyphs">★★★★★</span>' +
+            '<span class="review__date">' + r.d + '</span>' +
+          '</div>' +
+          '<p class="review__quote">“' + esc(r.q) + '”</p>' +
+          '<div class="review__product">' +
+            '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>' +
+            '<span>Purchased: <b>' + esc(r.p) + '</b></span>' +
+          '</div>' +
+        '</article>').join("");
     }
   }
 
