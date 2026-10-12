@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product — CHEKORGANICS</title>
+<meta name="description" content="CHEKORGANICS Ayurvedic product — farm-grown Noni, AYUSH certified, chemical free.">
+<link rel="icon" href="assets/brand/logo-mark.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="announce">
+  <div class="announce__track">
+    <span>Free shipping on domestic orders above ₹3,000</span>
+    <span>AYUSH certified · Govt. of India approved</span>
+    <span>100% natural · chemical free · cruelty free</span>
+    <span>Grown on our own farm — USDA certified Noni</span>
+    <span>Free shipping on domestic orders above ₹3,000</span>
+    <span>AYUSH certified · Govt. of India approved</span>
+    <span>100% natural · chemical free · cruelty free</span>
+    <span>Grown on our own farm — USDA certified Noni</span>
+  </div>
+</div>
+
+<header class="header">
+  <div class="container header__inner">
+    <a class="brand" href="index.html" aria-label="CHEKORGANICS home">
+      <img class="brand__mark" src="assets/brand/logo.webp" alt="CHEKORGANICS logo">
+      <span><span class="brand__name">CHEKORGANICS</span><span class="brand__tag">Route to Roots</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="shop.html?c=Superfoods">Superfoods</a>
+      <a href="shop.html?c=Haircare">Haircare</a>
+      <a href="shop.html?c=Skin%20Care">Skin Care</a>
+      <a href="index.html#story">Our Story</a>
+    </nav>
+    <div class="header__actions">
+      <button class="icon-btn" type="button" data-open-cart aria-label="Open shopping bag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        <span class="cart-count" data-cart-count style="display:none">0</span>
+      </button>
+      <button class="icon-btn burger" type="button" data-burger aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-nav" aria-label="Mobile">
+  <button class="icon-btn mobile-nav__close" type="button" data-burger-close aria-label="Close menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <a href="index.html">Home</a>
+  <a href="shop.html">Shop all</a>
+  <a href="shop.html?c=Superfoods">Superfoods</a>
+  <a href="shop.html?c=Haircare">Haircare</a>
+  <a href="shop.html?c=Skin%20Care">Skin Care</a>
+  <a href="index.html#story">Our story</a>
+</nav>
+
+<main>
+  <section class="section section--tight">
+    <div class="container">
+      <div class="breadcrumb" style="color:var(--muted);margin-bottom:1.75rem">
+        <a href="index.html">Home</a><span>/</span><a href="shop.html">Shop</a><span>/</span><span id="pdp-crumb">Product</span>
+      </div>
+
+      <div class="pdp" id="pdp">
+        <div class="gallery">
+          <div class="gallery__main">
+            <img id="gallery-main" src="" alt="">
+          </div>
+          <div class="gallery__thumbs" id="gallery-thumbs"></div>
+        </div>
+
+        <div class="pdp__info">
+          <span class="eyebrow" id="pdp-eyebrow">Ayurvedic</span>
+          <h1 id="pdp-title">Loading…</h1>
+          <div class="pdp__meta" id="pdp-rating"></div>
+
+          <div class="pdp__price">
+            <span class="price price--lg" id="pdp-price">₹0</span>
+            <span class="pdp__save" id="pdp-save" style="display:none"></span>
+          </div>
+
+          <p class="pdp__desc" id="pdp-benefit"></p>
+
+          <div class="pdp__buy">
+            <div class="qty">
+              <button type="button" id="qty-minus" aria-label="Decrease quantity">−</button>
+              <input id="qty" value="1" inputmode="numeric" aria-label="Quantity" style="width:38px;text-align:center;border:none;background:none;font-weight:600;font-family:inherit">
+              <button type="button" id="qty-plus" aria-label="Increase quantity">+</button>
+            </div>
+            <button class="btn btn--primary" type="button" id="pdp-add" data-add="">Add to bag</button>
+            <a class="btn btn--gold" id="pdp-buy" href="https://www.chekorganics.com" target="_blank" rel="noopener">Buy on chekorganics.com</a>
+          </div>
+
+          <div class="pdp__assurances">
+            <div class="assurance"><img src="assets/brand/badge-ayush.webp" alt="">AYUSH certified · Govt. approved</div>
+            <div class="assurance"><img src="assets/brand/badge-farmer.webp" alt="">Grown on our own farm</div>
+            <div class="assurance"><img src="assets/brand/badge-2.webp" alt="">100% natural, chemical free</div>
+            <div class="assurance"><img src="assets/brand/badge-3.webp" alt="">Free shipping above ₹3,000</div>
+          </div>
+
+          <p class="pdp__desc" id="pdp-desc" style="border-left-color:var(--sand-2)"></p>
+
+          <div class="pdp__tags" id="pdp-tags"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sand">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-head__text">
+          <span class="eyebrow">Pairs beautifully with</span>
+          <h2>Complete the ritual.</h2>
+        </div>
+        <a class="link-arrow" href="shop.html">Shop all <span>→</span></a>
+      </div>
+      <div class="grid-products" id="related-grid"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="index.html">
+          <img class="brand__mark" src="assets/brand/logo.webp" alt="">
+          <span><span class="brand__name">CHEKORGANICS</span><span class="brand__tag">Route to Roots</span></span>
+        </a>
+        <p class="footer__about">Holistic Ayurvedic skincare, haircare and wellness made with organic, farm-sourced ingredients. AYUSH certified, handmade and rooted in traditional Indian wisdom.</p>
+        <div class="socials">
+          <a href="https://www.instagram.com/chekorganics/" target="_blank" rel="noopener" aria-label="Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+          <a href="https://www.facebook.com/chekorganics" target="_blank" rel="noopener" aria-label="Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M13 22v-8h3l1-4h-4V8c0-1.1.3-1.8 1.9-1.8H17V2.7C16.7 2.6 15.5 2.5 14.2 2.5 11.4 2.5 9.5 4.2 9.5 7.4V10H7v4h2.5v8H13z"/></svg></a>
+          <a href="https://www.youtube.com/watch?v=Zavmi-sdeyM" target="_blank" rel="noopener" aria-label="YouTube"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12s0-3.2-.4-4.7a2.5 2.5 0 0 0-1.8-1.8C18.3 5 12 5 12 5s-6.3 0-7.8.5A2.5 2.5 0 0 0 2.4 7.3C2 8.8 2 12 2 12s0 3.2.4 4.7c.2.9.9 1.6 1.8 1.8C5.7 19 12 19 12 19s6.3 0 7.8-.5a2.5 2.5 0 0 0 1.8-1.8C22 15.2 22 12 22 12zM10 15V9l5 3-5 3z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="shop.html">All products</a></li>
+          <li><a href="shop.html?c=Superfoods">Superfoods</a></li>
+          <li><a href="shop.html?c=Haircare">Haircare</a></li>
+          <li><a href="shop.html?c=Skin%20Care">Skin care</a></li>
+          <li><a href="shop.html?c=Handmade%20Soaps">Handmade soaps</a></li>
+          <li><a href="shop.html?c=Men%27s%20Grooming">Men's grooming</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="index.html#story">Our story</a></li>
+          <li><a href="https://www.chekorganics.com/pages/about-us" target="_blank" rel="noopener">About us</a></li>
+          <li><a href="https://www.chekorganics.com/pages/contact" target="_blank" rel="noopener">Contact</a></li>
+          <li><a href="https://www.chekorganics.com/pages/shipping-policy" target="_blank" rel="noopener">Shipping policy</a></li>
+          <li><a href="https://www.chekorganics.com/policies/refund-policy" target="_blank" rel="noopener">Refund policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Reach us</h4>
+        <ul>
+          <li><a href="https://www.chekorganics.com" target="_blank" rel="noopener">chekorganics.com</a></li>
+          <li><a href="mailto:hello@chekorganics.com">hello@chekorganics.com</a></li>
+          <li>Telangana, India</li>
+          <li>Mon – Sat · 10am to 6pm IST</li>
+        </ul>
+        <div class="footer__pay"><span>UPI</span><span>Visa</span><span>Mastercard</span><span>RuPay</span><span>COD</span></div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 CHEKORGANICS · Route to Roots</span>
+      <span>Preview rebuild of chekorganics.com — all imagery and copy belong to CHEKORGANICS.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
