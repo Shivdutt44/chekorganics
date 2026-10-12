@@ -101,6 +101,41 @@ Imagery and copy remain the property of CHEKORGANICS.
 - Checkout CTA carries the live bag total; drawer shows COD / AYUSH / returns trust row
 - Comparison-price anchoring (`Save ₹X` badges) and review-count proof on every card
 
+## Mobile app shell (`ux.js` + `ux.css`)
+
+Loaded on every page in the order `data.js → ux.js → app.js`. `ux.js` must run before
+`app.js`, so it can read the store's real ratings before `app.js` modifies `window.STORE`.
+
+- **Bottom navigation** (≤768px): Home · Shop · Categories (opens the menu) · Account · Bag
+  (with a live count). It hides while you scroll down or type, and comes back when you
+  scroll up. The header becomes a compact app bar, and the product page's sticky buy bar
+  sits above the nav.
+- **Scroll progress**: a thin gold bar at the top, plus a back-to-top button whose ring
+  fills as you scroll.
+- **Account menu**: a person icon in the header (a bottom sheet on phones) with Log in,
+  Sign up, My orders, Track an order and Help. All of them link to the real Shopify
+  accounts on chekorganics.com.
+- **Footer accordions** on phones (≤640px). On larger screens the menus stay open.
+- **Shopper notifications** (bottom left): the first appears after 9s, then at most 5 per
+  page, 22–36s apart. They pause while the bag, menu or dialogs are open, and can be
+  dismissed for the session. They only show real data:
+  - by default, real ratings from the store's review widgets (`data.js`);
+  - real recent orders, if you publish a feed and point to it from each page's `<head>`:
+    ```html
+    <meta name="chek:sales-feed" content="https://example.com/recent-sales.json">
+    ```
+    ```json
+    [{ "handle": "noni-herbal-shampoo", "city": "Pune", "at": "2026-10-12T09:40:00Z" }]
+    ```
+    Only orders from the last 72 hours for products in the catalog are shown. Generate the
+    feed from Shopify orders (Shopify Flow, an app or a small serverless job). Admin API
+    keys can't be used from a public page.
+- **Installable**: `manifest.webmanifest`, home-screen icons, `theme-color`, and
+  `viewport-fit=cover` with safe-area padding for notched phones.
+- **Mobile fixes**: form fields at 16px (no iOS zoom on focus), 42–46px tap targets, product
+  card ratings that fit two columns, no shadow strip from the closed cart drawer, and no
+  tap highlight or double-tap delay.
+
 ## Cart & checkout
 
 The bag is a local preview (localStorage). **Checkout** hands off to the real store with a

@@ -2,15 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Product — CHEKORGANICS</title>
 <meta name="description" content="CHEKORGANICS Ayurvedic product — farm-grown Noni, AYUSH certified, chemical free.">
 <link rel="icon" type="image/jpeg" sizes="32x32" href="assets/brand/favicon-32.jpg">
 <link rel="apple-touch-icon" sizes="512x512" href="assets/brand/apple-touch-icon.jpg">
+<meta name="theme-color" content="#faf6ee">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CHEKORGANICS">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="ux.css">
 </head>
 <body>
 
@@ -100,7 +107,7 @@
               <button type="button" id="qty-plus" aria-label="Increase quantity">+</button>
             </div>
             <button class="btn btn--primary" type="button" id="pdp-add" data-add="">Add to bag</button>
-            <a class="btn btn--gold" id="pdp-buy" href="https://www.chekorganics.com" target="_blank" rel="noopener">Buy on chekorganics.com</a>
+            <button class="btn btn--gold" type="button" id="pdp-buy">Buy Now</button>
           </div>
 
           <div class="pdp__assurances">
@@ -304,6 +311,7 @@
 </footer>
 
 <script src="data.js"></script>
+<script src="ux.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

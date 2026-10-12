@@ -367,7 +367,8 @@
       openDrawer();
     },
     set(handle, qty) { const c = read(); if (qty <= 0) delete c[handle]; else c[handle] = Math.min(99, qty); write(c); sync(); },
-    remove(handle) { this.set(handle, 0); }
+    remove(handle) { this.set(handle, 0); },
+    clear() { write({}); sync(); }
   };
   window.Cart = Cart;
 
@@ -386,8 +387,8 @@
           '<p class="ship-bar__text" data-ship-text></p>' +
           '<div class="drawer__row"><span>Subtotal</span><b data-total>₹0</b></div>' +
           '<div class="drawer__row"><span>Shipping</span><span data-ship-cost>Calculated at checkout</span></div>' +
-          '<p class="drawer__hint">Preview bag — secure checkout, COD and discounts run on the official CHEKORGANICS store.</p>' +
-          '<a class="btn btn--primary btn--block" data-checkout href="' + LIVE + '/collections/all" target="_blank" rel="noopener">Checkout on chekorganics.com</a>' +
+          '<p class="drawer__hint">100% Genuine Ayurvedic Formulations · Dispatched from our farm in Telangana.</p>' +
+          '<a class="btn btn--primary btn--block" data-checkout href="checkout.html">Proceed to Checkout</a>' +
           '<div class="drawer__trust"><span>COD available</span><span>AYUSH certified</span><span>7-day returns</span></div>' +
         "</div>" +
       "</aside>";
@@ -434,11 +435,13 @@
     else { text.innerHTML = 'Add <b>' + money(FREE_SHIP - total) + "</b> more for free shipping"; bar.classList.remove("is-done"); }
     cost.textContent = total >= FREE_SHIP ? "FREE" : "Calculated at checkout";
 
-    const href = items.length
-      ? LIVE + "/cart/" + items.map(({ product: p, qty }) => p.id + ":" + qty).join(",")
-      : LIVE + "/collections/all";
-    $("[data-checkout]").href = href;
-    $("[data-checkout]").textContent = items.length ? "Checkout " + money(total) + " on chekorganics.com" : "Continue on chekorganics.com";
+    const chkBtn = $("[data-checkout]");
+    if (chkBtn) {
+      chkBtn.href = items.length ? "checkout.html" : "shop.html";
+      chkBtn.removeAttribute("target");
+      chkBtn.removeAttribute("rel");
+      chkBtn.textContent = items.length ? "Proceed to Checkout · " + money(total) : "Explore Products";
+    }
   }
 
   const openDrawer = () => { $(".drawer").classList.add("is-open"); $(".overlay").classList.add("is-open"); paintDrawer(); document.body.style.overflow = "hidden"; };
@@ -696,7 +699,16 @@
     addBtn.textContent = p.available ? "Add to bag" : "Sold out";
     addBtn.onclick = () => Cart.add(p.handle, Math.max(1, +qty.value || 1));
 
-    $("#pdp-buy").href = LIVE + "/products/" + p.handle;
+    const buyBtn = $("#pdp-buy");
+    if (buyBtn) {
+      buyBtn.textContent = p.available ? "Buy Now" : "Sold out";
+      buyBtn.disabled = !p.available;
+      buyBtn.onclick = (e) => {
+        e.preventDefault();
+        Cart.add(p.handle, Math.max(1, +qty.value || 1));
+        window.location.href = "checkout.html";
+      };
+    }
     const crumb = $("#pdp-crumb"); if (crumb) crumb.textContent = t.name;
 
     // sticky add-to-bag bar (appears once the buy box scrolls away) — CRO
@@ -709,8 +721,8 @@
           '<img alt="" data-sticky-img>' +
           '<div class="sticky-buy__text"><b data-sticky-title></b><span class="price" data-sticky-price></span></div>' +
           '<button class="btn btn--primary" type="button" data-sticky-add>Add to bag</button>' +
-          '<a class="icon-btn" data-sticky-buy-now target="_blank" rel="noopener" aria-label="Buy now on chekorganics.com">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></a>' +
+          '<button class="icon-btn" type="button" data-sticky-buy-now aria-label="Buy now · Checkout">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button>' +
         "</div>";
       document.body.appendChild(bar);
     }
@@ -723,7 +735,14 @@
           '<span class="stars stars--sm"><span class="stars__glyphs">' + renderStars(rStats.rating) + '</span> <b>' + rStats.rating.toFixed(1) + '</b></span>' +
         '</div>';
     }
-    $("[data-sticky-buy-now]").href = LIVE + "/products/" + p.handle;
+    const stickyBuyNow = $("[data-sticky-buy-now]");
+    if (stickyBuyNow) {
+      stickyBuyNow.onclick = (e) => {
+        e.preventDefault();
+        Cart.add(p.handle, Math.max(1, +qty.value || 1));
+        window.location.href = "checkout.html";
+      };
+    }
     $("[data-sticky-add]").onclick = () => Cart.add(p.handle, Math.max(1, +qty.value || 1));
     bar.dataset.handle = p.handle;
 
@@ -1143,6 +1162,613 @@
     }
   });
 
+  /* ----------------------------------------------------------- checkout */
+  function checkoutPage() {
+    const form = $("#checkout-form");
+    if (!form) return;
+
+    // Support 1-click direct buy via query parameter ?buy=handle&qty=N
+    const urlParams = new URLSearchParams(window.location.search);
+    const buyHandle = urlParams.get("buy");
+    const buyQty = Math.max(1, parseInt(urlParams.get("qty"), 10) || 1);
+    if (buyHandle) {
+      const p = byHandle(buyHandle) || localByHandle(buyHandle);
+      if (p) {
+        Cart.add(p.handle, buyQty);
+      }
+    }
+
+    let couponDiscount = 0;
+    let appliedCoupon = null;
+    let selectedShipping = "standard"; // standard | express
+    let selectedPayment = "upi"; // upi | cod | card | netbanking
+    let selectedAddressType = "Home";
+
+    const VALID_COUPONS = {
+      "WELCOME10": { type: "percent", value: 10, label: "10% off (Welcome Offer)" },
+      "CHEK100": { type: "flat", value: 100, label: "₹100 flat discount" },
+      "AYURVEDA": { type: "percent", value: 15, label: "15% off Ayurvedic special" }
+    };
+
+    // Indian PIN codes dictionary for instant auto-detection
+    const PIN_MAP = {
+      "500": { city: "Hyderabad", state: "Telangana" },
+      "501": { city: "Ranga Reddy", state: "Telangana" },
+      "502": { city: "Medak", state: "Telangana" },
+      "503": { city: "Nizamabad", state: "Telangana" },
+      "504": { city: "Adilabad", state: "Telangana" },
+      "505": { city: "Karimnagar", state: "Telangana" },
+      "506": { city: "Warangal", state: "Telangana" },
+      "507": { city: "Khammam", state: "Telangana" },
+      "508": { city: "Nalgonda", state: "Telangana" },
+      "509": { city: "Mahabubnagar", state: "Telangana" },
+      "515": { city: "Anantapur", state: "Andhra Pradesh" },
+      "516": { city: "Cuddapah", state: "Andhra Pradesh" },
+      "517": { city: "Tirupati", state: "Andhra Pradesh" },
+      "518": { city: "Kurnool", state: "Andhra Pradesh" },
+      "520": { city: "Vijayawada", state: "Andhra Pradesh" },
+      "521": { city: "Krishna", state: "Andhra Pradesh" },
+      "522": { city: "Guntur", state: "Andhra Pradesh" },
+      "530": { city: "Visakhapatnam", state: "Andhra Pradesh" },
+      "110": { city: "New Delhi", state: "Delhi" },
+      "121": { city: "Faridabad", state: "Haryana" },
+      "122": { city: "Gurugram", state: "Haryana" },
+      "201": { city: "Noida / Ghaziabad", state: "Uttar Pradesh" },
+      "400": { city: "Mumbai", state: "Maharashtra" },
+      "411": { city: "Pune", state: "Maharashtra" },
+      "440": { city: "Nagpur", state: "Maharashtra" },
+      "560": { city: "Bengaluru", state: "Karnataka" },
+      "570": { city: "Mysuru", state: "Karnataka" },
+      "600": { city: "Chennai", state: "Tamil Nadu" },
+      "641": { city: "Coimbatore", state: "Tamil Nadu" },
+      "682": { city: "Kochi", state: "Kerala" },
+      "695": { city: "Thiruvananthapuram", state: "Kerala" },
+      "700": { city: "Kolkata", state: "West Bengal" },
+      "302": { city: "Jaipur", state: "Rajasthan" },
+      "380": { city: "Ahmedabad", state: "Gujarat" },
+      "395": { city: "Surat", state: "Gujarat" },
+      "452": { city: "Indore", state: "Madhya Pradesh" },
+      "462": { city: "Bhopal", state: "Madhya Pradesh" },
+      "800": { city: "Patna", state: "Bihar" },
+      "160": { city: "Chandigarh", state: "Punjab" },
+      "141": { city: "Ludhiana", state: "Punjab" }
+    };
+
+    function renderSummary() {
+      const items = Cart.items();
+      const subtotal = Cart.total();
+      const count = Cart.count();
+
+      const emptyEl = $("#checkout-empty");
+      const gridEl = $("#checkout-main-grid");
+      if (!items.length) {
+        if (emptyEl) emptyEl.style.display = "block";
+        if (gridEl) gridEl.style.display = "none";
+        return;
+      } else {
+        if (emptyEl) emptyEl.style.display = "none";
+        if (gridEl) gridEl.style.display = "grid";
+      }
+
+      // Render summary items
+      const listEl = $("#summary-items-list");
+      if (listEl) {
+        listEl.innerHTML = items.map(({ product: p, qty }) => {
+          const t = splitTitle(p.title);
+          return `
+            <div class="summary-item">
+              <div class="summary-item__img-wrap">
+                <img src="${p.images[0]}" alt="${esc(t.name)}">
+                <span class="summary-item__badge">${qty}</span>
+              </div>
+              <div class="summary-item__details">
+                <p class="summary-item__title">${esc(t.name)}</p>
+                <div class="summary-item__meta">${esc(t.benefit || p.collections[0] || "Handcrafted")}</div>
+              </div>
+              <div class="summary-item__price">${money(p.price * qty)}</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      const countEl = $("#summary-items-count");
+      if (countEl) countEl.textContent = count + " item" + (count > 1 ? "s" : "");
+
+      // Shipping cost
+      let shippingFee = 0;
+      const stdPriceEl = $("#ship-standard-price");
+      const stdDescEl = $("#ship-standard-desc");
+      if (subtotal >= FREE_SHIP) {
+        if (stdPriceEl) stdPriceEl.textContent = "FREE";
+        if (stdDescEl) stdDescEl.textContent = "Delivered in 3–5 days · Free Shipping unlocked!";
+      } else {
+        if (stdPriceEl) stdPriceEl.textContent = "₹99";
+        if (stdDescEl) stdDescEl.textContent = "Add " + money(FREE_SHIP - subtotal) + " more for FREE Shipping";
+      }
+
+      if (selectedShipping === "express") {
+        shippingFee = 149;
+      } else {
+        shippingFee = subtotal >= FREE_SHIP ? 0 : 99;
+      }
+
+      // Coupon discount calculation
+      let discountAmt = 0;
+      if (appliedCoupon) {
+        const cInfo = VALID_COUPONS[appliedCoupon];
+        if (cInfo) {
+          if (cInfo.type === "percent") {
+            discountAmt = Math.round((subtotal * cInfo.value) / 100);
+          } else {
+            discountAmt = Math.min(subtotal, cInfo.value);
+          }
+        }
+      }
+      couponDiscount = discountAmt;
+
+      const totalToPay = Math.max(0, subtotal - discountAmt + shippingFee);
+      const estTax = Math.round(totalToPay * 0.18 / 1.18); // GST 18% embedded
+
+      // Update breakdown UI
+      const subtotalEl = $("#calc-subtotal"); if (subtotalEl) subtotalEl.textContent = money(subtotal);
+      const shipEl = $("#calc-shipping"); if (shipEl) shipEl.textContent = shippingFee === 0 ? "FREE" : money(shippingFee);
+      const taxEl = $("#calc-tax"); if (taxEl) taxEl.textContent = money(estTax) + " (included)";
+      const totalEl = $("#calc-total"); if (totalEl) totalEl.textContent = money(totalToPay);
+      const mobTotalEl = $("#mobile-summary-total"); if (mobTotalEl) mobTotalEl.textContent = money(totalToPay);
+
+      // Discount row
+      const discRow = $("#calc-row-discount");
+      const discVal = $("#calc-discount-val");
+      const discCode = $("#calc-discount-code");
+      if (discRow && discVal && discCode) {
+        if (discountAmt > 0) {
+          discRow.style.display = "flex";
+          discVal.textContent = "- " + money(discountAmt);
+          discCode.textContent = appliedCoupon;
+        } else {
+          discRow.style.display = "none";
+        }
+      }
+
+      // Savings banner
+      const savBanner = $("#savings-banner");
+      const savText = $("#savings-text");
+      const totalSavings = discountAmt + (shippingFee === 0 && subtotal < FREE_SHIP ? 99 : (subtotal >= FREE_SHIP ? 99 : 0));
+      if (savBanner && savText) {
+        if (totalSavings > 0) {
+          savBanner.style.display = "block";
+          savText.textContent = "You are saving " + money(totalSavings) + " on this order!";
+        } else {
+          savBanner.style.display = "none";
+        }
+      }
+
+      // Submit button text
+      const placeBtnText = $("#btn-place-order-text");
+      if (placeBtnText) {
+        if (selectedPayment === "cod") {
+          placeBtnText.textContent = "Place Order (COD) · " + money(totalToPay);
+        } else {
+          placeBtnText.textContent = "Pay Securely · " + money(totalToPay);
+        }
+      }
+
+      // UPI QR and Amount
+      const upiAmt = $("#upi-qr-amount");
+      if (upiAmt) upiAmt.textContent = money(totalToPay);
+      const codAmtVal = $(".cod-amount-val");
+      if (codAmtVal) codAmtVal.textContent = totalToPay.toLocaleString("en-IN");
+    }
+
+    // Toggle Mobile Order Summary
+    const mobToggle = $("#mobile-summary-toggle");
+    const sidebar = $("#checkout-sidebar");
+    const mobToggleText = $("#mobile-toggle-text");
+    if (mobToggle && sidebar) {
+      mobToggle.onclick = () => {
+        const isOpen = sidebar.classList.toggle("is-open");
+        mobToggle.classList.toggle("is-open", isOpen);
+        if (mobToggleText) mobToggleText.textContent = isOpen ? "Hide order summary" : "Show order summary";
+      };
+    }
+
+    // PIN code auto lookup
+    const pinInput = $("#addr-pincode");
+    const cityInput = $("#addr-city");
+    const stateSelect = $("#addr-state");
+    const pinHint = $("#pin-hint");
+    if (pinInput) {
+      pinInput.oninput = () => {
+        const val = pinInput.value.trim().replace(/\D/g, "");
+        pinInput.value = val;
+        if (val.length === 6) {
+          const prefix3 = val.substring(0, 3);
+          const match = PIN_MAP[prefix3];
+          if (match) {
+            if (cityInput && !cityInput.value) cityInput.value = match.city;
+            if (stateSelect) stateSelect.value = match.state;
+            if (pinHint) pinHint.textContent = `✓ ${match.city}, ${match.state}`;
+          } else {
+            if (pinHint) pinHint.textContent = "✓ PIN verified";
+          }
+        } else {
+          if (pinHint) pinHint.textContent = "";
+        }
+      };
+    }
+
+    // Address Type Chips
+    $$("#addr-type-group .pill-btn").forEach(btn => {
+      btn.onclick = () => {
+        $$("#addr-type-group .pill-btn").forEach(b => b.classList.remove("is-active"));
+        btn.classList.add("is-active");
+        selectedAddressType = btn.dataset.addrType;
+      };
+    });
+
+    // Shipping selection
+    $$("input[name='shipping_method']").forEach(radio => {
+      radio.onchange = () => {
+        selectedShipping = radio.value;
+        $$(".shipping-option").forEach(card => card.classList.remove("is-selected"));
+        radio.closest(".shipping-option").classList.add("is-selected");
+        renderSummary();
+      };
+    });
+
+    // Payment method accordion
+    $$(".payment-method__head").forEach(head => {
+      head.onclick = () => {
+        const wrap = head.closest(".payment-method");
+        const method = wrap.dataset.payMethod;
+        selectedPayment = method;
+
+        $$(".payment-method").forEach(m => {
+          m.classList.remove("is-active");
+          const b = m.querySelector(".payment-method__body");
+          if (b) b.style.display = "none";
+          const r = m.querySelector("input[name='payment_choice']");
+          if (r) r.checked = false;
+        });
+
+        wrap.classList.add("is-active");
+        const body = wrap.querySelector(".payment-method__body");
+        if (body) body.style.display = "block";
+        const radio = wrap.querySelector("input[name='payment_choice']");
+        if (radio) radio.checked = true;
+
+        renderSummary();
+      };
+    });
+
+    // UPI mode switch (QR vs ID)
+    $$(".upi-tab-btn").forEach(btn => {
+      btn.onclick = () => {
+        $$(".upi-tab-btn").forEach(b => b.classList.remove("is-active"));
+        btn.classList.add("is-active");
+        const mode = btn.dataset.upiMode;
+        const panelQr = $("#upi-panel-qr");
+        const panelId = $("#upi-panel-id");
+        if (mode === "qr") {
+          if (panelQr) panelQr.style.display = "block";
+          if (panelId) panelId.style.display = "none";
+        } else {
+          if (panelQr) panelQr.style.display = "none";
+          if (panelId) panelId.style.display = "block";
+        }
+      };
+    });
+
+    // UPI ID verify button
+    const upiVerifyBtn = $("#btn-verify-upi");
+    const upiInput = $("#upi-id-input");
+    const upiFeedback = $("#upi-verify-feedback");
+    if (upiVerifyBtn && upiInput && upiFeedback) {
+      upiVerifyBtn.onclick = () => {
+        const id = upiInput.value.trim();
+        if (!id || !id.includes("@")) {
+          upiFeedback.textContent = "⚠️ Please enter a valid UPI ID (e.g. name@okhdfcbank)";
+          upiFeedback.style.color = "#c85a32";
+        } else {
+          upiFeedback.textContent = "✓ Verified UPI account: " + id;
+          upiFeedback.style.color = "var(--leaf)";
+          toast("UPI ID verified successfully");
+        }
+      };
+    }
+
+    // Card formatters
+    const cardInput = $("#card-number");
+    if (cardInput) {
+      cardInput.oninput = () => {
+        let val = cardInput.value.replace(/\D/g, "").substring(0, 16);
+        val = val.match(/.{1,4}/g)?.join("  ") || val;
+        cardInput.value = val;
+
+        const ind = $("#card-type-indicator");
+        if (ind) {
+          if (val.startsWith("4")) ind.textContent = "💳 Visa";
+          else if (val.startsWith("5")) ind.textContent = "💳 Mastercard";
+          else if (val.startsWith("6")) ind.textContent = "💳 RuPay";
+          else ind.textContent = "💳";
+        }
+      };
+    }
+
+    const cardExp = $("#card-exp");
+    if (cardExp) {
+      cardExp.oninput = () => {
+        let val = cardExp.value.replace(/\D/g, "").substring(0, 4);
+        if (val.length >= 2) val = val.substring(0, 2) + "/" + val.substring(2);
+        cardExp.value = val;
+      };
+    }
+
+    // Coupon Apply & Chips
+    function applyCoupon(code) {
+      const clean = (code || "").trim().toUpperCase();
+      if (!clean) return;
+      if (VALID_COUPONS[clean]) {
+        appliedCoupon = clean;
+        const badge = $("#coupon-applied-badge");
+        const badgeText = $("#coupon-applied-text");
+        if (badge && badgeText) {
+          badge.style.display = "flex";
+          badgeText.innerHTML = `🎉 Coupon <b>${clean}</b> applied! (${VALID_COUPONS[clean].label})`;
+        }
+        toast("Coupon " + clean + " applied!");
+        renderSummary();
+      } else {
+        toast("Invalid promo code. Try WELCOME10 or CHEK100");
+      }
+    }
+
+    const applyCouponBtn = $("#btn-apply-coupon");
+    const couponInput = $("#coupon-code-input");
+    if (applyCouponBtn && couponInput) {
+      applyCouponBtn.onclick = () => {
+        applyCoupon(couponInput.value);
+        couponInput.value = "";
+      };
+      couponInput.onkeydown = (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          applyCoupon(couponInput.value);
+          couponInput.value = "";
+        }
+      };
+    }
+
+    $$(".coupon-chip").forEach(chip => {
+      chip.onclick = () => applyCoupon(chip.dataset.coupon);
+    });
+
+    const removeCouponBtn = $("#btn-remove-coupon");
+    if (removeCouponBtn) {
+      removeCouponBtn.onclick = () => {
+        appliedCoupon = null;
+        couponDiscount = 0;
+        const badge = $("#coupon-applied-badge");
+        if (badge) badge.style.display = "none";
+        toast("Coupon removed");
+        renderSummary();
+      };
+    }
+
+    // Express checkout buttons
+    $$("[data-express-pay]").forEach(btn => {
+      btn.onclick = () => {
+        const app = btn.dataset.expressPay;
+        // set payment method to upi and scroll down to contact
+        const upiHead = $("[data-pay-method='upi'] .payment-method__head");
+        if (upiHead) upiHead.click();
+        const mobInput = $("#cust-mobile");
+        if (mobInput) {
+          mobInput.focus();
+          toast(`Selected ${app.toUpperCase()} · Please fill delivery details to complete order`);
+        }
+      };
+    });
+
+    // Handle Form Submit -> Realistic Gateway Flow
+    form.onsubmit = (e) => {
+      e.preventDefault();
+
+      const items = Cart.items();
+      if (!items.length) {
+        toast("Your bag is empty");
+        return;
+      }
+
+      const mobile = $("#cust-mobile")?.value.trim();
+      const email = $("#cust-email")?.value.trim();
+      const name = $("#cust-name")?.value.trim();
+      const flat = $("#addr-flat")?.value.trim();
+      const street = $("#addr-street")?.value.trim();
+      const landmark = $("#addr-landmark")?.value.trim() || "";
+      const pincode = $("#addr-pincode")?.value.trim();
+      const city = $("#addr-city")?.value.trim();
+      const state = $("#addr-state")?.value;
+      const sendWhatsApp = $("#cust-whatsapp")?.checked;
+
+      if (!mobile || mobile.length !== 10) {
+        toast("Please enter a valid 10-digit mobile number");
+        $("#cust-mobile")?.focus();
+        return;
+      }
+      if (!pincode || pincode.length !== 6) {
+        toast("Please enter a valid 6-digit PIN code");
+        $("#addr-pincode")?.focus();
+        return;
+      }
+      if (!name || !flat || !street || !city || !state) {
+        toast("Please complete all required address fields");
+        return;
+      }
+
+      // Show authentic Payment Gateway Handshake Modal
+      const overlay = $("#gateway-overlay");
+      const titleEl = $("#gateway-status-title");
+      const descEl = $("#gateway-status-desc");
+
+      if (overlay) overlay.style.display = "grid";
+
+      const subtotal = Cart.total();
+      let shipFee = selectedShipping === "express" ? 149 : (subtotal >= FREE_SHIP ? 0 : 99);
+      const totalAmount = Math.max(0, subtotal - couponDiscount + shipFee);
+
+      // Random 5-digit order ID
+      const orderNum = "CHEK-" + Math.floor(10000 + Math.random() * 90000);
+
+      // Estimated Delivery: 4 days from today
+      const today = new Date();
+      const deliveryDate = new Date(today);
+      deliveryDate.setDate(today.getDate() + 4);
+      const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+      const formattedEta = deliveryDate.toLocaleDateString("en-IN", options);
+
+      setTimeout(() => {
+        if (titleEl) titleEl.textContent = "Authorizing Transaction…";
+        if (descEl) descEl.textContent = "Verifying details with CHEKORGANICS secure gateway and generating order ID…";
+      }, 700);
+
+      setTimeout(() => {
+        if (overlay) overlay.style.display = "none";
+
+        // Save order to localStorage
+        const orderData = {
+          orderId: orderNum,
+          date: new Date().toISOString(),
+          customer: { name, mobile, email, sendWhatsApp },
+          address: { flat, street, landmark, city, state, pincode, type: selectedAddressType },
+          shipping: { method: selectedShipping, fee: shipFee, eta: formattedEta },
+          payment: { method: selectedPayment, total: totalAmount },
+          coupon: appliedCoupon,
+          discount: couponDiscount,
+          items: items.map(x => ({
+            handle: x.product.handle,
+            title: x.product.title,
+            price: x.product.price,
+            qty: x.qty,
+            image: x.product.images[0]
+          }))
+        };
+
+        try {
+          const orders = JSON.parse(localStorage.getItem("chek_orders_v1")) || [];
+          orders.unshift(orderData);
+          localStorage.setItem("chek_orders_v1", JSON.stringify(orders));
+        } catch (err) {}
+
+        // Clear user cart
+        Cart.clear();
+
+        // Render Order Confirmation
+        renderConfirmation(orderData);
+
+        // Smooth scroll to top
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 1500);
+    };
+
+    function renderConfirmation(order) {
+      const formGrid = $("#checkout-main-grid");
+      const confView = $("#order-confirmation");
+      const stepsView = $(".checkout-steps");
+
+      if (formGrid) formGrid.style.display = "none";
+      if (confView) confView.style.display = "block";
+
+      if (stepsView) {
+        stepsView.innerHTML = `
+          <span class="step step--done"><span class="step__num">✓</span> Bag</span>
+          <span class="step__divider">›</span>
+          <span class="step step--done"><span class="step__num">✓</span> Shipping</span>
+          <span class="step__divider">›</span>
+          <span class="step step--done"><span class="step__num">✓</span> Confirmed</span>
+        `;
+      }
+
+      const confName = $("#conf-customer-name"); if (confName) confName.textContent = order.customer.name;
+      const confId = $("#conf-order-id"); if (confId) confId.textContent = order.orderId;
+      const confEta = $("#conf-delivery-date"); if (confEta) confEta.textContent = order.shipping.eta;
+
+      const waNote = $("#conf-whatsapp-note");
+      if (waNote) {
+        waNote.innerHTML = `📲 Order confirmed! Instant SMS & WhatsApp tracking link sent to <b>+91 ${esc(order.customer.mobile)}</b> and invoice emailed to <b>${esc(order.customer.email)}</b>.`;
+      }
+
+      // Address box
+      const addrBox = $("#conf-address-box");
+      if (addrBox) {
+        addrBox.innerHTML = `
+          <b>${esc(order.customer.name)} (${esc(order.address.type)})</b><br>
+          ${esc(order.address.flat)}, ${esc(order.address.street)}<br>
+          ${order.address.landmark ? esc(order.address.landmark) + "<br>" : ""}
+          ${esc(order.address.city)}, ${esc(order.address.state)} — <b>${esc(order.address.pincode)}</b><br>
+          📞 +91 ${esc(order.customer.mobile)}
+        `;
+      }
+
+      // Payment box
+      const payBox = $("#conf-payment-box");
+      if (payBox) {
+        let pLabel = "UPI (Verified Merchant)";
+        if (order.payment.method === "cod") pLabel = "Cash on Delivery (Pay upon delivery)";
+        else if (order.payment.method === "card") pLabel = "Debit / Credit Card (Encrypted)";
+        else if (order.payment.method === "netbanking") pLabel = "Net Banking (Instant Settlement)";
+
+        payBox.innerHTML = `
+          <b>Payment Method:</b> ${pLabel}<br>
+          <b>Status:</b> ${order.payment.method === "cod" ? "<span style='color:#c29a45'>Pending Doorstep Payment</span>" : "<span style='color:var(--leaf)'>Paid &amp; Verified</span>"}<br>
+          <b>Total Amount:</b> ${money(order.payment.total)}
+        `;
+      }
+
+      // Ordered Items
+      const itemsList = $("#conf-items-list");
+      if (itemsList) {
+        itemsList.innerHTML = order.items.map(it => {
+          const t = splitTitle(it.title);
+          return `
+            <div class="receipt-item-row">
+              <div style="display:flex;align-items:center;gap:0.7rem">
+                <img src="${it.image}" alt="" style="width:38px;height:38px;border-radius:6px;object-fit:cover">
+                <span><b>${esc(t.name)}</b> × ${it.qty}</span>
+              </div>
+              <b>${money(it.price * it.qty)}</b>
+            </div>
+          `;
+        }).join("");
+      }
+
+      const confCount = $("#conf-items-count");
+      if (confCount) confCount.textContent = order.items.reduce((s, x) => s + x.qty, 0);
+
+      // Totals Box
+      const totalsBox = $("#conf-totals-box");
+      if (totalsBox) {
+        const sub = order.items.reduce((s, x) => s + x.price * x.qty, 0);
+        totalsBox.innerHTML = `
+          <div style="display:flex;justify-content:space-between"><span>Subtotal:</span><span>${money(sub)}</span></div>
+          ${order.discount ? `<div style="display:flex;justify-content:space-between;color:var(--leaf)"><span>Coupon Discount:</span><span>-${money(order.discount)}</span></div>` : ""}
+          <div style="display:flex;justify-content:space-between"><span>Delivery:</span><span>${order.shipping.fee === 0 ? "FREE" : money(order.shipping.fee)}</span></div>
+          <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem;border-top:1px solid rgba(16,53,31,0.12);padding-top:0.4rem;margin-top:0.2rem">
+            <span>Total Paid:</span><span style="color:var(--forest)">${money(order.payment.total)}</span>
+          </div>
+        `;
+      }
+    }
+
+    // Print Receipt button
+    const printBtn = $("#btn-print-receipt");
+    if (printBtn) {
+      printBtn.onclick = () => window.print();
+    }
+
+    renderSummary();
+  }
+
   /* ---------------------------------------------------------------- boot */
   renderSkeletons($("#icon-rail"), 8);
   renderSkeletons($("#shop-grid"), 8);
@@ -1158,6 +1784,7 @@
     homePage();
     shopPage();
     productPage();
+    checkoutPage();
     paintSyncPill();
     reveal();
     document.body.classList.add("page-enter");
