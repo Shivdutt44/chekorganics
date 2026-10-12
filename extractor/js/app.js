@@ -351,7 +351,8 @@ function renderResults() {
   $("#summary").innerHTML = tiles.map(([k, v]) => `<div><b>${esc(fmt(v))}</b><span>${esc(k)}</span></div>`).join("");
 
   const order = ["products", "productEnrichment", "variants", "collections", "collectionProductRefs", "pages", "images", "banners", "posters", "blogs", "articles", "sitemap", "seo", "policies"];
-  const entries = Object.entries(r.coverage).sort((a, b) => (order.indexOf(a[0]) + 99) % 99 - (order.indexOf(b[0]) + 99) % 99);
+  const rank = k => (order.includes(k) ? order.indexOf(k) : order.length);
+  const entries = Object.entries(r.coverage).sort((a, b) => rank(a[0]) - rank(b[0]));
   $("#coverage").innerHTML = entries
     .map(([k, c]) => `<div class="cov"><span class="cov__name">${esc(k.replace(/([A-Z])/g, " $1").replace(/^./, m => m.toUpperCase()))}</span><span><span class="badge badge--${esc(c.status)}">${esc(c.status)}</span></span><span class="cov__notes muted">${esc(c.notes.join(" "))}</span></div>`)
     .join("");
