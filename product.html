@@ -83,7 +83,14 @@
       <div class="pdp" id="pdp">
         <div class="gallery">
           <div class="gallery__main">
+            <button type="button" class="gallery__nav-btn gallery__nav-btn--prev" id="gallery-prev" aria-label="Previous image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
             <img id="gallery-main" src="" alt="">
+            <button type="button" class="gallery__nav-btn gallery__nav-btn--next" id="gallery-next" aria-label="Next image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <span class="gallery__counter" id="gallery-counter">1 / 1</span>
           </div>
           <div class="gallery__thumbs" id="gallery-thumbs"></div>
         </div>

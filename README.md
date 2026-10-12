@@ -136,6 +136,28 @@ Loaded on every page in the order `data.js → ux.js → app.js`. `ux.js` must r
   card ratings that fit two columns, no shadow strip from the closed cart drawer, and no
   tap highlight or double-tap delay.
 
+## Shoppable videos ("Watch & shop" on the homepage)
+
+`shoppable.js` renders 14 short videos as a reels-style rail. Each video is tagged with a product:
+
+- **Rail:** muted autoplay for cards on screen; off-screen videos aren't downloaded. A "+" on each
+  card adds to the bag. There's no autoplay with reduced motion or Data Saver.
+- **Viewer:** a full-screen player with sound, a progress bar and swipe navigation (arrows and
+  keys on desktop). The tagged product shows its live price and stock from `products/{handle}.js`,
+  with Add to bag and View product.
+
+The data lives in `videos.js`, generated from the brand's own videos on Shopify's CDN:
+6 from the live homepage's shoppable video widget, plus 8 attached to products. To pick up
+new videos:
+
+```bash
+cd .build && node fetch-videos.mjs      # rewrites ../videos.js
+```
+
+Instagram isn't scraped. Instagram requires a login and its terms forbid scraping. A new reel
+shows up here once the same video is uploaded to Shopify, either in the homepage video widget
+or as product media, and the script is re-run.
+
 ## Cart & checkout
 
 The bag is a local preview (localStorage). **Checkout** hands off to the real store with a

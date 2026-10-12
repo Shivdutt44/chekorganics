@@ -662,10 +662,113 @@
     if (meta && p.excerpt) meta.setAttribute("content", p.excerpt);
 
     const main = $("#gallery-main"), thumbs = $("#gallery-thumbs");
-    main.src = p.images[0]; main.alt = t.name;
-    thumbs.innerHTML = p.images.map((src, i) =>
-      '<button type="button" class="' + (i === 0 ? "is-active" : "") + '" data-shot="' + i + '" aria-label="View image ' + (i + 1) + '">' +
-      '<img src="' + src + '" alt="' + esc(t.name) + " view " + (i + 1) + '"></button>').join("");
+    const prevBtn = $("#gallery-prev"), nextBtn = $("#gallery-next"), counter = $("#gallery-counter");
+    const images = (p.images && p.images.length) ? p.images : ["assets/brand/logo.webp"];
+    let currentIdx = 0;
+
+    function showImage(idx, animate = true) {
+      if (!images.length) return;
+      currentIdx = (idx + images.length) % images.length;
+      const targetSrc = images[currentIdx];
+
+      if (animate && main) {
+        main.classList.add("is-changing");
+        setTimeout(() => {
+          main.src = targetSrc;
+          main.alt = t.name + " · View " + (currentIdx + 1);
+          main.classList.remove("is-changing");
+        }, 120);
+      } else if (main) {
+        main.src = targetSrc;
+        main.alt = t.name + " · View " + (currentIdx + 1);
+      }
+
+      // Sync active state on thumbnails
+      if (thumbs) {
+        $$("button", thumbs).forEach((btn, i) => {
+          const isActive = (i === currentIdx);
+          btn.classList.toggle("is-active", isActive);
+          btn.setAttribute("aria-selected", isActive ? "true" : "false");
+          if (isActive) {
+            btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+          }
+        });
+      }
+
+      // Sync counter
+      if (counter) {
+        counter.textContent = (currentIdx + 1) + " / " + images.length;
+        counter.style.display = images.length > 1 ? "block" : "none";
+      }
+
+      // Show/hide prev/next if only 1 image
+      if (prevBtn) prevBtn.style.display = images.length > 1 ? "grid" : "none";
+      if (nextBtn) nextBtn.style.display = images.length > 1 ? "grid" : "none";
+    }
+
+    if (thumbs) {
+      thumbs.innerHTML = images.map((src, i) =>
+        '<button type="button" class="' + (i === 0 ? "is-active" : "") + '" data-shot="' + i + '" aria-label="View image ' + (i + 1) + '" aria-selected="' + (i === 0 ? "true" : "false") + '">' +
+        '<img src="' + src + '" alt="' + esc(t.name) + " view " + (i + 1) + '"></button>').join("");
+
+      thumbs.onclick = (e) => {
+        const btn = e.target.closest("[data-shot]");
+        if (btn) {
+          const shotIdx = parseInt(btn.dataset.shot, 10);
+          showImage(shotIdx);
+        }
+      };
+    }
+
+    if (prevBtn) {
+      prevBtn.onclick = (e) => {
+        e.preventDefault();
+        showImage(currentIdx - 1);
+      };
+    }
+
+    if (nextBtn) {
+      nextBtn.onclick = (e) => {
+        e.preventDefault();
+        showImage(currentIdx + 1);
+      };
+    }
+
+    // Touch swipe support for gallery on mobile
+    const galleryMain = $(".gallery__main");
+    if (galleryMain) {
+      let touchStartX = 0;
+      let touchEndX = 0;
+      galleryMain.addEventListener("touchstart", (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      galleryMain.addEventListener("touchend", (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 45) {
+          if (diff > 0) showImage(currentIdx + 1); // swipe left
+          else showImage(currentIdx - 1); // swipe right
+        }
+      }, { passive: true });
+    }
+
+    // Keyboard navigation (Left / Right arrow keys)
+    if (!window.__pdpGalleryKeyBound) {
+      window.__pdpGalleryKeyBound = true;
+      window.addEventListener("keydown", (e) => {
+        if (!location.pathname.includes("product.html")) return;
+        if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
+        if (e.key === "ArrowLeft") {
+          const pb = $("#gallery-prev");
+          if (pb) pb.click();
+        } else if (e.key === "ArrowRight") {
+          const nb = $("#gallery-next");
+          if (nb) nb.click();
+        }
+      });
+    }
+
+    showImage(0, false);
 
     $("#pdp-eyebrow").textContent = p.primaryCollection + (p.type ? " · " + p.type : "");
     $("#pdp-title").textContent = t.name;

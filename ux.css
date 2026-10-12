@@ -233,5 +233,140 @@ a, button, input, select, textarea, label { -webkit-tap-highlight-color: transpa
 }
 
 @media print {
-  .bnav, .to-top, .proof, .scroll-progress, .acct-pop, .acct-scrim { display: none !important; }
+  .bnav, .to-top, .proof, .scroll-progress, .acct-pop, .acct-scrim, .vviewer { display: none !important; }
+}
+
+/* ==========================================================================
+   Shoppable videos — "Watch & shop" (shoppable.js)
+   ========================================================================== */
+.vrail { grid-auto-columns: clamp(200px, 22vw, 250px); padding-bottom: 1rem; }
+.vcard {
+  position: relative; display: flex; flex-direction: column;
+  border-radius: 22px; overflow: hidden;
+  background: var(--forest);
+  box-shadow: var(--shadow-md);
+  isolation: isolate;
+}
+.vcard__play {
+  position: relative; display: block; width: 100%; aspect-ratio: 9 / 16;
+  border: none; padding: 0; margin: 0; cursor: pointer; overflow: hidden;
+  background: #0c2416;
+}
+.vcard__video, .vcard__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vcard__video { transition: transform 0.6s var(--ease); }
+.vcard--wide .vcard__bg { filter: blur(18px) saturate(1.2) brightness(0.7); transform: scale(1.2); }
+.vcard--wide .vcard__video { object-fit: contain; }
+.vcard:hover .vcard__video { transform: scale(1.03); }
+.vcard__play::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(6, 18, 9, 0.35) 0%, rgba(6, 18, 9, 0) 22%, rgba(6, 18, 9, 0) 62%, rgba(6, 18, 9, 0.55) 100%);
+}
+.vcard__badge {
+  position: absolute; top: 12px; left: 12px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.3rem 0.65rem 0.3rem 0.5rem; border-radius: 999px;
+  background: rgba(6, 18, 9, 0.55); backdrop-filter: blur(6px);
+  color: #fff; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em;
+}
+.vcard__badge svg { width: 13px; height: 13px; }
+.vcard.is-playing .vcard__badge svg { opacity: 0.6; }
+.vcard__shop {
+  display: grid; grid-template-columns: 44px 1fr auto; grid-template-rows: auto auto;
+  column-gap: 0.65rem; align-items: center;
+  padding: 0.7rem 0.7rem 0.75rem; background: var(--paper);
+}
+.vcard__shop img { grid-row: 1 / 3; width: 44px; height: 44px; border-radius: 10px; object-fit: contain; background: var(--white); border: 1px solid var(--line); }
+.vcard__name { font-size: 0.82rem; font-weight: 600; color: var(--forest); line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.vcard__name:hover { color: var(--leaf); }
+.vcard__price { grid-column: 2; font-size: 0.8rem; color: var(--ink); }
+.vprice { font-weight: 600; }
+.vprice s { color: var(--muted); font-weight: 400; margin-left: 0.25rem; font-size: 0.9em; }
+.vcard__add {
+  grid-column: 3; grid-row: 1 / 3;
+  width: 40px; height: 40px; border-radius: 50%; border: none;
+  display: grid; place-items: center;
+  background: var(--forest); color: var(--cream);
+  transition: transform 0.25s var(--ease), background 0.25s;
+}
+.vcard__add svg { width: 18px; height: 18px; }
+.vcard__add:hover { background: var(--leaf); transform: scale(1.06); }
+.vcard__add:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.vrail__follow { margin: 1.4rem 0 0; text-align: center; font-size: 0.9rem; }
+.vrail__follow a { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 44px; color: var(--forest); font-weight: 600; border-bottom: 1px solid var(--gold); }
+.vrail__follow svg { width: 18px; height: 18px; }
+
+/* full-screen viewer */
+.vviewer {
+  position: fixed; inset: 0; z-index: 88; /* above the bottom nav, below the cart drawer */
+  display: none; grid-template-columns: minmax(0, 1fr) 360px;
+  background: rgba(4, 12, 7, 0.96);
+  color: var(--cream);
+}
+.vviewer.is-open { display: grid; animation: vvIn 0.35s var(--ease); }
+@keyframes vvIn { from { opacity: 0; } }
+html.vviewer-lock, html.vviewer-lock body { overflow: hidden; }
+.vviewer__stage { position: relative; display: grid; place-items: center; overflow: hidden; min-height: 0; }
+.vviewer__bg { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; filter: blur(40px) brightness(0.45) saturate(1.2); }
+.vviewer__video {
+  position: relative; max-width: 100%; max-height: 100vh; height: 100vh; aspect-ratio: 9 / 16;
+  object-fit: contain; background: #000; cursor: pointer;
+}
+.vviewer__video.is-wide { aspect-ratio: 16 / 9; height: auto; width: min(100%, 1100px); }
+.vviewer__progress { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: rgba(255, 255, 255, 0.15); z-index: 3; }
+.vviewer__progress span { display: block; height: 100%; background: var(--gold-2); transform-origin: 0 50%; transform: scaleX(0); }
+.vviewer__count { position: absolute; top: 18px; left: 18px; z-index: 3; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; padding: 0.3rem 0.7rem; border-radius: 999px; background: rgba(0, 0, 0, 0.4); }
+.vviewer__btn {
+  position: absolute; z-index: 3; width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px);
+  color: #fff; display: grid; place-items: center;
+  transition: background 0.25s, transform 0.25s var(--ease);
+}
+.vviewer__btn:hover { background: rgba(0, 0, 0, 0.7); transform: scale(1.05); }
+.vviewer__btn svg { width: 22px; height: 22px; }
+.vviewer__close { top: 14px; right: 14px; }
+.vviewer__sound { top: 70px; right: 14px; }
+.vviewer__prev { left: 18px; top: 50%; transform: translateY(-50%); }
+.vviewer__next { right: 18px; top: 50%; transform: translateY(-50%); }
+.vviewer__prev:hover, .vviewer__next:hover { transform: translateY(-50%) scale(1.05); }
+.vviewer__paused { position: absolute; z-index: 2; width: 74px; height: 74px; border-radius: 50%; background: rgba(0, 0, 0, 0.45); display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.vviewer__paused svg { width: 34px; height: 34px; margin-left: 4px; }
+.vviewer.is-paused .vviewer__paused { opacity: 1; }
+.vviewer__shop { background: var(--cream); color: var(--ink); padding: 2rem 1.4rem; display: grid; align-content: center; gap: 1rem; overflow-y: auto; }
+.vshop { display: grid; grid-template-columns: 64px 1fr; gap: 0.9rem; align-items: center; }
+.vshop img { width: 64px; height: 64px; border-radius: 14px; object-fit: contain; background: var(--white); border: 1px solid var(--line); }
+.vshop__text { display: grid; gap: 0.15rem; min-width: 0; }
+.vshop__kicker { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--leaf); font-weight: 600; }
+.vshop__name { font-family: var(--font-display); font-size: 1.15rem; line-height: 1.2; color: var(--forest); }
+.vshop__price { font-size: 1rem; }
+.vshop__stock { font-size: 0.78rem; color: var(--leaf); }
+.vshop__stock.is-out { color: #a4341f; }
+.vshop__actions { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.vshop__actions .btn { justify-content: center; padding: 0.85rem 0.6rem; font-size: 0.9rem; }
+
+@media (max-width: 900px) {
+  .vviewer { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+  .vviewer__video { height: 100%; max-height: 100%; width: auto; }
+  .vviewer__video.is-wide { width: 100%; height: auto; }
+  .vviewer__prev, .vviewer__next { display: none; } /* swipe instead */
+  .vviewer__shop {
+    padding: 0.9rem 1rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    border-radius: 22px 22px 0 0; margin-top: -22px; position: relative; z-index: 4;
+    box-shadow: 0 -20px 40px -20px rgba(0, 0, 0, 0.6);
+  }
+  .vshop { grid-template-columns: 52px 1fr; gap: 0.7rem; }
+  .vshop img { width: 52px; height: 52px; }
+  .vshop__name { font-size: 1rem; }
+  .vshop__kicker { font-size: 0.62rem; }
+  .vshop__actions .btn { padding: 0.75rem 0.5rem; }
+  .vviewer__count { top: 14px; left: 14px; }
+}
+@media (max-width: 640px) {
+  .vrail { grid-auto-columns: 62%; }
+  .vcard { border-radius: 18px; }
+  .vcard__shop { grid-template-columns: 38px 1fr auto; padding: 0.6rem; column-gap: 0.5rem; }
+  .vcard__shop img { width: 38px; height: 38px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vviewer.is-open { animation: none; }
+  .vcard:hover .vcard__video { transform: none; }
 }
