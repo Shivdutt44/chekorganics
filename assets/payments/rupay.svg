@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 40" width="64" height="40">
+  <rect width="64" height="40" rx="7" fill="#ffffff" stroke="#dbe3de" stroke-width="1.2"/>
+  <g transform="translate(6, 12)">
+    <text x="0" y="14" font-family="-apple-system, BlinkMacSystemFont, 'Inter', Arial, sans-serif" font-style="italic" font-weight="900" font-size="14" fill="#0c2577" letter-spacing="-0.5">RuPay</text>
+    <!-- RuPay orange & green arrows -->
+    <path d="M42,2 L48,8 L42,14 Z" fill="#EF4123"/>
+    <path d="M47,2 L53,8 L47,14 Z" fill="#00843D"/>
+  </g>
+</svg>

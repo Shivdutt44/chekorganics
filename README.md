@@ -158,6 +158,29 @@ Instagram isn't scraped. Instagram requires a login and its terms forbid scrapin
 shows up here once the same video is uploaded to Shopify, either in the homepage video widget
 or as product media, and the script is re-run.
 
+## Instagram feed (homepage)
+
+`instagram.js` shows the latest posts from @chekorganics in a grid (6 columns on desktop, 3×3 on
+phones). Reels and carousels are marked with an icon, and each tile opens the post on Instagram.
+The data is `instagram.json` plus WebP thumbnails in `assets/instagram/`. Both are generated from
+the **official Instagram API** by `.build/fetch-instagram.mjs`, because Instagram image links
+expire. Until a feed exists, the section shows only its heading and the Follow button, never
+placeholder posts.
+
+**Connect the account (one time):**
+
+1. Switch the Instagram account to a Professional account (Business or Creator).
+2. At developers.facebook.com, create an app with the Instagram API ("API setup with Instagram
+   login"), add @chekorganics and generate an access token.
+3. In the GitHub repo, go to Settings → Secrets and variables → Actions and add a new secret,
+   `IG_ACCESS_TOKEN`.
+4. Go to Actions → **Instagram feed** → Run workflow. After that it runs daily at 07:00 IST and
+   commits new posts.
+
+Locally: `cd .build && npm i && IG_ACCESS_TOKEN=… node fetch-instagram.mjs`.
+Never commit the token. Long-lived tokens expire after about 60 days, so generate a new one and
+update the secret before then. A failed run leaves the last good feed in place and prints why.
+
 ## Cart & checkout
 
 The bag is a local preview (localStorage). **Checkout** hands off to the real store with a

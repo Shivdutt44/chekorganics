@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 40" width="64" height="40">
+  <rect width="64" height="40" rx="7" fill="#ffffff" stroke="#dbe3de" stroke-width="1.2"/>
+  <g transform="translate(6, 7)">
+    <!-- Package / Cash icon -->
+    <rect x="2" y="2" width="16" height="13" rx="2" fill="#10351f"/>
+    <!-- Rupee symbol on box -->
+    <text x="10" y="12" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" font-weight="900" fill="#e3c47c">₹</text>
+    <!-- Check badge on box corner -->
+    <circle cx="17" cy="3" r="3.2" fill="#1f7a4d"/>
+    <path d="M15.8,3 L16.8,4 L18.4,2.2" stroke="#ffffff" stroke-width="0.8" fill="none"/>
+    <!-- COD text -->
+    <text x="23" y="12" font-family="-apple-system, BlinkMacSystemFont, 'Inter', Roboto, sans-serif" font-weight="900" font-size="12" fill="#10351f" letter-spacing="0.4">COD</text>
+    <text x="23" y="19.5" font-family="-apple-system, BlinkMacSystemFont, 'Inter', Roboto, sans-serif" font-weight="700" font-size="4.8" fill="#c29a45" letter-spacing="0.2">PAY AT DOORSTEP</text>
+  </g>
+</svg>

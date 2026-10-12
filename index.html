@@ -387,6 +387,33 @@
     </div>
   </section>
 
+  <!-- instagram: app-style profile, story highlights and feed -->
+  <section class="section section--tight" id="instagram" aria-labelledby="ig-title">
+    <div class="container">
+      <div class="igapp" id="igapp">
+        <header class="igp">
+          <a class="igp__avatar" href="https://www.instagram.com/chekorganics/" target="_blank" rel="noopener" aria-label="@chekorganics on Instagram">
+            <img data-ig-avatar src="assets/brand/logo-mark.webp" alt="" width="96" height="96">
+          </a>
+          <div class="igp__body">
+            <div class="igp__top">
+              <h2 id="ig-title" class="igp__handle">chekorganics <svg class="igp__ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="on Instagram" role="img"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></h2>
+              <div class="igp__actions">
+                <a class="igp__btn igp__btn--follow" href="https://www.instagram.com/chekorganics/" target="_blank" rel="noopener">Follow</a>
+                <a class="igp__btn" href="https://ig.me/m/chekorganics" target="_blank" rel="noopener">Message</a>
+              </div>
+            </div>
+            <ul class="igp__stats" data-ig-stats aria-label="Profile stats"></ul>
+            <p class="igp__bio"><b>CHEKORGANICS · Route to Roots</b><br>Ayurvedic skincare, haircare &amp; wellness 🌿 Organic, farm-sourced ingredients · AYUSH certified</p>
+          </div>
+        </header>
+        <div class="igs-row" data-ig-stories aria-label="Story highlights"></div>
+        <div class="igt-bar" role="tablist" data-ig-tabs aria-label="Feed"></div>
+        <div class="igg" data-ig-grid aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- newsletter -->
   <section class="section section--tight">
     <div class="container">
@@ -460,7 +487,14 @@
           <li>Mon – Sat · 10am to 6pm IST</li>
         </ul>
         <div class="footer__pay">
-          <span>UPI</span><span>Visa</span><span>Mastercard</span><span>RuPay</span><span>COD</span>
+          <img src="assets/payments/upi.svg" alt="UPI" title="UPI - Unified Payments Interface" width="48" height="30">
+          <img src="assets/payments/gpay.svg" alt="Google Pay" title="Google Pay" width="48" height="30">
+          <img src="assets/payments/phonepe.svg" alt="PhonePe" title="PhonePe" width="48" height="30">
+          <img src="assets/payments/paytm.svg" alt="Paytm" title="Paytm" width="48" height="30">
+          <img src="assets/payments/visa.svg" alt="Visa" title="Visa" width="48" height="30">
+          <img src="assets/payments/mastercard.svg" alt="Mastercard" title="Mastercard" width="48" height="30">
+          <img src="assets/payments/rupay.svg" alt="RuPay" title="RuPay" width="48" height="30">
+          <img src="assets/payments/cod.svg" alt="Cash on Delivery" title="Cash on Delivery" width="48" height="30">
         </div>
       </div>
     </div>
@@ -477,5 +511,6 @@
 <script src="app.js"></script>
 <script src="videos.js"></script>
 <script src="shoppable.js"></script>
+<script src="instagram.js"></script>
 </body>
 </html>

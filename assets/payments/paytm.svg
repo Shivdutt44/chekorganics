@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 40" width="64" height="40">
+  <rect width="64" height="40" rx="7" fill="#ffffff" stroke="#dbe3de" stroke-width="1.2"/>
+  <g transform="translate(6, 13)">
+    <text x="5" y="12" font-family="-apple-system, BlinkMacSystemFont, 'Inter', Roboto, sans-serif" font-weight="900" font-size="12" letter-spacing="-0.3">
+      <tspan fill="#002970">Pay</tspan><tspan fill="#00BAF2">tm</tspan>
+    </text>
+  </g>
+  <text x="32" y="32" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="5" font-weight="700" fill="#00BAF2" letter-spacing="0.3">UPI &amp; WALLET</text>
+</svg>
