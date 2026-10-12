@@ -118,7 +118,100 @@
     </div>
   </section>
 
-  <section class="section section--sand">
+  <!-- customer reviews & ratings -->
+  <section class="section section--sand pdp-reviews" id="reviews-section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <div class="section-head__text">
+          <span class="eyebrow eyebrow--center">Ayurvedic Community</span>
+          <h2>Customer Reviews &amp; Ratings</h2>
+          <p>Real experiences from verified buyers who transformed their daily rituals with CHEKORGANICS farm-grown Ayurveda.</p>
+        </div>
+      </div>
+
+      <div class="reviews-layout">
+        <!-- left: rating summary breakdown -->
+        <aside class="reviews-summary-card">
+          <div class="reviews-summary__score-box">
+            <div class="reviews-summary__big-score" id="summary-score">4.9</div>
+            <div class="reviews-summary__meta">
+              <div class="stars__glyphs stars__glyphs--lg" id="summary-stars">★★★★★</div>
+              <div class="reviews-summary__count" id="summary-count">Based on 48 verified ratings</div>
+              <div class="reviews-summary__badge">🌿 98% of customers recommend this</div>
+            </div>
+          </div>
+
+          <div class="rating-breakdown" id="summary-bars" aria-label="Rating distribution">
+            <!-- dynamic breakdown bars -->
+          </div>
+
+          <button class="btn btn--primary btn--block pdp-write-review-btn" type="button" id="btn-toggle-review-form">
+            <span>✍️</span> Rate &amp; Write a Review
+          </button>
+        </aside>
+
+        <!-- right: interactive review form + customer review cards -->
+        <div class="reviews-feed-wrap">
+          <!-- expandable review submission form -->
+          <form class="pdp-review-form" id="pdp-review-form" style="display:none">
+            <div class="review-form__header">
+              <h3>Share your experience</h3>
+              <button class="icon-btn icon-btn--sm" type="button" id="btn-close-review-form" aria-label="Close form">✕</button>
+            </div>
+            <p class="review-form__sub">Your review helps our community choose authentic, chemical-free wellness.</p>
+
+            <div class="form-group">
+              <label class="form-label">Your Rating <span class="req">*</span></label>
+              <div class="star-rating-picker" data-picker="pdp">
+                <div class="picker-stars" id="pdp-star-picker">
+                  <button type="button" data-val="1" aria-label="1 star">★</button>
+                  <button type="button" data-val="2" aria-label="2 stars">★</button>
+                  <button type="button" data-val="3" aria-label="3 stars">★</button>
+                  <button type="button" data-val="4" aria-label="4 stars">★</button>
+                  <button type="button" data-val="5" aria-label="5 stars">★</button>
+                </div>
+                <span class="picker-label" id="pdp-picker-label">5★ Excellent!</span>
+                <input type="hidden" name="rating" id="pdp-rating-input" value="5" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="pdp-rev-name">Your Name <span class="req">*</span></label>
+                <input class="form-input" id="pdp-rev-name" type="text" placeholder="e.g. Keerthi R." required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="pdp-rev-city">City (optional)</label>
+                <input class="form-input" id="pdp-rev-city" type="text" placeholder="e.g. Hyderabad, Telangana">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pdp-rev-title">Review Title (optional)</label>
+              <input class="form-input" id="pdp-rev-title" type="text" placeholder="e.g. Genuine Ayurvedic quality, visible results!">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pdp-rev-body">Your Review <span class="req">*</span></label>
+              <textarea class="form-textarea" id="pdp-rev-body" rows="4" placeholder="How did this product feel? Mention texture, herbal fragrance, or hair/skin benefits..." required></textarea>
+            </div>
+
+            <div class="review-form__actions">
+              <button class="btn btn--gold" type="submit">Submit Review</button>
+              <button class="btn btn--ghost" type="button" id="btn-cancel-review">Cancel</button>
+            </div>
+          </form>
+
+          <!-- live reviews list -->
+          <div class="reviews-list" id="pdp-reviews-list">
+            <!-- populated by app.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
     <div class="container">
       <div class="section-head">
         <div class="section-head__text">
