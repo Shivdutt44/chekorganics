@@ -407,7 +407,7 @@
           }
           if (window.FirebaseDB && window.FirebaseDB.signUp) {
             await window.FirebaseDB.signUp(name, email, pass);
-            showToast("Account created! We've emailed you a link to verify your address.");
+            showToast("Account created successfully!");
             closeAuthModal();
           } else {
             throw new Error("Firebase Auth service is connecting. Please wait.");
