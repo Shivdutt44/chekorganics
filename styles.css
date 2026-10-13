@@ -3322,3 +3322,24 @@ body.page-enter { animation: pageIn 0.45s var(--ease); }
 }
 .conf-account b { color: var(--forest); }
 .conf-account p { margin: 0.25rem 0 0; font-size: 14px; color: var(--muted); }
+
+/* ---- checkout: COD email verification (app.js openVerify); below the auth dialog (z 10000) ---- */
+.verify-overlay {
+  position: fixed; inset: 0; z-index: 1200; display: none; place-items: center; padding: 1rem;
+  background: rgba(13, 26, 18, 0.6); backdrop-filter: blur(4px);
+}
+.verify-overlay.is-open { display: grid; }
+.verify-card {
+  position: relative; width: min(440px, 100%); max-height: calc(100dvh - 2rem); overflow-y: auto;
+  background: var(--paper); border-radius: var(--radius); padding: 1.75rem 1.5rem 1.4rem;
+  box-shadow: var(--shadow-lg); text-align: center;
+}
+.verify-icon { font-size: 2rem; line-height: 1; margin-bottom: 0.6rem; }
+.verify-card h3 { font-size: 22px; }
+.verify-text { color: var(--muted); font-size: 14px; margin: 0.7rem 0 0.4rem; }
+.verify-text b { color: var(--forest); word-break: break-all; }
+.verify-msg { min-height: 1.2em; font-size: 13px; color: var(--leaf); margin: 0 0 0.9rem; }
+.verify-actions { display: grid; gap: 0.6rem; }
+.verify-close { position: absolute; top: 0.7rem; right: 0.8rem; background: none; border: 0; font-size: 1.1rem; color: var(--muted); }
+.verify-alt { margin: 0.9rem 0 0; font-size: 13px; color: var(--muted); }
+.verify-alt button { background: none; border: 0; padding: 0; color: var(--leaf); font: 600 13px var(--font-body); text-decoration: underline; }

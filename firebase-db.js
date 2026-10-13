@@ -88,7 +88,40 @@
           }
         }
       }
+      // verification link (free plan: 1,000/day); Cash on Delivery needs a verified email
+      try { await FirebaseDB.sendVerificationEmail(); } catch (e) { console.warn("Verification email note:", e.message); }
       return cred.user;
+    },
+
+    /**
+     * Email the signed-in user a verification link that returns them to checkout
+     */
+    async sendVerificationEmail() {
+      const user = auth ? auth.currentUser : null;
+      if (!user) throw new Error("Please sign in first.");
+      const url = location.origin + location.pathname.replace(/[^/]*$/, "") + "checkout.html";
+      try {
+        await user.sendEmailVerification({ url });
+      } catch (err) {
+        // the return link needs this site in Firebase's authorized domains; send without it otherwise
+        if (/continue-uri|unauthorized-domain/.test(err.code || "")) await user.sendEmailVerification();
+        else throw err;
+      }
+      return user.email;
+    },
+
+    /**
+     * Re-check the signed-in user's email verification (after they clicked the link)
+     * and refresh the ID token so firestore.rules sees email_verified = true
+     */
+    async refreshEmailVerified() {
+      const user = auth ? auth.currentUser : null;
+      if (!user) return false;
+      await user.reload();
+      const fresh = auth.currentUser;
+      if (!fresh || !fresh.emailVerified) return false;
+      await fresh.getIdToken(true);
+      return true;
     },
 
     /**
@@ -193,7 +226,11 @@
       // If Firestore is ready, save to cloud
       if (isReady && db) {
         try {
-          const docRef = await db.collection("orders").add(orderPayload);
+          // emailQueueAt (server time) queues the "order received" email (email/Code.gs)
+          const docRef = await db.collection("orders").add({
+            ...orderPayload,
+            emailQueueAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
           console.log("🌿 [Firebase DB] Order saved to Firestore with ID:", docRef.id);
           backupLocally();
           return { success: true, cloudId: docRef.id };

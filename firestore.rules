@@ -2,11 +2,38 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper: Check if user is Super Admin
-    function isAdmin() {
+    // Helper: Check if user is permanent Super Admin
+    function isSuperAdmin() {
       return request.auth != null &&
              request.auth.token.email != null &&
              request.auth.token.email.lower() == 'shivduttchauhan2@gmail.com';
+    }
+
+    // Helper: Check if user is Super Admin OR an active Staff member
+    function isStaffOrAdmin() {
+      return isSuperAdmin() || (
+        request.auth != null &&
+        request.auth.token.email != null &&
+        exists(/databases/$(database)/documents/staff/$(request.auth.token.email.lower())) &&
+        get(/databases/$(database)/documents/staff/$(request.auth.token.email.lower())).data.active == true
+      );
+    }
+
+    // Helper for general admin and management privileges
+    function isAdmin() {
+      return isStaffOrAdmin();
+    }
+
+    // 0. STAFF & ACCESS CONTROL:
+    // - Only Super Admin can view all, add, update, or revoke staff members
+    // - Authenticated users can check their own staff access document
+    match /staff/{staffEmail} {
+      allow read: if isSuperAdmin() || (
+        request.auth != null &&
+        request.auth.token.email != null &&
+        request.auth.token.email.lower() == staffEmail.lower()
+      );
+      allow write: if isSuperAdmin();
     }
 
     // 1. ORDERS:
@@ -17,13 +44,16 @@ service cloud.firestore {
     //   customer's address with the site's public API key)
     // - ONLY Super Admin can update status (batching, dispatched, delivered) or delete
     match /orders/{orderId} {
-      // Shoppers create orders as "pending" (UPI, matched by UTR) or "cod" (cash on delivery,
-      // confirmed by the admin on WhatsApp before dispatch). Only the admin can move an
-      // order to paid / COD-confirmed.
+      // Shoppers create orders as "pending" (UPI, matched by UTR) or "cod" (cash on delivery).
+      // COD needs a signed-in customer with a verified email (free Firebase verification link),
+      // which stops anonymous fake COD orders; the admin can still confirm on WhatsApp.
+      // Only the admin can move an order to paid / COD-confirmed.
       allow create: if request.resource.data.keys().hasAll(['orderId', 'customer', 'address', 'items', 'payment'])
                     && !('deliveryStatus' in request.resource.data)
                     && request.resource.data.payment.method in ['upi', 'cod']
                     && request.resource.data.payment.get('status', 'pending') in ['pending', 'cod']
+                    && (request.resource.data.payment.method == 'upi'
+                        || (request.auth != null && request.auth.token.email_verified == true))
                     && (request.resource.data.userId == null
                         || (request.auth != null && request.resource.data.userId == request.auth.uid));
       allow read: if isAdmin()

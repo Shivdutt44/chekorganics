@@ -711,8 +711,8 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
       <div id="gate-login-view">
         <form id="admin-gate-form">
           <div class="gate-group">
-            <label for="admin-email">Super Admin Email</label>
-            <input type="email" id="admin-email" class="gate-input" value="Shivduttchauhan2@gmail.com" required autocomplete="email">
+            <label for="admin-email">Admin / Staff Email</label>
+            <input type="email" id="admin-email" class="gate-input" value="Shivduttchauhan2@gmail.com" placeholder="admin@domain.com" required autocomplete="email">
           </div>
           <div class="gate-group">
             <label for="admin-password">Password</label>
@@ -742,8 +742,8 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
       <div id="gate-reset-view" style="display:none">
         <div style="text-align:center;margin-bottom:1.25rem">
           <span class="admin-badge-gold" style="font-size:0.7rem;padding:2px 8px">Security Recovery</span>
-          <h3 style="font-family:'Fraunces',serif;margin:0.5rem 0 0.25rem;color:var(--admin-forest)">Reset Admin Password</h3>
-          <p style="font-size:0.82rem;color:#64748b;margin:0">A 6-digit OTP will be sent to the Super Admin email.</p>
+          <h3 style="font-family:'Fraunces',serif;margin:0.5rem 0 0.25rem;color:var(--admin-forest)">Reset Password</h3>
+          <p style="font-size:0.82rem;color:#64748b;margin:0">Enter your authorized email to receive a password reset link &amp; OTP.</p>
         </div>
 
         <div id="reset-status" style="display:none;padding:0.75rem 1rem;border-radius:10px;font-size:0.85rem;margin-bottom:1.25rem"></div>
@@ -751,11 +751,11 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
         <!-- Step 1: Request OTP -->
         <div id="reset-step-1">
           <div class="gate-group">
-            <label for="admin-reset-email">Super Admin Email</label>
-            <input type="email" id="admin-reset-email" class="gate-input" value="Shivduttchauhan2@gmail.com" readonly style="background:#f1ece2;cursor:not-allowed">
+            <label for="admin-reset-email">Admin / Staff Email</label>
+            <input type="email" id="admin-reset-email" class="gate-input" value="Shivduttchauhan2@gmail.com" placeholder="Enter your registered email" required>
           </div>
           <button type="button" class="gate-btn" id="btn-send-admin-otp">
-            <span>Send OTP to Email ✉️</span>
+            <span>Send OTP / Reset Link to Email ✉️</span>
           </button>
         </div>
 
@@ -838,6 +838,9 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
       <button type="button" class="sidebar-btn" data-view="products">
         <span>🌿</span> Products
       </button>
+      <button type="button" class="sidebar-btn" data-view="team" id="sidebar-team-btn">
+        <span>👥</span> Team &amp; Access (<b id="nav-team-count">1</b>)
+      </button>
       <a href="./" target="_blank" class="sidebar-btn">
         <span>🏪</span> Open Store
       </a>
@@ -862,10 +865,10 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
       </div>
       <div class="topbar-right">
         <div class="admin-user-chip">
-          <div class="admin-avatar">S</div>
+          <div class="admin-avatar" id="topbar-avatar">S</div>
           <div>
-            <b>Shivdutt (Super Admin)</b><br>
-            <span style="font-size:0.75rem;color:#64748b">Shivduttchauhan2@gmail.com</span>
+            <b id="topbar-name">Shivdutt (Super Admin)</b><br>
+            <span style="font-size:0.75rem;color:#64748b" id="topbar-email">Shivduttchauhan2@gmail.com</span>
           </div>
         </div>
         <button type="button" class="btn-detail" id="btn-topbar-change-pass" style="margin-left:0.75rem;padding:0.5rem 0.85rem;display:inline-flex;align-items:center;gap:0.4rem;font-size:0.82rem">
@@ -985,6 +988,74 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
             <tbody id="subscribers-table-body">
               <tr>
                 <td colspan="2" style="text-align:center;padding:2rem;color:#64748b">Loading subscribers…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW: TEAM & ACCESS (STAFF MANAGEMENT) -->
+      <section class="admin-card" id="panel-team" style="display:none">
+        <div class="card-header">
+          <div>
+            <h3 style="display:flex;align-items:center;gap:0.5rem;margin:0 0 0.25rem">
+              <span>👥 Team &amp; Staff Access Management</span>
+              <span class="admin-badge-gold" style="font-size:0.68rem;padding:2px 8px;margin:0">Super Admin Only</span>
+            </h3>
+            <span style="font-size:0.82rem;color:#64748b">
+              Grant and manage staff portal access to process orders, update live tracking stages, and manage the store.
+            </span>
+          </div>
+        </div>
+
+        <!-- Add Staff Form (Visible to Super Admin) -->
+        <div id="add-staff-container" style="background:#faf8f5;border:1.5px solid #ded8ce;border-radius:14px;padding:1.25rem;margin:1.25rem 0 1.5rem">
+          <h4 style="margin:0 0 0.65rem;font-family:'Fraunces',serif;color:var(--admin-forest);font-size:1.05rem;display:flex;align-items:center;gap:0.4rem">
+            <span>➕</span> Grant Access to New Member
+          </h4>
+          <form id="form-add-staff" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)) 160px;gap:0.85rem;align-items:flex-end">
+            <div>
+              <label for="staff-name-input" style="display:block;font-size:0.75rem;font-weight:600;color:#475569;margin-bottom:0.35rem">Full Name</label>
+              <input type="text" id="staff-name-input" class="gate-input" placeholder="e.g. Ramesh Sharma" required style="padding:0.65rem 0.85rem;font-size:0.88rem">
+            </div>
+            <div>
+              <label for="staff-email-input" style="display:block;font-size:0.75rem;font-weight:600;color:#475569;margin-bottom:0.35rem">Email Address</label>
+              <input type="email" id="staff-email-input" class="gate-input" placeholder="staff@domain.com" required style="padding:0.65rem 0.85rem;font-size:0.88rem">
+            </div>
+            <div>
+              <label for="staff-role-input" style="display:block;font-size:0.75rem;font-weight:600;color:#475569;margin-bottom:0.35rem">Role / Access Level</label>
+              <select id="staff-role-input" class="gate-input" style="padding:0.65rem 0.85rem;font-size:0.88rem">
+                <option value="staff">Staff (Orders &amp; Tracking)</option>
+                <option value="manager">Manager (Orders + Products + Reviews)</option>
+              </select>
+            </div>
+            <div>
+              <button type="submit" id="btn-save-staff" class="gate-btn" style="padding:0.65rem 1rem;font-size:0.88rem;height:42px;width:100%">
+                <span>Grant Access ✨</span>
+              </button>
+            </div>
+          </form>
+          <div style="margin-top:0.75rem;font-size:0.78rem;color:#64748b;line-height:1.45;background:rgba(15,46,29,0.04);padding:0.6rem 0.85rem;border-radius:8px">
+            💡 <b>Kaise kaam karega:</b> Super Admin jiska bhi email add karega, wo is Admin Portal par apne email se login karke orders ka live status (Farm Batching, Dispatched, Delivered) update kar sakega. Agar unka password set nahi hai, toh wo "Forgot Password" se apna password create kar sakte hain.
+          </div>
+        </div>
+
+        <!-- Team Table -->
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Team Member</th>
+                <th>Access Role</th>
+                <th>Status</th>
+                <th>Authorized On</th>
+                <th>Added By</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="staff-table-body">
+              <tr>
+                <td colspan="6" style="text-align:center;padding:2rem;color:#64748b">Loading team members…</td>
               </tr>
             </tbody>
           </table>
@@ -1126,9 +1197,11 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
   "use strict";
 
   const SUPER_ADMIN_EMAIL = "shivduttchauhan2@gmail.com";
+  let CURRENT_USER = null;
   let ALL_ORDERS = [];
   let ALL_REVIEWS = [];
   let ALL_SUBSCRIBERS = [];
+  let ALL_STAFF = [];
 
   const $id = id => document.getElementById(id);
   // Orders, reviews and subscribers are written by the public, so escape everything before innerHTML:
@@ -1213,25 +1286,32 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
 
   async function sendAdminOtp() {
     const btn = $id("btn-send-admin-otp");
+    const targetEmail = ($id("admin-reset-email") ? $id("admin-reset-email").value : "").trim().toLowerCase();
+
+    if (!targetEmail || !targetEmail.includes("@")) {
+      showResetStatus("Please enter a valid email address.", true);
+      return;
+    }
+
     btn.disabled = true;
     btn.innerHTML = "<span>Sending OTP &amp; Reset Link…</span>";
 
     activeOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
     const expiry = Date.now() + 10 * 60 * 1000;
-    sessionStorage.setItem("chek_admin_otp", JSON.stringify({ otp: activeOtpCode, exp: expiry }));
+    sessionStorage.setItem("chek_admin_otp", JSON.stringify({ otp: activeOtpCode, exp: expiry, email: targetEmail }));
 
     try {
-      // 1. Send official Firebase password reset email to Shivduttchauhan2@gmail.com
+      // 1. Send official Firebase password reset email to the requested account
       if (window.FirebaseDB && window.FirebaseDB.sendPasswordReset) {
-        await window.FirebaseDB.sendPasswordReset(SUPER_ADMIN_EMAIL);
+        await window.FirebaseDB.sendPasswordReset(targetEmail);
       }
 
-      // 2. Also record OTP in Firestore
+      // 2. Also record OTP in Firestore if Super Admin
       const db = window.FirebaseDB ? window.FirebaseDB.getFirestore() : null;
       if (db) {
         db.collection("admin_security").doc("otp_reset").set({
           otp: activeOtpCode,
-          email: SUPER_ADMIN_EMAIL,
+          email: targetEmail,
           expiresAt: expiry,
           createdAt: new Date().toISOString()
         }).catch(() => {});
@@ -1239,24 +1319,24 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
 
       // 3. Dispatch OTP notification email via FormSubmit
       try {
-        fetch("https://formsubmit.co/ajax/" + SUPER_ADMIN_EMAIL, {
+        fetch("https://formsubmit.co/ajax/" + targetEmail, {
           method: "POST",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
           body: JSON.stringify({
-            _subject: "CHEKORGANICS Super Admin OTP: " + activeOtpCode,
-            message: "Your Super Admin password reset OTP is: " + activeOtpCode + ".\n\nThis verification OTP is valid for 10 minutes.\n\nAccount: " + SUPER_ADMIN_EMAIL
+            _subject: "CHEKORGANICS Portal Access OTP: " + activeOtpCode,
+            message: "Your Admin / Staff password reset OTP is: " + activeOtpCode + ".\n\nThis verification OTP is valid for 10 minutes.\n\nAccount: " + targetEmail
           })
         }).catch(() => {});
       } catch (e) {}
 
-      showResetStatus("✅ 6-digit OTP & Reset Link sent to " + SUPER_ADMIN_EMAIL + ". Check your email!");
+      showResetStatus("✅ 6-digit OTP & Reset Link sent to " + targetEmail + ". Check your email!");
       resetStep1.style.display = "none";
       resetStep2.style.display = "block";
       startOtpTimer(expiry);
     } catch (err) {
       showResetStatus("Failed to send OTP: " + err.message, true);
       btn.disabled = false;
-      btn.innerHTML = "<span>Send OTP to Email ✉️</span>";
+      btn.innerHTML = "<span>Send OTP / Reset Link to Email ✉️</span>";
     }
   }
 
@@ -1422,8 +1502,8 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     const password = $id("admin-password").value;
     const btn = $id("btn-admin-login");
 
-    if (email !== SUPER_ADMIN_EMAIL.toLowerCase()) {
-      showError("Access Denied: Only Super Admin (" + SUPER_ADMIN_EMAIL + ") is authorized.");
+    if (!email || !password) {
+      showError("Please enter both email and password.");
       return;
     }
 
@@ -1440,7 +1520,7 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
 
   // Logout
   $id("btn-admin-logout").onclick = async () => {
-    if (confirm("Are you sure you want to log out of Super Admin?")) {
+    if (confirm("Are you sure you want to log out of the Admin Portal?")) {
       await window.FirebaseDB.signOut();
       location.reload();
     }
@@ -1448,15 +1528,67 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
 
   // Auth State Listener
   if (window.FirebaseDB && window.FirebaseDB.onAuthStateChanged) {
-    window.FirebaseDB.onAuthStateChanged((user) => {
-      if (user && user.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
-        gateWrap.style.display = "none";
-        adminApp.style.display = "flex";
-        initDashboard();
-      } else {
+    window.FirebaseDB.onAuthStateChanged(async (user) => {
+      if (!user || !user.email) {
         gateWrap.style.display = "flex";
         adminApp.style.display = "none";
+        return;
       }
+
+      const userEmail = user.email.toLowerCase().trim();
+      const isSuper = (userEmail === SUPER_ADMIN_EMAIL.toLowerCase());
+      let staffDoc = null;
+
+      if (!isSuper) {
+        // Check if user has active staff access
+        try {
+          const db = window.FirebaseDB.getFirestore();
+          if (db) {
+            const snap = await db.collection("staff").doc(userEmail).get();
+            if (snap.exists && snap.data().active !== false) {
+              staffDoc = snap.data();
+            }
+          }
+        } catch (err) {
+          console.warn("Staff verification check err:", err);
+        }
+
+        if (!staffDoc) {
+          await window.FirebaseDB.signOut();
+          showError(`Access Denied: The account "${esc(user.email)}" does not have active staff or admin access. Please contact the Super Admin.`);
+          gateWrap.style.display = "flex";
+          adminApp.style.display = "none";
+          return;
+        }
+      }
+
+      // Authorized user profile
+      CURRENT_USER = {
+        email: userEmail,
+        isSuperAdmin: isSuper,
+        role: isSuper ? "super_admin" : (staffDoc && staffDoc.role ? staffDoc.role : "staff"),
+        name: isSuper ? "Shivdutt" : (staffDoc && staffDoc.name ? staffDoc.name : "Staff Member")
+      };
+
+      // Update Topbar Info
+      const topAvatar = $id("topbar-avatar");
+      const topName = $id("topbar-name");
+      const topEmail = $id("topbar-email");
+      if (topAvatar) topAvatar.textContent = CURRENT_USER.name.charAt(0).toUpperCase();
+      if (topName) topName.textContent = `${CURRENT_USER.name} (${isSuper ? "Super Admin" : CURRENT_USER.role === "manager" ? "Manager" : "Staff"})`;
+      if (topEmail) topEmail.textContent = CURRENT_USER.email;
+
+      // Adjust controls visibility based on role
+      const topbarChangePass = $id("btn-topbar-change-pass");
+      if (topbarChangePass) topbarChangePass.style.display = isSuper ? "inline-flex" : "none";
+      const sidebarChangePass = $id("btn-open-change-pass");
+      if (sidebarChangePass) sidebarChangePass.style.display = isSuper ? "flex" : "none";
+      const sidebarTeamBtn = $id("sidebar-team-btn");
+      if (sidebarTeamBtn) sidebarTeamBtn.style.display = isSuper ? "flex" : "none";
+
+      gateWrap.style.display = "none";
+      adminApp.style.display = "flex";
+      initDashboard();
     });
   }
 
@@ -1506,6 +1638,21 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
       renderSubscribers(ALL_SUBSCRIBERS);
       updateKPIs();
     });
+
+    // Real-time listener for STAFF & TEAM (Super Admin only)
+    if (CURRENT_USER && CURRENT_USER.isSuperAdmin) {
+      db.collection("staff").onSnapshot((snapshot) => {
+        ALL_STAFF = [];
+        snapshot.forEach(doc => {
+          ALL_STAFF.push({ id: doc.id, ...doc.data() });
+        });
+        renderStaff(ALL_STAFF);
+        const navTeam = $id("nav-team-count");
+        if (navTeam) navTeam.textContent = ALL_STAFF.length + 1; // +1 includes Super Admin
+      }, (err) => {
+        console.warn("Firestore staff listener err:", err);
+      });
+    }
   }
 
   function loadLocalStorageFallback() {
@@ -1580,6 +1727,10 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     }).join("");
   }
 
+  // Every customer-visible change stamps emailQueueAt (server time); the free Apps Script
+  // mailer (email/Code.gs) picks those orders up every 5 minutes and emails the customer.
+  const emailQueue = () => ({ emailQueueAt: firebase.firestore.FieldValue.serverTimestamp() });
+
   // Live Status Updater
   window.updateOrderStatus = async function(docId, newStatus) {
     const db = window.FirebaseDB.getFirestore();
@@ -1588,7 +1739,8 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     try {
       await db.collection("orders").doc(docId).update({
         deliveryStatus: newStatus,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        ...emailQueue()
       });
       alert("✅ Status updated to: " + newStatus);
     } catch (err) {
@@ -1604,7 +1756,8 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     try {
       await db.collection("orders").doc(docId).update({
         "payment.status": "paid",
-        "payment.verifiedAt": new Date().toISOString()
+        "payment.verifiedAt": new Date().toISOString(),
+        ...emailQueue()
       });
       $id("order-modal-backdrop").classList.remove("is-open");
     } catch (err) {
@@ -1621,11 +1774,34 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     try {
       await db.collection("orders").doc(docId).update({
         "payment.status": "cod_confirmed",
-        "payment.confirmedAt": new Date().toISOString()
+        "payment.confirmedAt": new Date().toISOString(),
+        ...emailQueue()
       });
       $id("order-modal-backdrop").classList.remove("is-open");
     } catch (err) {
       alert("Failed to confirm order: " + err.message);
+    }
+  };
+
+  // Courier + AWB / tracking link: shown in Track Order and emailed to the customer
+  window.saveShipment = async function(docId) {
+    const db = window.FirebaseDB.getFirestore();
+    if (!db || !docId) return;
+    const val = id => ($id(id) ? $id(id).value.trim() : "");
+    const link = val("ship-link");
+    if (link && !/^https:\/\/[^"'<>\s]+$/.test(link)) { alert("Tracking link must start with https://"); return; }
+    try {
+      await db.collection("orders").doc(docId).update({
+        "shipping.courier": val("ship-courier").slice(0, 60),
+        "shipping.awb": val("ship-awb").slice(0, 60),
+        "shipping.trackingUrl": link.slice(0, 500),
+        updatedAt: new Date().toISOString(),
+        ...emailQueue()
+      });
+      alert("✅ Tracking details saved — the customer will be emailed.");
+      $id("order-modal-backdrop").classList.remove("is-open");
+    } catch (err) {
+      alert("Failed to save tracking details: " + err.message);
     }
   };
 
@@ -1701,6 +1877,18 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
         <div style="font-size:0.85rem;margin-bottom:1rem">
           <b style="color:var(--admin-forest)">Cash on Delivery:</b>
           <b>${order.payment.status === "cod_confirmed" ? "✅ Confirmed by customer — ready to dispatch" : "⏳ Not confirmed yet — WhatsApp the customer before dispatch"}</b>
+        </div>` : ""}
+
+      ${order.id ? `
+        <div style="border:1px solid #eee8df;border-radius:12px;padding:0.85rem;margin-bottom:1.25rem;background:#faf8f5">
+          <b style="color:var(--admin-forest);font-size:0.85rem">Shipment tracking</b>
+          <span style="font-size:0.75rem;color:#64748b"> — emailed to the customer and shown in Track Order</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.6rem">
+            <input id="ship-courier" placeholder="Courier (e.g. India Post, Delhivery)" value="${esc((order.shipping && order.shipping.courier) || "")}" style="padding:0.5rem 0.65rem;border:1.5px solid #ded8ce;border-radius:8px;font-size:0.82rem">
+            <input id="ship-awb" placeholder="AWB / tracking number" value="${esc((order.shipping && order.shipping.awb) || "")}" style="padding:0.5rem 0.65rem;border:1.5px solid #ded8ce;border-radius:8px;font-size:0.82rem">
+            <input id="ship-link" placeholder="Tracking link (https://…)" value="${esc((order.shipping && order.shipping.trackingUrl) || "")}" style="grid-column:1/-1;padding:0.5rem 0.65rem;border:1.5px solid #ded8ce;border-radius:8px;font-size:0.82rem">
+          </div>
+          <button type="button" class="btn-detail" style="margin-top:0.6rem" onclick="window.saveShipment('${esc(order.id)}')">💾 Save tracking &amp; email customer</button>
         </div>` : ""}
 
       <div style="display:flex;justify-content:flex-end;gap:0.75rem;flex-wrap:wrap">
@@ -1795,6 +1983,188 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     a.click();
   };
 
+  // 5B. RENDER TEAM & STAFF ACCESS
+  function renderStaff(list) {
+    const tbody = $id("staff-table-body");
+    if (!tbody) return;
+
+    let html = `
+      <tr style="background:rgba(194, 154, 69, 0.05)">
+        <td>
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <span style="background:var(--admin-forest);color:#fff;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:0.85rem">S</span>
+            <div>
+              <b>Shivdutt Chauhan</b><br>
+              <span style="font-size:0.78rem;color:#64748b">${esc(SUPER_ADMIN_EMAIL)}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;padding:3px 9px;border-radius:99px;font-size:0.75rem;font-weight:700">👑 Super Admin</span>
+        </td>
+        <td>
+          <span style="background:#dcfce7;color:#166534;padding:3px 9px;border-radius:99px;font-size:0.75rem;font-weight:700">● Active</span>
+        </td>
+        <td style="color:#64748b;font-size:0.8rem">Primary Owner</td>
+        <td style="color:#64748b;font-size:0.8rem">System Master</td>
+        <td>
+          <span style="font-size:0.75rem;color:#64748b;font-style:italic">🔒 Permanent Owner</span>
+        </td>
+      </tr>
+    `;
+
+    if (list && list.length) {
+      html += list.map(s => {
+        const email = s.email || s.id;
+        const name = s.name || "Staff Member";
+        const isManager = (s.role === "manager");
+        const roleBadge = isManager
+          ? `<span style="background:#dcfce7;color:#166534;border:1px solid #bbf7d0;padding:3px 9px;border-radius:99px;font-size:0.75rem;font-weight:700">👔 Manager</span>`
+          : `<span style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;padding:3px 9px;border-radius:99px;font-size:0.75rem;font-weight:700">📦 Operations Staff</span>`;
+        const active = (s.active !== false);
+        const statusBadge = active
+          ? `<span style="background:#dcfce7;color:#166534;padding:3px 9px;border-radius:99px;font-size:0.75rem;font-weight:700">● Active</span>`
+          : `<span style="background:#fee2e2;color:#991b1b;padding:3px 9px;border-radius:99px;font-size:0.75rem;font-weight:700">○ Suspended</span>`;
+        const date = s.addedAt ? new Date(s.addedAt).toLocaleDateString("en-IN") : "Recent";
+        const addedBy = s.addedBy ? esc(s.addedBy.split("@")[0]) : "Super Admin";
+
+        return `
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:0.75rem">
+                <span style="background:#cbd5e1;color:#1e293b;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:0.85rem">${esc(name.charAt(0).toUpperCase())}</span>
+                <div>
+                  <b>${esc(name)}</b><br>
+                  <span style="font-size:0.78rem;color:#64748b">${esc(email)}</span>
+                </div>
+              </div>
+            </td>
+            <td>${roleBadge}</td>
+            <td>${statusBadge}</td>
+            <td style="color:#64748b;font-size:0.8rem">${date}</td>
+            <td style="color:#64748b;font-size:0.8rem">${addedBy}</td>
+            <td>
+              <div style="display:flex;gap:0.35rem;flex-wrap:wrap">
+                <button type="button" class="btn-detail" onclick="window.toggleStaffStatus('${esc(email)}', ${active})" style="font-size:0.74rem;padding:3px 7px">
+                  ${active ? "Suspend ⏸️" : "Activate ▶️"}
+                </button>
+                <button type="button" class="btn-detail" onclick="window.sendStaffPasswordReset('${esc(email)}')" style="font-size:0.74rem;padding:3px 7px" title="Send Password Setup Link">
+                  🔑 Reset Link
+                </button>
+                <button type="button" class="btn-detail" onclick="window.revokeStaffAccess('${esc(email)}')" style="font-size:0.74rem;padding:3px 7px;color:#dc2626">
+                  Remove ✕
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    tbody.innerHTML = html;
+  }
+
+  // Toggle active/suspended
+  window.toggleStaffStatus = async function(email, currentActive) {
+    const db = window.FirebaseDB ? window.FirebaseDB.getFirestore() : null;
+    if (!db || !email) return;
+    try {
+      await db.collection("staff").doc(email.toLowerCase()).update({
+        active: !currentActive,
+        updatedAt: new Date().toISOString()
+      });
+      alert(`✅ Staff status updated for ${email}`);
+    } catch (e) {
+      alert("Failed to update status: " + e.message);
+    }
+  };
+
+  // Revoke & delete staff
+  window.revokeStaffAccess = async function(email) {
+    if (!confirm(`Are you sure you want to REVOKE access for ${email}?\n\nThey will immediately lose access to the Admin Portal.`)) return;
+    const db = window.FirebaseDB ? window.FirebaseDB.getFirestore() : null;
+    if (!db || !email) return;
+    try {
+      await db.collection("staff").doc(email.toLowerCase()).delete();
+      alert(`✅ Access revoked for ${email}`);
+    } catch (e) {
+      alert("Failed to remove staff member: " + e.message);
+    }
+  };
+
+  // Send password setup / reset link to staff
+  window.sendStaffPasswordReset = async function(email) {
+    if (!confirm(`Send a Password Setup / Reset email link to ${email}?`)) return;
+    try {
+      if (window.FirebaseDB && window.FirebaseDB.sendPasswordReset) {
+        await window.FirebaseDB.sendPasswordReset(email);
+        alert(`✅ Password Setup / Reset link successfully sent to ${email}!`);
+      }
+    } catch (e) {
+      alert("Failed to send reset link: " + e.message);
+    }
+  };
+
+  // Form submit: Add Staff
+  const formAddStaff = $id("form-add-staff");
+  if (formAddStaff) {
+    formAddStaff.onsubmit = async (e) => {
+      e.preventDefault();
+      const name = ($id("staff-name-input").value || "").trim();
+      const email = ($id("staff-email-input").value || "").trim().toLowerCase();
+      const role = $id("staff-role-input").value || "staff";
+      const btn = $id("btn-save-staff");
+
+      if (!name || !email || !email.includes("@")) {
+        alert("Please enter a valid Name and Email.");
+        return;
+      }
+
+      if (email === SUPER_ADMIN_EMAIL.toLowerCase()) {
+        alert("This email is already the permanent Super Admin!");
+        return;
+      }
+
+      const db = window.FirebaseDB ? window.FirebaseDB.getFirestore() : null;
+      if (!db) {
+        alert("Database connection not ready.");
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = "<span>Granting Access…</span>";
+
+        await db.collection("staff").doc(email).set({
+          name: name,
+          email: email,
+          role: role,
+          active: true,
+          addedAt: new Date().toISOString(),
+          addedBy: CURRENT_USER ? CURRENT_USER.email : SUPER_ADMIN_EMAIL
+        });
+
+        $id("staff-name-input").value = "";
+        $id("staff-email-input").value = "";
+        btn.disabled = false;
+        btn.innerHTML = "<span>Grant Access ✨</span>";
+
+        if (confirm(`✅ Access successfully granted to ${name} (${email})!\n\nKya aap unhe abhi Password Setup / Reset link email bhejna chahte hain taaki wo apna password bana sakein?`)) {
+          try {
+            await window.FirebaseDB.sendPasswordReset(email);
+            alert(`✅ Setup link emailed to ${email}. They can now set their password and log in!`);
+          } catch (resetErr) {
+            console.warn("Reset email notice:", resetErr);
+          }
+        }
+      } catch (err) {
+        alert("Failed to grant access: " + err.message);
+        btn.disabled = false;
+        btn.innerHTML = "<span>Grant Access ✨</span>";
+      }
+    };
+  }
+
   // 6. SIDEBAR NAVIGATION SWITCHING
   document.querySelectorAll(".sidebar-btn[data-view]").forEach(btn => {
     btn.onclick = () => {
@@ -1807,6 +2177,7 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
       const pOrders = $id("panel-orders");
       const pReviews = $id("panel-reviews");
       const pSubs = $id("panel-subscribers");
+      const pTeam = $id("panel-team");
       const title = $id("page-title");
       const kpis = document.querySelector(".kpi-grid");
 
@@ -1821,23 +2192,33 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
         pOrders.style.display = "none";
         pReviews.style.display = "none";
         pSubs.style.display = "none";
+        if (pTeam) pTeam.style.display = "none";
         title.textContent = "Products";
         if (window.AdminProducts) window.AdminProducts.open();
       } else if (v === "dashboard" || v === "orders") {
         pOrders.style.display = "block";
         pReviews.style.display = "none";
         pSubs.style.display = "none";
+        if (pTeam) pTeam.style.display = "none";
         title.textContent = v === "dashboard" ? "Store Overview" : "Customer Orders";
       } else if (v === "reviews") {
         pOrders.style.display = "none";
         pReviews.style.display = "block";
         pSubs.style.display = "none";
+        if (pTeam) pTeam.style.display = "none";
         title.textContent = "Customer Reviews";
       } else if (v === "subscribers") {
         pOrders.style.display = "none";
         pReviews.style.display = "none";
         pSubs.style.display = "block";
+        if (pTeam) pTeam.style.display = "none";
         title.textContent = "Newsletter Leads";
+      } else if (v === "team") {
+        pOrders.style.display = "none";
+        pReviews.style.display = "none";
+        pSubs.style.display = "none";
+        if (pTeam) pTeam.style.display = "block";
+        title.textContent = "Team & Staff Access";
       }
     };
   });

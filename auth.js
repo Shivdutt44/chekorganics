@@ -407,7 +407,7 @@
           }
           if (window.FirebaseDB && window.FirebaseDB.signUp) {
             await window.FirebaseDB.signUp(name, email, pass);
-            showToast("Account created successfully!");
+            showToast("Account created! We've emailed you a link to verify your address.");
             closeAuthModal();
           } else {
             throw new Error("Firebase Auth service is connecting. Please wait.");
@@ -560,6 +560,9 @@
           Customer: <b>${esc(name)}</b><br>
           Destination: <b>${esc(dest)}</b><br>
           Estimated Delivery: <b style="color:#0f2e1d">${esc(eta)}</b>
+          ${order.shipping && (order.shipping.courier || order.shipping.awb) ? `<br>
+          Shipped with: <b>${esc(order.shipping.courier || "Courier")}</b>${order.shipping.awb ? ` · AWB <b>${esc(order.shipping.awb)}</b>` : ""}
+          ${/^https:\/\/[^"'<>\s]+$/.test(order.shipping.trackingUrl || "") ? `<br><a href="${esc(order.shipping.trackingUrl)}" target="_blank" rel="noopener" style="color:#166534;font-weight:700">Track shipment ↗</a>` : ""}` : ""}
         </div>
 
         <!-- Live Tracker Timeline -->

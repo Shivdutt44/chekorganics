@@ -1874,6 +1874,150 @@
       };
     });
 
+    /* ---- checkout form draft: survives a tab switch (e.g. opening the email verification link) ---- */
+    const DRAFT_KEY = "chek_checkout_draft_v1";
+    const DRAFT_FIELDS = ["cust-mobile", "cust-email", "cust-name", "addr-flat", "addr-street", "addr-landmark", "addr-pincode", "addr-city", "addr-state"];
+    try {
+      const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}");
+      DRAFT_FIELDS.forEach(id => { const el = $("#" + id); if (el && !el.value && draft[id]) el.value = draft[id]; });
+    } catch (e) {}
+    form.addEventListener("input", () => {
+      const draft = {};
+      DRAFT_FIELDS.forEach(id => { const el = $("#" + id); if (el && el.value) draft[id] = el.value; });
+      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch (e) {}
+    });
+    const clearDraft = () => { try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} };
+
+    /* ---- Cash on Delivery: needs a signed-in customer with a verified email ----
+       Free on Firebase's Spark plan (verification links, 1,000/day) and enforced by
+       firestore.rules (request.auth.token.email_verified) */
+    async function ensureVerifiedEmail(prefill) {
+      const F = window.FirebaseDB;
+      if (!F || !F.getAuth || !F.getAuth()) return true; // local preview without Firebase
+      if (F.getCurrentUser() && (await F.refreshEmailVerified().catch(() => false))) return true;
+      return new Promise(resolve => openVerify(prefill, resolve));
+    }
+
+    function openVerify(prefill, done) {
+      const F = window.FirebaseDB;
+      let box = $("#verify-overlay");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "verify-overlay";
+        box.className = "verify-overlay";
+        box.setAttribute("role", "dialog");
+        box.setAttribute("aria-modal", "true");
+        box.setAttribute("aria-labelledby", "verify-title");
+        box.innerHTML =
+          '<div class="verify-card">' +
+            '<button type="button" class="verify-close" data-v-close aria-label="Close">✕</button>' +
+            '<div class="verify-icon" aria-hidden="true">✉️</div>' +
+            '<h3 id="verify-title">Verify your email for Cash on Delivery</h3>' +
+            '<p class="verify-text" data-v-text></p>' +
+            '<p class="verify-msg" data-v-msg aria-live="polite"></p>' +
+            '<div class="verify-actions" data-v-actions></div>' +
+            '<p class="verify-alt">Prefer not to wait? <button type="button" data-v-upi>Pay by UPI instead</button></p>' +
+          "</div>";
+        document.body.appendChild(box);
+      }
+      const text = $("[data-v-text]", box), msg = $("[data-v-msg]", box), actions = $("[data-v-actions]", box);
+      let finished = false, poll = null, stopAuth = null;
+
+      const finish = ok => {
+        if (finished) return;
+        finished = true;
+        clearInterval(poll);
+        if (stopAuth) stopAuth();
+        box.classList.remove("is-open");
+        document.body.style.overflow = "";
+        box.onclick = null;
+        done(ok);
+      };
+
+      // signed out: create an account (or sign in) with the checkout email
+      const showSignedOut = () => {
+        clearInterval(poll);
+        text.innerHTML = "To stop fake COD orders, Cash on Delivery needs a free account with a verified email. " +
+          "Create one with <b>" + esc(prefill.email || "your email") + "</b> — we'll email you a link to verify it.";
+        msg.textContent = "";
+        actions.innerHTML =
+          '<button type="button" class="btn btn--primary btn--block" data-v-signup>Create free account</button>' +
+          '<button type="button" class="btn btn--ghost btn--block" data-v-signin>I already have an account</button>';
+      };
+
+      // signed in, not verified yet: wait for the link click (checked every few seconds)
+      const showCheckInbox = (email, sent) => {
+        text.innerHTML = (sent ? "We've sent a verification link to " : "Open the verification link we emailed to ") +
+          "<b>" + esc(email) + "</b>. Click it, then come back here — your order is placed automatically.";
+        msg.textContent = "Check your spam folder if you don't see it within a minute.";
+        actions.innerHTML =
+          '<button type="button" class="btn btn--primary btn--block" data-v-check>I&#39;ve verified — place my order</button>' +
+          '<button type="button" class="btn btn--ghost btn--block" data-v-resend>Resend verification email</button>';
+        clearInterval(poll);
+        poll = setInterval(async () => {
+          if (await F.refreshEmailVerified().catch(() => false)) finish(true);
+        }, 4000);
+      };
+
+      const route = async () => {
+        const user = F.getCurrentUser();
+        if (!user) return showSignedOut();
+        if (await F.refreshEmailVerified().catch(() => false)) return finish(true);
+        showCheckInbox(user.email, false);
+      };
+
+      box.onclick = async e => {
+        if (e.target === box || e.target.closest("[data-v-close]")) return finish(false);
+        if (e.target.closest("[data-v-upi]")) {
+          finish(false);
+          const upiHead = $("[data-pay-method='upi'] .payment-method__head");
+          if (upiHead) { upiHead.click(); upiHead.scrollIntoView({ behavior: "smooth", block: "center" }); }
+          return;
+        }
+        if (e.target.closest("[data-v-signup]") || e.target.closest("[data-v-signin]")) {
+          const signup = !!e.target.closest("[data-v-signup]");
+          window.openAuth(signup ? "signup" : "login");
+          const n = $("#signup-name"), m = $(signup ? "#signup-email" : "#login-email");
+          if (signup && n && !n.value) n.value = prefill.name || "";
+          if (m && !m.value) m.value = prefill.email || "";
+          return;
+        }
+        if (e.target.closest("[data-v-check]")) {
+          msg.textContent = "Checking…";
+          if (await F.refreshEmailVerified().catch(() => false)) return finish(true);
+          msg.textContent = "Not verified yet. Click the link in the email first (check spam too).";
+          return;
+        }
+        if (e.target.closest("[data-v-resend]")) {
+          const b = e.target.closest("[data-v-resend]");
+          b.disabled = true;
+          try {
+            await F.sendVerificationEmail();
+            msg.textContent = "Sent again. It can take a minute to arrive.";
+          } catch (err) {
+            msg.textContent = /too-many-requests/.test(err.code || "") ? "Too many emails sent. Please wait a few minutes." : "Couldn't send the email. Please try again.";
+          }
+          setTimeout(() => { b.disabled = false; }, 30000);
+        }
+      };
+
+      // after signing up / in through the account dialog, continue from here
+      stopAuth = F.onAuthStateChanged(user => {
+        if (finished || !user) return;
+        // a fresh sign-up already sent the link (FirebaseDB.signUp)
+        const created = user.metadata && user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : 0;
+        (async () => {
+          if (await F.refreshEmailVerified().catch(() => false)) return finish(true);
+          if (!finished) showCheckInbox(user.email, Date.now() - created < 60000);
+        })();
+      });
+
+      box.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+      route();
+    }
+
+
     // Handle Form Submit -> Realistic Gateway Flow
     form.onsubmit = (e) => {
       e.preventDefault();
@@ -1917,7 +2061,12 @@
         return;
       }
 
-      placeOrder();
+      // Cash on Delivery needs a verified email first (fake-order guard, also in firestore.rules)
+      if (selectedPayment === "cod") {
+        ensureVerifiedEmail({ name, email }).then(ok => { if (ok) placeOrder(); });
+      } else {
+        placeOrder();
+      }
 
       async function placeOrder() {
         const overlay = $("#gateway-overlay");
@@ -1984,6 +2133,7 @@
         }
 
         Cart.clear();
+        clearDraft();
         renderConfirmation(orderData);
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -2041,6 +2191,7 @@
         waNote.innerHTML = (order.payment.method === "cod"
           ? `📲 We'll WhatsApp you at <b>+91 ${esc(order.customer.mobile)}</b> to confirm this Cash on Delivery order before we dispatch it. `
           : "") +
+          `✉️ Order details are on their way to <b>${esc(order.customer.email)}</b>, and we'll email you at every step until delivery. ` +
           `📦 Save your order ID <b>${esc(order.orderId)}</b> — track it any time from "Track Order" with this ID or <b>+91 ${esc(order.customer.mobile)}</b>.`;
       }
 
