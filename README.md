@@ -224,19 +224,41 @@ the site's checkout page (`checkout.html`), the same destination as the product 
 
 ## Cart & checkout
 
-The bag is a local preview (localStorage). **Checkout happens on the real Shopify store.** The
-bag's "Proceed to Checkout" and the product page's "Buy Now" open `checkout.html`, a small
-handoff page. It looks up each product's live variant ID (`/products/<handle>.js`) and redirects
-to Shopify's cart permalink `chekorganics.com/cart/<variantId>:<qty>,…`. Payment (UPI and
-dynamic QR, cards, net banking, COD), payment verification and the order itself are all
-handled by Shopify, and orders appear in Shopify admin.
+The bag lives in localStorage. `checkout.html` takes the order on this site and saves it to
+Firestore (`orders`) through `firebase-db.js`.
 
-- Permalinks need **variant** IDs. A product ID returns `410 Gone`.
-- Sold-out or removed products are listed before continuing, and the rest of the bag can still
-  check out.
-- If the store can't be reached, the page shows Try again and the bag is kept.
-- This static site never takes payment and never asks for card details. Customers pay only on
-  Shopify's checkout.
+- Payment is **UPI** (merchant QR / UPI link, then the shopper enters the 12-digit UTR) or
+  **Cash on Delivery**. There is no payment gateway, so card and net banking are not offered.
+- UPI orders are saved with `payment.status: "pending"`. In the admin portal, match the UTR in the
+  PhonePe business app, then press **Mark payment received**.
+- Order tracking (`auth.js`) follows the delivery status set in the admin portal.
+
+## Admin portal (`admin.html`)
+
+Sign in with the Super Admin account. Views: orders, reviews, subscribers and **Products**.
+
+**Products** (`admin-products.js`) works like Shopify's product admin: a list with status tabs,
+search, collection filter, sort, bulk actions (active / draft / archive / delete) and CSV export,
+and a product editor (title, description, media, price and compare-at price, SKU and inventory,
+status, type, collections, tags, card badge). New products can be added and existing ones
+duplicated.
+
+- Every save writes one Firestore document, `products/{handle}`. `app.js` layers these over the
+  catalog (bundled `data.js` or the live Shopify feed), so edits show on the site within seconds.
+  They do **not** change the Shopify store at chekorganics.com.
+- Draft, archived and deleted products are hidden from the shop, product pages and carts.
+- "Discard all edits" deletes the product's document, so the store's own data shows again.
+- With **Track quantity** on, a product is sold out at 0. Orders don't reduce the count
+  automatically; update it after dispatch.
+- Images: paste an `https://` URL, or upload (resized to WebP, max 1600px) to Firebase Storage.
+  Uploads need Firebase Storage set up first: Firebase console → Storage → Get started.
+
+Deploy the security rules after changing them (and once Storage is set up):
+
+```bash
+firebase deploy --only firestore:rules --project chekorganics-live
+firebase deploy --only storage --project chekorganics-live
+```
 
 ## Regenerating the data
 

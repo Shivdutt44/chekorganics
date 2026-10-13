@@ -41,6 +41,10 @@ http.createServer(async (req, res) => {
   let file = path.join(root, p);
   // clean URLs like GitHub Pages: /shop → shop.html
   if (!fs.existsSync(file) && fs.existsSync(file + '.html')) file += '.html';
+  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
+    const idx = path.join(file, 'index.html');
+    if (fs.existsSync(idx)) file = idx;
+  }
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
     res.writeHead(404); return res.end('not found');
   }

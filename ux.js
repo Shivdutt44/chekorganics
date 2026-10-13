@@ -257,7 +257,7 @@
     const current = name => (name === page ? ' aria-current="page"' : "");
     nav.innerHTML =
       '<a class="bnav__item" href="./"' + current("index") + '><span class="bnav__icon">' + ICON.home + "</span>Home</a>" +
-      '<a class="bnav__item" href="shop"' + (page === "shop" || page === "product" ? ' aria-current="page"' : "") + '><span class="bnav__icon">' + ICON.shop + "</span>Shop</a>" +
+      '<a class="bnav__item" href="shop.html"' + (page === "shop" || page === "product" ? ' aria-current="page"' : "") + '><span class="bnav__icon">' + ICON.shop + "</span>Shop</a>" +
       '<button class="bnav__item" type="button" data-bnav-menu aria-label="Browse categories"><span class="bnav__icon">' + ICON.grid + "</span>Categories</button>" +
       '<button class="bnav__item" type="button" data-account aria-haspopup="dialog" aria-expanded="false" aria-controls="account-menu"><span class="bnav__icon">' + ICON.user + "</span>Account</button>" +
       '<button class="bnav__item" type="button" data-open-cart aria-label="Open shopping bag"><span class="bnav__icon">' + ICON.bag +
@@ -414,7 +414,7 @@
     }
 
     function render(item) {
-      const href = "product?p=" + encodeURIComponent(item.handle);
+      const href = "product.html?p=" + encodeURIComponent(item.handle);
       const meta = item.kind === "sale" ? esc(relTime(item.at) || "") + " · verified order" : item.meta;
       el.innerHTML =
         (item.image ? '<img class="proof__img" src="' + esc(item.image) + '" alt="" width="56" height="56" loading="lazy" decoding="async">' : "<span></span>") +

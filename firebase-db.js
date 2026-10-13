@@ -344,6 +344,61 @@
       }
     },
 
+    // -------------------------------- PRODUCTS ------------------------------
+    // admin.html edits products Shopify-style; each edited or added product is one
+    // document in `products`, keyed by its handle, layered over the store catalog by app.js
+
+    /**
+     * All product edits, as { handle: doc }
+     */
+    async getProductOverrides() {
+      if (!isReady || !db) return null;
+      try {
+        const snap = await db.collection("products").get();
+        const map = {};
+        snap.forEach((doc) => { map[doc.id] = { ...doc.data(), handle: doc.id }; });
+        return map;
+      } catch (err) {
+        console.warn("🌿 [Firebase DB] Fetch product edits failed:", err.message);
+        return null;
+      }
+    },
+
+    /**
+     * Create or replace a product's edits (admin only — enforced by firestore.rules)
+     * @param {string} handle
+     * @param {Object} data
+     */
+    async saveProduct(handle, data) {
+      if (!db) throw new Error("Cloud Firestore is not connected.");
+      const payload = { ...data, handle, updatedAt: new Date().toISOString(), updatedBy: auth && auth.currentUser ? auth.currentUser.email : null };
+      await db.collection("products").doc(handle).set(payload);
+      return payload;
+    },
+
+    /**
+     * Remove a product's edits document entirely (reverts to store data, or drops an added product)
+     * @param {string} handle
+     */
+    async removeProductOverride(handle) {
+      if (!db) throw new Error("Cloud Firestore is not connected.");
+      await db.collection("products").doc(handle).delete();
+    },
+
+    /**
+     * Upload a product image to Firebase Storage and return its public URL
+     * @param {Blob} blob
+     * @param {string} handle
+     * @param {string} name
+     */
+    async uploadProductImage(blob, handle, name) {
+      if (typeof firebase === "undefined" || !firebase.storage) throw new Error("Firebase Storage is not loaded.");
+      const safe = String(name || "image").toLowerCase().replace(/[^a-z0-9.]+/g, "-").slice(-60);
+      const ref = firebase.storage().ref().child("products/" + handle + "/" + Date.now() + "-" + safe);
+      await ref.put(blob, { contentType: blob.type || "image/webp", cacheControl: "public, max-age=31536000" });
+      return ref.getDownloadURL();
+    },
+
     // -------------------------------- NEWSLETTER ----------------------------
     /**
      * Save newsletter subscriber email

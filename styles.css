@@ -3310,3 +3310,6 @@ body.page-enter { animation: pageIn 0.45s var(--ease); }
   }
 }
 
+
+/* descriptions edited in the admin portal keep their line breaks */
+#pdp-desc { white-space: pre-line; }

@@ -228,7 +228,7 @@
     if (!list.length) {
       body.innerHTML =
         '<div class="wl-empty">' + HEART + "<p><b>Your wishlist is empty</b><br>Tap the heart on any product to save it for later.</p>" +
-        '<a class="btn btn--primary btn--sm" href="shop">Explore products</a></div>';
+        '<a class="btn btn--primary btn--sm" href="shop.html">Explore products</a></div>';
       return;
     }
     body.innerHTML = list
@@ -236,8 +236,8 @@
         const x = info(h);
         return (
           '<div class="wl-item" data-wl-item="' + esc(h) + '">' +
-          '<a class="wl-item__img" href="product?p=' + encodeURIComponent(h) + '">' + (x.image ? '<img src="' + esc(x.image) + '" alt="" loading="lazy">' : "") + "</a>" +
-          '<div class="wl-item__body"><a class="wl-item__name" href="product?p=' + encodeURIComponent(h) + '">' + esc(x.title) + "</a>" +
+          '<a class="wl-item__img" href="product.html?p=' + encodeURIComponent(h) + '">' + (x.image ? '<img src="' + esc(x.image) + '" alt="" loading="lazy">' : "") + "</a>" +
+          '<div class="wl-item__body"><a class="wl-item__name" href="product.html?p=' + encodeURIComponent(h) + '">' + esc(x.title) + "</a>" +
           '<div class="wl-item__price">' + priceHtml(x) + "</div>" +
           '<div class="wl-item__actions"><button class="btn btn--primary btn--sm" type="button" data-add="' + esc(h) + '"' + (x.available === false ? " disabled" : "") + ">" + (x.available === false ? "Sold out" : "Add to bag") + "</button>" +
           '<button class="wl-item__remove" type="button" data-wl-remove="' + esc(h) + '" aria-label="Remove ' + esc(x.title) + ' from wishlist">Remove</button></div></div></div>'

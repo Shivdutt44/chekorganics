@@ -265,7 +265,7 @@
     grid.innerHTML = VIDEOS.map((v, i) => {
       const p = product(v.products[0]);
       return (
-        '<a class="igg__tile" href="product?p=' + encodeURIComponent(v.products[0]) + '" data-video="' + i + '" aria-label="' + esc("Play video: " + (p ? p.title : "product video")) + '">' +
+        '<a class="igg__tile" href="product.html?p=' + encodeURIComponent(v.products[0]) + '" data-video="' + i + '" aria-label="' + esc("Play video: " + (p ? p.title : "product video")) + '">' +
         '<img src="' + esc(thumb(v.poster, 420)) + '" alt="" loading="lazy" decoding="async">' +
         '<span class="igg__center">' + IG_WHITE + "</span>" +
         '<span class="igg__play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>' + (v.duration ? fmtTime(v.duration) : "") + "</span>" +
@@ -496,7 +496,7 @@
       box.innerHTML =
         '<div class="story__product">' +
         (p.image ? '<img src="' + esc(thumb(p.image, 120)) + '" alt="" width="48" height="48">' : "") +
-        '<div><a class="story__pname" href="product?p=' + encodeURIComponent(p.handle) + '">' + esc(p.title) + "</a>" +
+        '<div><a class="story__pname" href="product.html?p=' + encodeURIComponent(p.handle) + '">' + esc(p.title) + "</a>" +
         '<span class="story__price">' + price(p) + "</span></div>" +
         '<button class="story__add" type="button" data-add="' + esc(p.handle) + '"' + (p.available ? "" : " disabled") + ">" + (p.available ? "Add to bag" : "Sold out") + "</button></div>";
       liveProduct(p.handle).then(lp => {

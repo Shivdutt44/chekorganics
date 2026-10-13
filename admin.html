@@ -519,6 +519,131 @@ body.admin-body {
 }
 
 .btn-detail:hover { background: #eee8df; }
+.btn-detail:disabled { opacity: 0.45; cursor: default; }
+
+/* PRODUCT MANAGER (admin-products.js) */
+.pm-head-actions { display: flex; gap: 0.6rem; align-items: center; }
+.pm-save {
+  padding: 0.5rem 1rem; background: var(--admin-forest); color: #fff; border: none;
+  border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer;
+}
+.pm-save:hover { background: #16462c; }
+.pm-save:disabled { opacity: 0.6; cursor: default; }
+.pm-tabs { display: flex; gap: 0.25rem; padding: 0 1.5rem; border-bottom: 1px solid #eee8df; overflow-x: auto; }
+.pm-tab {
+  background: none; border: none; border-bottom: 2px solid transparent; padding: 0.75rem 0.9rem;
+  font: 600 0.84rem 'Inter', sans-serif; color: #64748b; cursor: pointer; white-space: nowrap;
+}
+.pm-tab span { font-weight: 500; color: #94a3b8; margin-left: 0.2rem; }
+.pm-tab.is-active { color: var(--admin-forest); border-bottom-color: var(--admin-forest); }
+.pm-toolbar { display: flex; gap: 0.6rem; flex-wrap: wrap; padding: 1rem 1.5rem; }
+.pm-toolbar .table-search { flex: 1 1 260px; width: auto; }
+.pm-bulk {
+  display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+  margin: 0 1.5rem 0.75rem; padding: 0.6rem 0.9rem; background: #f1ece2; border-radius: 10px; font-size: 0.82rem;
+}
+.pm-bulk[hidden] { display: none; }
+.pm-input {
+  width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; font: 0.88rem 'Inter', sans-serif;
+  border: 1.5px solid #ded8ce; border-radius: 10px; background: #fff; color: #1b1b1b;
+}
+.pm-input:focus { outline: none; border-color: var(--admin-forest); box-shadow: 0 0 0 3px rgba(15, 46, 29, 0.08); }
+.pm-input[readonly] { background: #faf8f5; color: #64748b; }
+textarea.pm-input { resize: vertical; line-height: 1.55; }
+.pm-input--inline { width: auto; background: #faf8f5; }
+.pm-table .pm-check { width: 36px; }
+.pm-table input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--admin-forest); }
+.pm-row { cursor: pointer; }
+.pm-prod { display: flex; align-items: center; gap: 0.75rem; min-width: 240px; }
+.pm-prod img, .pm-noimg {
+  width: 44px; height: 44px; border-radius: 8px; object-fit: contain; background: #faf8f5;
+  border: 1px solid #eee8df; flex-shrink: 0; display: grid; place-items: center;
+}
+.pm-prod b { display: block; color: var(--admin-forest); line-height: 1.3; }
+.pm-prod small { display: block; color: #94a3b8; font-size: 0.74rem; margin-top: 2px; word-break: break-all; }
+.pm-pill { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.74rem; font-weight: 600; white-space: nowrap; }
+.pm-pill--active { background: #dcfce7; color: #166534; }
+.pm-pill--draft { background: #e0f2fe; color: #0369a1; }
+.pm-pill--archived { background: #eee8df; color: #64748b; }
+.pm-muted { color: #64748b; }
+.pm-small { font-size: 0.78rem; margin: 0.4rem 0 0; }
+.pm-bad { color: #b91c1c; font-weight: 600; }
+.pm-warn { color: #a16207; font-weight: 600; }
+.pm-price { white-space: nowrap; font-weight: 600; color: var(--admin-forest); }
+.pm-price s { color: #94a3b8; font-weight: 400; margin-left: 0.25rem; }
+.pm-empty { text-align: center; padding: 2.5rem !important; color: #64748b; }
+.pm-delete { color: #b91c1c; }
+
+.pm-edit-head { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.pm-edit-head h3 { margin: 0; font-family: 'Fraunces', serif; color: var(--admin-forest); font-size: 1.35rem; }
+.pm-edit-actions { margin-left: auto; display: flex; gap: 0.5rem; }
+.pm-edit-actions a { text-decoration: none; }
+.pm-back {
+  width: 34px; height: 34px; border-radius: 8px; border: 1px solid #ded8ce; background: #fff;
+  cursor: pointer; font-size: 1.05rem; color: var(--admin-forest);
+}
+.pm-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 1.25rem; align-items: start; padding-bottom: 5rem; }
+.pm-col { display: grid; gap: 1.25rem; }
+.pm-card { background: #fff; border: 1px solid var(--admin-border); border-radius: 14px; padding: 1.25rem; }
+.pm-card h4 { margin: 0 0 0.75rem; font-size: 0.92rem; color: var(--admin-forest); }
+.pm-card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.pm-label { display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin: 0.85rem 0 0.35rem; }
+.pm-card > .pm-label:first-child, .pm-card h4 + .pm-label { margin-top: 0; }
+.pm-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.pm-row2 .pm-label { margin-top: 0; }
+.pm-checkline { display: flex; gap: 0.5rem; align-items: center; font-size: 0.85rem; margin-top: 0.7rem; cursor: pointer; }
+.pm-checkline input { accent-color: var(--admin-forest); width: 16px; height: 16px; }
+.pm-colls { display: grid; gap: 0.1rem; max-height: 220px; overflow-y: auto; }
+.pm-colls .pm-checkline { margin-top: 0.35rem; }
+.pm-media { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.6rem; }
+.pm-thumb { margin: 0; border: 1px solid #eee8df; border-radius: 10px; overflow: hidden; background: #faf8f5; }
+.pm-thumb.is-main { grid-column: span 2; grid-row: span 2; border-color: var(--admin-gold); }
+.pm-thumb img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; }
+.pm-thumb figcaption { display: flex; justify-content: center; gap: 0.25rem; padding: 0.3rem; background: #fff; border-top: 1px solid #eee8df; }
+.pm-thumb button { border: 1px solid #ded8ce; background: #fff; border-radius: 6px; cursor: pointer; font-size: 0.75rem; padding: 0.15rem 0.45rem; }
+.pm-thumb button:disabled { opacity: 0.35; cursor: default; }
+.pm-media-add { display: flex; gap: 0.5rem; margin-top: 0.9rem; flex-wrap: wrap; align-items: center; }
+.pm-media-add .pm-input { flex: 1 1 200px; width: auto; }
+.pm-upload { display: inline-flex; align-items: center; }
+.pm-danger { display: grid; gap: 0.5rem; }
+.pm-savebar {
+  position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%); z-index: 900;
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.8rem 0.7rem 1.2rem;
+  background: #0a1f14; color: #e2ece5; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); font-size: 0.86rem;
+}
+.pm-savebar[hidden] { display: none; }
+.pm-savebar .pm-save { background: var(--admin-gold); color: #0a1f14; }
+.pm-toast {
+  position: fixed; left: 50%; top: 1.25rem; transform: translate(-50%, -150%); z-index: 1100;
+  background: var(--admin-forest); color: #fff; padding: 0.7rem 1.1rem; border-radius: 10px;
+  font-size: 0.86rem; max-width: min(92vw, 560px); transition: transform 0.25s ease; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.pm-toast.is-on { transform: translate(-50%, 0); }
+.pm-toast.is-bad { background: #991b1b; }
+/* phones / small tablets: sidebar becomes a scrollable strip above the content */
+@media (max-width: 900px) {
+  .admin-app { flex-direction: column; }
+  .admin-sidebar { width: auto; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+  .sidebar-brand { padding: 0.9rem 1rem; }
+  .sidebar-brand img { width: 36px; height: 36px; }
+  .sidebar-nav { flex-direction: row; overflow-x: auto; padding: 0.5rem 0.75rem 0.75rem; gap: 0.3rem; }
+  .sidebar-btn { white-space: nowrap; padding: 0.55rem 0.8rem; font-size: 0.85rem; flex-shrink: 0; }
+  .sidebar-foot { padding: 0 0.75rem 0.6rem; border-top: none; }
+  .sidebar-foot .sidebar-btn { padding: 0.4rem 0.8rem; font-size: 0.82rem; }
+  .admin-main { min-width: 0; }
+  .admin-topbar { padding: 0.75rem 1rem; position: static; }
+  .topbar-right, .live-pill { display: none; }
+  .admin-content { padding: 1rem; }
+  .card-header { flex-wrap: wrap; gap: 0.75rem; }
+  .table-search { width: 100%; }
+  .pm-grid { grid-template-columns: 1fr; }
+  .pm-edit-actions { margin-left: 0; width: 100%; }
+  .pm-savebar { left: 1rem; right: 1rem; transform: none; justify-content: flex-end; }
+  .pm-savebar span { margin-right: auto; }
+  .pm-tabs, .pm-toolbar { padding-left: 1rem; padding-right: 1rem; }
+  .pm-bulk { margin-left: 1rem; margin-right: 1rem; }
+  .pm-row2 { grid-template-columns: 1fr; }
+}
 
 /* MODAL */
 .admin-modal-backdrop {
@@ -635,9 +760,9 @@ body.admin-body {
       <button type="button" class="sidebar-btn" data-view="subscribers">
         <span>✉️</span> Subscribers
       </button>
-      <a href="shop" target="_blank" class="sidebar-btn">
-        <span>🌿</span> View Products
-      </a>
+      <button type="button" class="sidebar-btn" data-view="products">
+        <span>🌿</span> Products
+      </button>
       <a href="./" target="_blank" class="sidebar-btn">
         <span>🏪</span> Open Store
       </a>
@@ -684,8 +809,8 @@ body.admin-body {
         </div>
         <div class="kpi-card">
           <div class="kpi-title">Catalog Items</div>
-          <div class="kpi-val" id="kpi-products">20</div>
-          <div class="kpi-sub">● AYUSH Ayurvedic Formulations</div>
+          <div class="kpi-val" id="kpi-products">–</div>
+          <div class="kpi-sub">● Active products in the store</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-title">Newsletter Leads</div>
@@ -785,6 +910,61 @@ body.admin-body {
         </div>
       </section>
 
+      <!-- VIEW: PRODUCTS (list) — driven by admin-products.js -->
+      <section class="admin-card" id="panel-products" style="display:none">
+        <div class="card-header">
+          <div>
+            <h3>Products</h3>
+            <span style="font-size:0.82rem;color:#64748b" id="pm-count">Loading…</span>
+          </div>
+          <div class="pm-head-actions">
+            <button type="button" class="btn-detail" id="pm-export">📥 Export</button>
+            <button type="button" class="pm-save" id="pm-add">+ Add product</button>
+          </div>
+        </div>
+        <div class="pm-tabs" id="pm-tabs" role="tablist" aria-label="Filter by status"></div>
+        <div class="pm-toolbar">
+          <input type="search" id="pm-search" class="table-search" placeholder="🔍 Search title, handle, type, SKU, tag…">
+          <select id="pm-coll" class="pm-input pm-input--inline" aria-label="Filter by collection"></select>
+          <select id="pm-sort" class="pm-input pm-input--inline" aria-label="Sort products">
+            <option value="title-asc">Title A–Z</option>
+            <option value="title-desc">Title Z–A</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="inventory-asc">Inventory: low first</option>
+            <option value="updated-desc">Recently edited</option>
+          </select>
+        </div>
+        <div class="pm-bulk" id="pm-bulk" hidden>
+          <b id="pm-bulk-count">0 selected</b>
+          <button type="button" class="btn-detail" data-pm-bulk="active">Set as active</button>
+          <button type="button" class="btn-detail" data-pm-bulk="draft">Set as draft</button>
+          <button type="button" class="btn-detail" data-pm-bulk="archived">Archive</button>
+          <button type="button" class="btn-detail pm-delete" data-pm-bulk="delete">Delete</button>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table pm-table">
+            <thead>
+              <tr>
+                <th class="pm-check"><input type="checkbox" id="pm-select-all" aria-label="Select all products"></th>
+                <th>Product</th>
+                <th>Status</th>
+                <th>Inventory</th>
+                <th>Type</th>
+                <th>Collections</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody id="pm-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW: PRODUCT EDITOR -->
+      <section id="panel-product-edit" style="display:none">
+        <div id="pm-editor"></div>
+      </section>
+
     </div>
   </main>
 </div>
@@ -803,8 +983,10 @@ body.admin-body {
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <script src="firebase-db.js"></script>
 <script src="data.js"></script>
+<script src="admin-products.js"></script>
 
 <script>
 (function() {
@@ -898,6 +1080,7 @@ body.admin-body {
     // onAuthStateChanged can fire more than once; attach the listeners only once
     if (dashboardStarted) return;
     dashboardStarted = true;
+    if (window.AdminProducts) window.AdminProducts.refreshKpi(); // fills the "Catalog Items" card
     const db = window.FirebaseDB.getFirestore();
     if (!db) {
       loadLocalStorageFallback();
@@ -1186,16 +1369,32 @@ body.admin-body {
   // 6. SIDEBAR NAVIGATION SWITCHING
   document.querySelectorAll(".sidebar-btn[data-view]").forEach(btn => {
     btn.onclick = () => {
+      const v = btn.dataset.view;
+      // the product editor may hold unsaved changes
+      if (v !== "products" && window.AdminProducts && !window.AdminProducts.leave()) return;
       document.querySelectorAll(".sidebar-btn[data-view]").forEach(b => b.classList.remove("is-active"));
       btn.classList.add("is-active");
-      const v = btn.dataset.view;
 
       const pOrders = $id("panel-orders");
       const pReviews = $id("panel-reviews");
       const pSubs = $id("panel-subscribers");
       const title = $id("page-title");
+      const kpis = document.querySelector(".kpi-grid");
 
-      if (v === "dashboard" || v === "orders") {
+      // products get the full width, like Shopify's product pages
+      if (kpis) kpis.style.display = v === "products" ? "none" : "";
+      if (v !== "products") {
+        $id("panel-products").style.display = "none";
+        $id("panel-product-edit").style.display = "none";
+      }
+
+      if (v === "products") {
+        pOrders.style.display = "none";
+        pReviews.style.display = "none";
+        pSubs.style.display = "none";
+        title.textContent = "Products";
+        if (window.AdminProducts) window.AdminProducts.open();
+      } else if (v === "dashboard" || v === "orders") {
         pOrders.style.display = "block";
         pReviews.style.display = "none";
         pSubs.style.display = "none";

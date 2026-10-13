@@ -5,16 +5,58 @@
 (function () {
   "use strict";
 
-  // Old ".html" links and bookmarks still open (GitHub Pages serves both forms),
-  // but the address bar shows the clean URL. Skipped locally, where a plain static
-  // server may not resolve extensionless paths on refresh.
-  if (/\.html$/.test(location.pathname) && location.protocol.startsWith("http") && !/^(localhost|127\.|192\.168\.)/.test(location.hostname)) {
-    history.replaceState(history.state, "", location.pathname.replace(/(index)?\.html$/, "") + location.search + location.hash);
-  }
+  // Preserve explicit .html filenames so all static file servers and GitHub Pages
+  // reliably resolve routes on refresh and navigation.
 
   /* ------------------------------------------------------------ catalog */
   const LOCAL = window.STORE || { products: [], collections: [] };
-  let STORE = LOCAL;                 // working catalog — local first for instant paint
+
+  /* ------------------------------------------- admin product edits (Firestore) */
+  // admin.html saves Shopify-style product edits to the Firestore `products` collection,
+  // keyed by handle. They are layered over whichever catalog is showing (bundled data.js
+  // or the live Shopify feed). A cached copy applies instantly; loadProductOverrides()
+  // refreshes it. Edits are applied to the product objects in place, so the snapshots
+  // ux.js / wishlist.js / quickbuy.js / shoppable.js took of data.js see them too.
+  const OVERRIDES_KEY = "chek_product_overrides_v1";
+  let OVERRIDES = (() => { try { return JSON.parse(localStorage.getItem(OVERRIDES_KEY)) || {}; } catch (e) { return {}; } })();
+  const isHidden = h => { const o = OVERRIDES[h]; return !!o && (o.deleted || o.status === "draft" || o.status === "archived"); };
+
+  function overlayProduct(p, o) {
+    if (typeof o.title === "string" && o.title.trim()) p.title = o.title.trim();
+    if (Number(o.price) >= 0 && o.price !== "" && o.price != null) p.price = Number(o.price);
+    if ("compareAt" in o) p.compareAt = Number(o.compareAt) > p.price ? Number(o.compareAt) : null;
+    if (Array.isArray(o.images) && o.images.length) p.images = o.images.slice();
+    if (typeof o.description === "string") p.excerpt = o.description;
+    if (typeof o.type === "string") p.type = o.type;
+    if (Array.isArray(o.tags)) p.tags = o.tags.slice();
+    if (Array.isArray(o.collections) && o.collections.length) {
+      p.collections = o.collections.includes("All Products") ? o.collections.slice() : ["All Products"].concat(o.collections);
+      p.primaryCollection = p.collections.find(c => c !== "All Products") || "All Products";
+    }
+    if ("badge" in o) p.badge = o.badge || null;
+    if (o.trackInventory) p.available = Number(o.inventory) > 0;
+    else if ("available" in o) p.available = o.available !== false;
+    return p;
+  }
+
+  function withOverrides(list) {
+    const have = new Set(list.map(p => p.handle));
+    const out = list.filter(p => !isHidden(p.handle)).map(p => (OVERRIDES[p.handle] ? overlayProduct(p, OVERRIDES[p.handle]) : p));
+    // products added in the admin portal (not in the store catalog)
+    Object.keys(OVERRIDES).forEach(h => {
+      const o = OVERRIDES[h];
+      if (have.has(h) || isHidden(h) || !o.title || !Array.isArray(o.images) || !o.images.length) return;
+      out.push(overlayProduct({
+        id: h, handle: h, title: o.title, price: 0, compareAt: null, images: [], type: "", tags: [],
+        collections: ["All Products"], primaryCollection: "All Products", excerpt: "",
+        rating: 0, reviews: 0, available: true, badge: null, featured: -1
+      }, o));
+    });
+    return out;
+  }
+
+  let BASE = LOCAL.products;         // catalog before admin edits (bundled, then live feed)
+  let STORE = { products: withOverrides(BASE), collections: LOCAL.collections }; // working catalog
   let SOURCE = "local";              // local | live | cached
   let SYNCED_AT = null;
 
@@ -24,7 +66,8 @@
   const FREE_SHIP = 3000;
   const money = n => "₹" + Number(n).toLocaleString("en-IN", { maximumFractionDigits: 0 });
   const byHandle = h => STORE.products.find(p => p.handle === h);
-  const localByHandle = h => LOCAL.products.find(p => p.handle === h);
+  // drafts / archived / deleted products stay out of carts and direct links too
+  const localByHandle = h => (isHidden(h) ? undefined : LOCAL.products.find(p => p.handle === h));
 
   function splitTitle(raw) {
     const t = String(raw).replace(/\s+/g, " ").trim();
@@ -143,6 +186,22 @@
 
   // Synchronize initial products with their real ratings
   if (LOCAL && Array.isArray(LOCAL.products)) applyRatings(LOCAL.products);
+  applyRatings(STORE.products); // includes products added in the admin portal
+
+  // Fetch the admin's product edits, cache them for the next page view, repaint if they changed
+  async function loadProductOverrides() {
+    if (!window.FirebaseDB || !window.FirebaseDB.getProductOverrides) return;
+    const map = await window.FirebaseDB.getProductOverrides();
+    if (!map) return; // offline / not configured: keep the cached edits
+    const before = JSON.stringify(OVERRIDES);
+    OVERRIDES = map;
+    try { localStorage.setItem(OVERRIDES_KEY, JSON.stringify(map)); } catch (e) {}
+    if (JSON.stringify(map) === before) return;
+    // edits were applied in place; an edit that was removed needs a reload to restore store data
+    STORE = { products: withOverrides(BASE), collections: STORE.collections };
+    applyRatings(STORE.products);
+    rerender();
+  }
 
   // Pull every shopper's reviews from Firestore once per page, then repaint ratings
   async function loadRemoteReviews() {
@@ -153,7 +212,7 @@
     list.forEach(r => { if (r && r.productHandle) (byProduct[r.productHandle] = byProduct[r.productHandle] || []).push(r); });
     REMOTE_REVIEWS = byProduct;
     applyRatings(LOCAL.products);
-    if (STORE !== LOCAL) applyRatings(STORE.products);
+    applyRatings(STORE.products);
     rerender();
   }
 
@@ -200,14 +259,14 @@
       : p.badge ? '<span class="card__badge">' + esc(p.badge) + "</span>" : "";
     return (
       '<article class="card">' +
-        '<a class="card__media" href="product?p=' + p.handle + '" aria-label="' + esc(t.name) + '">' +
+        '<a class="card__media" href="product.html?p=' + p.handle + '" aria-label="' + esc(t.name) + '">' +
           badge +
           '<img src="' + p.images[0] + '" alt="' + esc(t.name) + '" loading="lazy" decoding="async">' +
           '<div class="card__quick"><button class="btn btn--gold btn--sm btn--block" type="button" data-add="' + p.handle + '">Add to bag</button></div>' +
         "</a>" +
         '<div class="card__body">' +
           '<span class="card__eyebrow">' + esc(p.primaryCollection) + "</span>" +
-          '<h3 class="card__title"><a href="product?p=' + p.handle + '">' + esc(t.name) + "</a></h3>" +
+          '<h3 class="card__title"><a href="product.html?p=' + p.handle + '">' + esc(t.name) + "</a></h3>" +
           ratingHtml(p) +
           '<div class="card__foot">' +
             '<span class="price">' + money(p.price) + (p.compareAt ? "<s>" + money(p.compareAt) + "</s>" : "") + "</span>" +
@@ -314,9 +373,12 @@
       try {
         const norm = normalizeLive(await fetchJson(url));
         if (norm) {
-          const changed = norm.products.length !== STORE.products.length ||
-            norm.products.some((p, i) => STORE.products[i] && STORE.products[i].price !== p.price);
-          STORE = { products: norm.products, collections: norm.collections.length ? norm.collections : LOCAL.collections };
+          BASE = norm.products;
+          const products = withOverrides(BASE);
+          applyRatings(products);
+          const changed = products.length !== STORE.products.length ||
+            products.some((p, i) => STORE.products[i] && STORE.products[i].price !== p.price);
+          STORE = { products, collections: norm.collections.length ? norm.collections : LOCAL.collections };
           SOURCE = "live";
           SYNCED_AT = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
           window.CHEK_SYNC = { stage: 'live', url: url, products: norm.products.length };
@@ -380,7 +442,7 @@
           '<div class="drawer__row"><span>Subtotal</span><b data-total>₹0</b></div>' +
           '<div class="drawer__row"><span>Shipping</span><span data-ship-cost>Calculated at checkout</span></div>' +
           '<p class="drawer__hint">100% Genuine Ayurvedic Formulations · Dispatched from our farm in Telangana.</p>' +
-          '<a class="btn btn--primary btn--block" data-checkout href="checkout">Proceed to Checkout</a>' +
+          '<a class="btn btn--primary btn--block" data-checkout href="checkout.html">Proceed to Checkout</a>' +
           '<div class="drawer__trust"><span>COD available</span><span>AYUSH certified</span><span>7-day returns</span></div>' +
         "</div>" +
       "</aside>";
@@ -399,7 +461,7 @@
     if (!body) return;
     const items = Cart.items();
     if (!items.length) {
-      body.innerHTML = '<div class="drawer__empty"><p>Your bag is empty.</p><a class="btn btn--ghost btn--sm" href="shop">Explore the apothecary</a></div>';
+      body.innerHTML = '<div class="drawer__empty"><p>Your bag is empty.</p><a class="btn btn--ghost btn--sm" href="shop.html">Explore the apothecary</a></div>';
     } else {
       body.innerHTML = items.map(({ product: p, qty }) =>
         '<div class="line-item">' +
@@ -429,7 +491,7 @@
 
     const chkBtn = $("[data-checkout]");
     if (chkBtn) {
-      chkBtn.href = items.length ? "checkout" : "shop";
+      chkBtn.href = items.length ? "checkout.html" : "shop.html";
       chkBtn.removeAttribute("target");
       chkBtn.removeAttribute("rel");
       chkBtn.textContent = items.length ? "Proceed to Checkout · " + money(total) : "Explore Products";
@@ -552,7 +614,7 @@
     const cats = $("#cat-grid");
     if (cats) {
       cats.innerHTML = STORE.collections.map(c =>
-        '<a class="cat reveal" href="shop?c=' + encodeURIComponent(c.title) + '">' +
+        '<a class="cat reveal" href="shop.html?c=' + encodeURIComponent(c.title) + '">' +
           '<div class="cat__media"><img src="' + c.image + '" alt="' + esc(c.title) + '" loading="lazy" decoding="async"></div>' +
           '<div class="cat__body"><div><span>' + c.count + " products</span><h3>" + esc(c.title) + "</h3></div>" +
           '<span class="cat__arrow" aria-hidden="true">→</span></div>' +
@@ -728,7 +790,7 @@
         missing.id = "pdp-missing";
         missing.style.cssText = "text-align:center;padding:3rem 1rem";
         missing.innerHTML = "<h1>Product not found</h1><p style=\"color:var(--muted);margin:0.75rem 0 1.5rem\">This product may have been renamed or is no longer available.</p>" +
-          '<a class="btn btn--primary" href="shop">Browse all products</a>';
+          '<a class="btn btn--primary" href="shop.html">Browse all products</a>';
         root.after(missing);
       }
       document.title = "Product not found — CHEKORGANICS";
@@ -895,7 +957,7 @@
       buyBtn.onclick = (e) => {
         e.preventDefault();
         Cart.add(p.handle, Math.max(1, +qty.value || 1));
-        window.location.href = "checkout";
+        window.location.href = "checkout.html";
       };
     }
     const crumb = $("#pdp-crumb"); if (crumb) crumb.textContent = t.name;
@@ -929,7 +991,7 @@
       stickyBuyNow.onclick = (e) => {
         e.preventDefault();
         Cart.add(p.handle, Math.max(1, +qty.value || 1));
-        window.location.href = "checkout";
+        window.location.href = "checkout.html";
       };
     }
     $("[data-sticky-add]").onclick = () => Cart.add(p.handle, Math.max(1, +qty.value || 1));
@@ -2021,6 +2083,7 @@
     // hydrate with the live products.json feed, then re-render
     refreshCatalog().then(() => { reveal(); });
     loadRemoteReviews().catch(() => {});
+    loadProductOverrides().catch(() => {});
     setTimeout(refreshCatalog, 60000); // keep prices/stock fresh while the tab stays open
   });
 })();
