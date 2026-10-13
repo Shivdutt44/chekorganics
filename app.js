@@ -1260,8 +1260,9 @@
           '<div class="review-card__header">' +
             '<div class="review-card__user">' +
               '<div class="review-card__name">' +
+                // no "Verified Buyer" tag: reviews aren't linked to orders, and older saved
+                // reviews carry verified:true from a version that set it on every review
                 esc(r.author) +
-                (r.verified ? ' <span class="verified-tag">✓ Verified Buyer</span>' : '') +
               '</div>' +
               (r.city ? '<span class="review-card__city">' + esc(r.city) + '</span>' : '') +
             '</div>' +
