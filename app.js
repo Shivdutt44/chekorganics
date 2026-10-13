@@ -397,6 +397,9 @@
 
   function rerender() {
     homePage(); shopPage(); productPage(); sync();
+    // re-rendered sections (e.g. the home collections grid) bring fresh .reveal elements that
+    // nothing observes yet; without this they stay at opacity 0 after reviews/admin edits load
+    reveal();
   }
 
   /* --------------------------------------------------------------- cart */
@@ -425,6 +428,8 @@
     clear() { write({}); sync(); }
   };
   window.Cart = Cart;
+  // read-only view of the working catalog for header.js search suggestions
+  window.ChekCatalog = { products: () => STORE.products, collections: () => STORE.collections || [] };
 
   function buildDrawer() {
     const wrap = document.createElement("div");
@@ -544,9 +549,10 @@
     $$("[data-open-cart]").forEach(btn => {
       btn.addEventListener("click", e => { e.preventDefault(); openDrawer(); });
     });
-    const burger = $("[data-burger]"), mnav = $(".mobile-nav");
-    if (burger && mnav) {
-      burger.addEventListener("click", () => mnav.classList.add("is-open"));
+    // several menu buttons can exist (header.js: ☰ on phones, "All" on desktop)
+    const burgers = $$("[data-burger]"), mnav = $(".mobile-nav");
+    if (burgers.length && mnav) {
+      burgers.forEach(b => b.addEventListener("click", () => mnav.classList.add("is-open")));
       const close = $("[data-burger-close]");
       if (close) close.addEventListener("click", () => mnav.classList.remove("is-open"));
       mnav.addEventListener("click", e => { if (e.target.tagName === "A") mnav.classList.remove("is-open"); });
@@ -569,7 +575,7 @@
 
   /* -------------------------------------------------------------- reveal */
   function reveal() {
-    const els = $$(".reveal");
+    const els = $$(".reveal:not(.is-in)");
     if (!("IntersectionObserver" in window)) { els.forEach(el => el.classList.add("is-in")); return; }
     const io = new IntersectionObserver(entries => {
       entries.forEach((en, i) => {
@@ -616,7 +622,7 @@
       cats.innerHTML = STORE.collections.map(c =>
         '<a class="cat reveal" href="shop.html?c=' + encodeURIComponent(c.title) + '">' +
           '<div class="cat__media"><img src="' + c.image + '" alt="' + esc(c.title) + '" loading="lazy" decoding="async"></div>' +
-          '<div class="cat__body"><div><span>' + c.count + " products</span><h3>" + esc(c.title) + "</h3></div>" +
+          '<div class="cat__body"><div><span>' + c.count + (c.count === 1 ? " product" : " products") + "</span><h3>" + esc(c.title) + "</h3></div>" +
           '<span class="cat__arrow" aria-hidden="true">→</span></div>' +
         "</a>").join("");
     }
@@ -718,7 +724,8 @@
     const grid = $("#shop-grid");
     if (!grid) return;
     const params = new URLSearchParams(location.search);
-    window.__shopState = window.__shopState || { c: params.get("c") || "All Products", q: "", sort: "featured" };
+    // ?q= comes from the header search, ?deals=1 from "Today's Deals" (products with a compare-at price)
+    window.__shopState = window.__shopState || { c: params.get("c") || "All Products", q: (params.get("q") || "").trim(), sort: "featured", deals: params.get("deals") === "1" };
     const state = window.__shopState;
     const chips = $("#chips");
     const countEl = $("#result-count"), search = $("#shop-search"), sort = $("#shop-sort");
@@ -732,6 +739,7 @@
     function apply() {
       let list = STORE.products.slice();
       if (state.c && state.c !== "All Products") list = list.filter(p => p.collections.includes(state.c));
+      if (state.deals) list = list.filter(p => p.compareAt && p.compareAt > p.price);
       if (state.q) {
         const q = state.q.toLowerCase();
         list = list.filter(p => (p.title + " " + p.type + " " + p.collections.join(" ") + " " + p.tags.join(" ")).toLowerCase().includes(q));
@@ -744,11 +752,13 @@
       renderInto(grid, list);
       countEl.textContent = list.length + (list.length === 1 ? " product" : " products");
       const empty = $("#empty"); if (empty) empty.style.display = list.length ? "none" : "block";
-      const heading = $("#active-col"); if (heading) heading.textContent = state.c;
+      const heading = $("#active-col");
+      if (heading) heading.textContent = state.deals ? "Today's Deals" : state.q ? "Results for “" + state.q + "”" : state.c;
     }
 
     if (!grid.dataset.bound) {
       grid.dataset.bound = "1";
+      if (state.q) search.value = state.q;
       chips.addEventListener("click", e => {
         const b = e.target.closest("[data-col]");
         if (!b) return;
@@ -1727,6 +1737,10 @@
           if (pinHint) pinHint.textContent = "";
         }
       };
+      // PIN chosen in the header's "Deliver to" (header.js)
+      let savedPin = "";
+      try { savedPin = localStorage.getItem("chek_delivery_pin") || ""; } catch (e) {}
+      if (!pinInput.value && /^\d{6}$/.test(savedPin)) { pinInput.value = savedPin; pinInput.oninput(); }
     }
 
     // Address Type Chips

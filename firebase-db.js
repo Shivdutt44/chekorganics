@@ -113,6 +113,33 @@
     },
 
     /**
+     * Confirm password reset with Firebase oobCode
+     * @param {string} code
+     * @param {string} newPassword
+     */
+    async confirmPasswordReset(code, newPassword) {
+      if (!auth) throw new Error("Firebase Auth is loading. Please try again.");
+      await auth.confirmPasswordReset(code.trim(), newPassword);
+      return true;
+    },
+
+    /**
+     * Update current logged-in user password
+     * @param {string} currentPassword
+     * @param {string} newPassword
+     */
+    async updateUserPassword(currentPassword, newPassword) {
+      if (!auth || !auth.currentUser) throw new Error("You must be logged in to change password.");
+      const user = auth.currentUser;
+      if (currentPassword) {
+        const cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+        await user.reauthenticateWithCredential(cred);
+      }
+      await user.updatePassword(newPassword);
+      return true;
+    },
+
+    /**
      * Sign out current user
      */
     async signOut() {

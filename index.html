@@ -22,6 +22,8 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="ux.css">
 <link rel="stylesheet" href="auth.css">
+<link rel="stylesheet" href="header.css">
+<link rel="stylesheet" href="search.css">
 </head>
 <body>
 
@@ -41,51 +43,97 @@
   </div>
 </div>
 
-<!-- header -->
-<header class="header">
-  <div class="container header__inner">
-    <a class="brand" href="./" aria-label="CHEKORGANICS home">
-      <img class="brand__mark" src="assets/brand/logo.webp" alt="CHEKORGANICS logo" width="100" height="100">
-      <span>
-        <span class="brand__name">CHEKORGANICS</span>
-        <span class="brand__tag">Route to Roots</span>
-      </span>
-    </a>
-
-    <nav class="nav" aria-label="Primary">
-      <a href="./">Home</a>
-      <a href="shop.html">Shop</a>
-      <a href="shop.html?c=Superfoods">Superfoods</a>
-      <a href="shop.html?c=Haircare">Haircare</a>
-      <a href="shop.html?c=Skin%20Care">Skin Care</a>
-      <a href="#story">Our Story</a>
-    </nav>
-
-    <div class="header__actions">
-      <span class="sync-pill" id="sync-pill" aria-live="polite"><span class="dot"></span> Loading live catalog…</span>
-      <a class="btn btn--primary btn--sm header__cta" href="shop.html">Shop now</a>
-      <button class="icon-btn" type="button" data-open-cart aria-label="Open shopping bag">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
-        <span class="cart-count" data-cart-count style="display:none">0</span>
+<!-- header: Amazon-style (header.css / header.js) -->
+<header class="amz-header" id="site-header">
+  <div class="amz-top">
+    <div class="amz-top__inner">
+      <button class="amz-burger" type="button" data-burger aria-label="Open menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <a class="amz-logo brand amz-hit" href="./" aria-label="CHEKORGANICS home">
+        <img src="assets/brand/logo.webp" alt="" width="40" height="40">
+        <span class="amz-logo__text"><span class="amz-logo__name">CHEKORGANICS</span><span class="amz-logo__tag">Route to Roots</span></span>
+      </a>
+      <button class="amz-loc amz-hit" type="button" data-loc-open aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+        <span class="amz-two"><span class="amz-two__sm" data-loc-line1>Delivering across India</span><b data-loc-line2>Enter your PIN code</b></span>
       </button>
-      <button class="icon-btn burger" type="button" data-burger aria-label="Open menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <form class="amz-search" role="search" action="shop.html" data-amz-search>
+        <label class="amz-search__cat"><span data-amz-cat-label>All</span><svg class="amz-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><select name="c" aria-label="Search in category" data-amz-cat><option value="">All</option></select></label>
+        <input class="amz-search__input" type="search" name="q" placeholder="Search CHEKORGANICS" autocomplete="off" aria-label="Search products" aria-autocomplete="list" aria-expanded="false" data-amz-q>
+        <button class="amz-search__go" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5 16 16"/></svg></button>
+        <div class="amz-suggest" role="listbox" aria-label="Suggestions" data-amz-suggest hidden></div>
+      </form>
+      <button class="amz-acct amz-hit" type="button" data-account aria-haspopup="dialog" aria-expanded="false" aria-controls="account-menu" aria-label="Account and lists">
+        <span class="amz-two"><span class="amz-two__sm" data-hello>Hello, sign in</span><b>Account &amp; Lists <svg class="amz-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></b></span>
+        <span class="amz-acct__mobile" data-acct-mobile>Sign in ›</span><svg class="amz-acct__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
       </button>
+      <button class="amz-orders amz-hit" type="button" data-amz-orders>
+        <span class="amz-two"><span class="amz-two__sm">Returns</span><b>&amp; Orders</b></span>
+      </button>
+      <button class="amz-cart amz-hit" type="button" data-open-cart aria-label="Open cart">
+        <span class="amz-cart__icon"><svg viewBox="0 0 40 34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 4h5l4.3 18.5h20.4l4.3-13H11"/><circle cx="14" cy="28.5" r="2.4"/><circle cx="28" cy="28.5" r="2.4"/></svg><span class="amz-cart__count" data-cart-count>0</span></span>
+        <b class="amz-cart__label">Cart</b>
+      </button>
+    </div>
+    <button class="amz-loc amz-loc--strip" type="button" data-loc-open aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+      <span class="amz-two"><span class="amz-two__sm" data-loc-line1>Delivering across India</span><b data-loc-line2>Enter your PIN code</b></span>
+    </button>
+  </div>
+  <div class="amz-nav">
+    <div class="amz-nav__inner">
+      <button class="amz-all amz-hit" type="button" data-burger aria-label="Open all categories"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg> All</button>
+      <nav class="amz-nav__links" aria-label="Categories">
+        <a class="amz-hit" href="shop.html?deals=1">Today's Deals</a>
+        <a class="amz-hit" href="shop.html">Shop All</a>
+        <button class="amz-hit" type="button" data-wishlist-open>Wishlist<span class="amz-badge" data-wishlist-count style="display:none">0</span></button>
+        <a class="amz-hit" href="shop.html?c=Superfoods">Superfoods</a>
+        <a class="amz-hit" href="shop.html?c=Haircare">Haircare</a>
+        <a class="amz-hit" href="shop.html?c=Skin%20Care">Skin Care</a>
+        <a class="amz-hit" href="shop.html?c=Handmade%20Soaps">Handmade Soaps</a>
+        <a class="amz-hit" href="shop.html?c=Moisturisers">Moisturisers</a>
+        <a class="amz-hit" href="shop.html?c=Men%27s%20Grooming">Men's Grooming</a>
+        <a class="amz-hit" href="shop.html?c=Herbal%20Hair%20Colours">Herbal Hair Colours</a>
+        <a class="amz-hit" href="shop.html?c=Lip%20Care">Lip Care</a>
+        <a class="amz-hit" href="shop.html?c=Oral%20Care">Oral Care</a>
+        <a class="amz-hit" href="shop.html?c=Eye%20Care">Eye Care</a>
+        <a class="amz-hit" href="#story">Our Story</a>
+      </nav>
+      <a class="amz-promo amz-hit" href="shop.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 6-14 15-14 0 9-6 15-14 15"/><path d="M5 19l7-7"/></svg> Free shipping above ₹3,000</a>
     </div>
   </div>
 </header>
 
-<nav class="mobile-nav" aria-label="Mobile">
-  <button class="icon-btn mobile-nav__close" type="button" data-burger-close aria-label="Close menu">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
-  </button>
-  <a href="./">Home</a>
-  <a href="shop.html">Shop all</a>
-  <a href="shop.html?c=Superfoods">Superfoods</a>
-  <a href="shop.html?c=Haircare">Haircare</a>
-  <a href="shop.html?c=Skin%20Care">Skin Care</a>
-  <a href="shop.html?c=Handmade%20Soaps">Handmade Soaps</a>
-  <a href="#story">Our story</a>
+<nav class="mobile-nav amz-drawer" aria-label="All categories">
+  <div class="amz-drawer__panel">
+    <div class="amz-drawer__head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span data-hello>Hello, sign in</span></div>
+    <div class="amz-drawer__sec">
+      <h3>Trending</h3>
+      <a href="shop.html?deals=1">Today's Deals</a>
+      <a href="shop.html">Shop all products</a>
+    </div>
+    <div class="amz-drawer__sec">
+      <h3>Shop by Category</h3>
+      <a href="shop.html?c=Superfoods">Superfoods</a>
+      <a href="shop.html?c=Haircare">Haircare</a>
+      <a href="shop.html?c=Skin%20Care">Skin Care</a>
+      <a href="shop.html?c=Handmade%20Soaps">Handmade Soaps</a>
+      <a href="shop.html?c=Moisturisers">Moisturisers</a>
+      <a href="shop.html?c=Men%27s%20Grooming">Men's Grooming</a>
+      <a href="shop.html?c=Herbal%20Hair%20Colours">Herbal Hair Colours</a>
+      <a href="shop.html?c=Lip%20Care">Lip Care</a>
+      <a href="shop.html?c=Oral%20Care">Oral Care</a>
+      <a href="shop.html?c=Eye%20Care">Eye Care</a>
+    </div>
+    <div class="amz-drawer__sec">
+      <h3>Help &amp; Settings</h3>
+      <button type="button" data-account aria-haspopup="dialog" aria-controls="account-menu">Your Account</button>
+      <button type="button" data-amz-orders>Returns &amp; Orders</button>
+      <button type="button" data-wishlist-open>Your Wishlist</button>
+      <button type="button" data-loc-open>Delivery location</button>
+      <a href="#story">Our Story</a>
+    </div>
+  </div>
+  <button class="amz-drawer__close mobile-nav__close" type="button" data-burger-close aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
 </nav>
 
 <main>
@@ -561,8 +609,10 @@
 <script src="data.js"></script>
 <script src="ux.js"></script>
 <script src="app.js"></script>
+<script src="header.js"></script>
 <script src="wishlist.js"></script>
 <script src="quickbuy.js"></script>
+<script src="search.js"></script>
 <script src="videos.js"></script>
 <script src="shoppable.js"></script>
 <script src="instagram.js"></script>

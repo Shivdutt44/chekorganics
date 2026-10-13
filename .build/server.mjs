@@ -46,6 +46,11 @@ http.createServer(async (req, res) => {
     if (fs.existsSync(idx)) file = idx;
   }
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
+    const page404 = path.join(root, '404.html');
+    if (fs.existsSync(page404)) {
+      res.writeHead(404, { 'content-type': 'text/html; charset=utf-8' });
+      return fs.createReadStream(page404).pipe(res);
+    }
     res.writeHead(404); return res.end('not found');
   }
   res.writeHead(200, { 'content-type': types[path.extname(file)] || 'application/octet-stream', 'cache-control': 'no-cache' });

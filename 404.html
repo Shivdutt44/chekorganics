@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>404 — Page Not Found | CHEKORGANICS</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/jpeg" sizes="32x32" href="assets/brand/favicon-32.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  :root {
+    --forest-main: #0f2e1d;
+    --forest-deep: #0a1f14;
+    --gold-main: #c29a45;
+    --cream-bg: #ffffff;
+    --card-sand: #faf8f5;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #10351f;
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page-404-wrapper {
+    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
+    width: 100vw;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: radial-gradient(circle at 50% 10%, #faf8f3 0%, #ffffff 80%);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Compact Brand Bar */
+  .brand-bar {
+    width: 100%;
+    padding: 0.55rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(15, 46, 29, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  .brand-bar__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+    color: var(--forest-main);
+  }
+
+  .brand-bar__logo img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 3px 10px rgba(15, 46, 29, 0.12);
+  }
+
+  .brand-bar__name {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    display: block;
+    line-height: 1.1;
+  }
+
+  .brand-bar__tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-main);
+    font-weight: 600;
+  }
+
+  .brand-bar__nav {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+  }
+
+  .brand-bar__nav a {
+    text-decoration: none;
+    color: #475569;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .brand-bar__nav a:hover {
+    color: var(--forest-main);
+  }
+
+  /* Main 404 Stage */
+  .stage-404 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.25rem;
+    text-align: center;
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* Visual Container with contain scaling */
+  .visual-container {
+    width: 100%;
+    max-width: 380px;
+    max-height: 25vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    animation: gentleFloat 4s ease-in-out infinite;
+  }
+
+  .visual-img {
+    width: 100%;
+    height: 100%;
+    max-height: 23vh;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 28px rgba(15, 46, 29, 0.08));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  @keyframes gentleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  /* Headline & text */
+  .title-404 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+    font-weight: 600;
+    color: var(--forest-main);
+    margin: 0 0 0.25rem;
+    line-height: 1.2;
+  }
+
+  .desc-404 {
+    font-size: clamp(0.82rem, 1.3vw, 0.92rem);
+    color: #475569;
+    max-width: 480px;
+    margin: 0 auto 0.75rem;
+    line-height: 1.45;
+  }
+
+  /* Search Bar */
+  .search-form-404 {
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    align-items: center;
+    background: #faf8f5;
+    border: 1.5px solid #ded8ce;
+    border-radius: 999px;
+    padding: 0.25rem 0.3rem 0.25rem 0.95rem;
+    margin: 0 auto 0.75rem;
+    box-shadow: 0 4px 16px rgba(15, 46, 29, 0.04);
+    transition: all 0.25s ease;
+  }
+
+  .search-form-404:focus-within {
+    border-color: var(--forest-main);
+    box-shadow: 0 0 0 3px rgba(15, 46, 29, 0.12);
+    background: #ffffff;
+  }
+
+  .search-input-404 {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.88rem;
+    font-family: inherit;
+    color: #10351f;
+    outline: none;
+  }
+
+  .search-btn-404 {
+    background: var(--forest-main);
+    color: #faf8f3;
+    border: none;
+    padding: 0.48rem 1rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .search-btn-404:hover {
+    background: #164a2c;
+  }
+
+  .search-btn-404:active {
+    transform: scale(0.97);
+  }
+
+  /* Action Buttons */
+  .actions-404 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+  }
+
+  .btn-404 {
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-404--primary {
+    background: var(--forest-main);
+    color: #faf8f3;
+    border: none;
+    box-shadow: 0 6px 20px rgba(15, 46, 29, 0.18);
+  }
+
+  .btn-404--primary:hover {
+    background: #164a2c;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(15, 46, 29, 0.24);
+  }
+
+  .btn-404--secondary {
+    background: #faf8f5;
+    color: var(--forest-main);
+    border: 1.5px solid #ded8ce;
+  }
+
+  .btn-404--secondary:hover {
+    background: #ffffff;
+    border-color: var(--forest-main);
+    transform: translateY(-2px);
+  }
+
+  .btn-404--ghost {
+    background: transparent;
+    color: #64748b;
+    border: none;
+    padding: 0.7rem 0.85rem;
+  }
+
+  .btn-404--ghost:hover {
+    color: var(--forest-main);
+    text-decoration: underline;
+  }
+
+  /* Quick Pills */
+  .pills-label {
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+  }
+
+  .pills-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .pill-link {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--forest-main);
+    background: #f4efe6;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    text-decoration: none;
+    border: 1px solid rgba(194, 154, 69, 0.25);
+    transition: all 0.2s;
+  }
+
+  .pill-link:hover {
+    background: var(--forest-main);
+    color: #faf8f3;
+    border-color: var(--forest-main);
+    transform: translateY(-1px);
+  }
+
+  /* Footer */
+  .footer-404 {
+    padding: 0.45rem 1.25rem;
+    text-align: center;
+    border-top: 1px solid rgba(15, 46, 29, 0.08);
+    font-size: 0.76rem;
+    color: #64748b;
+    background: #ffffff;
+  }
+
+  .footer-404 a {
+    color: var(--forest-main);
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
+  @media (max-width: 640px) {
+    .brand-bar {
+      padding: 0.85rem 1rem;
+    }
+    .brand-bar__nav {
+      display: none;
+    }
+    .stage-404 {
+      padding: 1.5rem 1rem;
+    }
+    .visual-container {
+      max-height: 38vh;
+    }
+    .btn-404 {
+      width: 100%;
+      justify-content: center;
+    }
+    .actions-404 {
+      width: 100%;
+      max-width: 380px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-404-wrapper">
+
+  <!-- 1. BRAND HEADER BAR -->
+  <header class="brand-bar">
+    <a href="index.html" class="brand-bar__logo" aria-label="CHEKORGANICS Home">
+      <img src="assets/brand/logo.webp" alt="CHEKORGANICS Logo">
+      <div>
+        <span class="brand-bar__name">CHEKORGANICS</span>
+        <span class="brand-bar__tag">Route to Roots</span>
+      </div>
+    </a>
+    <nav class="brand-bar__nav" aria-label="Main Navigation">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop All</a>
+      <a href="shop.html?c=Superfoods">Superfoods</a>
+      <a href="shop.html?c=Haircare">Haircare</a>
+      <a href="shop.html?c=Skin%20Care">Skin Care</a>
+    </nav>
+  </header>
+
+  <!-- 2. MAIN 404 STAGE -->
+  <main class="stage-404">
+    
+    <!-- Fitted Image Container (Windows Contain Height & Width) -->
+    <div class="visual-container">
+      <img src="assets/brand/404-error.png" alt="404 Error - Page Not Found" class="visual-img">
+    </div>
+
+    <!-- Text Messaging -->
+    <h1 class="title-404">Whoops! Looks like this page took a detour.</h1>
+    <p class="desc-404">
+      The Ayurvedic remedy or link you were looking for doesn't exist, was moved, or has a typo in the URL.
+    </p>
+
+    <!-- Interactive Search Bar -->
+    <form class="search-form-404" onsubmit="event.preventDefault(); const q = this.querySelector('input').value.trim(); location.href = q ? 'shop.html?q=' + encodeURIComponent(q) : 'shop.html';">
+      <input type="search" class="search-input-404" placeholder="Search for Noni Juice, Hair Oil, Superfoods…" aria-label="Search ChekOrganics Products" autocomplete="off">
+      <button type="submit" class="search-btn-404">
+        <span>Search</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </form>
+
+    <!-- Action Recovery CTAs -->
+    <div class="actions-404">
+      <a href="index.html" class="btn-404 btn-404--primary">
+        <span>🏪</span> Return to Store Home
+      </a>
+      <a href="shop.html" class="btn-404 btn-404--secondary">
+        <span>🌿</span> Browse All 38 Products
+      </a>
+      <button type="button" class="btn-404 btn-404--ghost" onclick="if (history.length > 1) { history.back(); } else { location.href = 'index.html'; }">
+        <span>←</span> Go Back
+      </button>
+    </div>
+
+    <!-- Popular Category Quick Pills -->
+    <div>
+      <div class="pills-label">Popular Ayurvedic Remedies:</div>
+      <div class="pills-row">
+        <a href="shop.html?c=Superfoods" class="pill-link">Noni Juice &amp; Superfoods</a>
+        <a href="shop.html?c=Haircare" class="pill-link">Herbal Hair Oils &amp; Shampoos</a>
+        <a href="shop.html?c=Skin%20Care" class="pill-link">Herbal Bath &amp; Skin Care</a>
+        <a href="shop.html?c=Handmade%20Soaps" class="pill-link">Cold-Pressed Soaps</a>
+        <a href="shop.html?c=Oral%20Care" class="pill-link">Mulika Manjan</a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 3. HELPFUL FOOTER -->
+  <footer class="footer-404">
+    Need assistance finding your order or product? Contact customer care at <a href="mailto:hello@chekorganics.com">hello@chekorganics.com</a><br>
+    © 2026 CHEKORGANICS · Handcrafted with 100% Genuine Ayurvedic Formulations.
+  </footer>
+
+</div>
+
+</body>
+</html>
