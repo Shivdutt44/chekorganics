@@ -1542,7 +1542,9 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
       const custPhone = o.customer ? o.customer.mobile : "—";
       const dest = o.address ? `${o.address.city}, ${o.address.state}` : "India";
       const amount = o.payment ? "₹" + Number(o.payment.total).toLocaleString("en-IN") : "₹0";
-      const pMethod = o.payment ? (o.payment.method === "cod" ? "COD" : o.payment.status === "pending" ? "UPI · verify" : "Prepaid UPI") : "UPI";
+      const pMethod = o.payment
+        ? (o.payment.method === "cod" ? (o.payment.status === "cod_confirmed" ? "COD ✓" : "COD · confirm") : o.payment.status === "pending" ? "UPI · verify" : "Prepaid UPI")
+        : "UPI";
       const status = String(o.deliveryStatus || "Confirmed & Batched");
 
       let statusClass = "status-confirmed";
@@ -1610,6 +1612,39 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     }
   };
 
+  // COD orders arrive unconfirmed; the admin confirms with the shopper on WhatsApp first
+  // (free alternative to SMS OTP), then marks them confirmed before dispatch
+  window.markCodConfirmed = async function(docId) {
+    const db = window.FirebaseDB.getFirestore();
+    if (!db || !docId) return;
+    if (!confirm("Has the customer confirmed this Cash on Delivery order on WhatsApp/call?")) return;
+    try {
+      await db.collection("orders").doc(docId).update({
+        "payment.status": "cod_confirmed",
+        "payment.confirmedAt": new Date().toISOString()
+      });
+      $id("order-modal-backdrop").classList.remove("is-open");
+    } catch (err) {
+      alert("Failed to confirm order: " + err.message);
+    }
+  };
+
+  // wa.me link with the order summary, so the confirmation message is one tap
+  function codWhatsAppLink(order) {
+    const digits = String((order.customer && order.customer.mobile) || "").replace(/\D/g, "").slice(-10);
+    if (digits.length !== 10) return "";
+    const items = (order.items || []).map(it => "• " + it.title + " × " + (Number(it.qty) || 1)).join("\n");
+    const a = order.address || {};
+    const msg =
+      "Namaste " + ((order.customer && order.customer.name) || "") + " 🌿\n" +
+      "CHEKORGANICS se aapka Cash on Delivery order confirm karna hai:\n\n" +
+      "Order: " + (order.orderId || "") + "\n" + items + "\n" +
+      "Total (COD): ₹" + Number((order.payment && order.payment.total) || 0).toLocaleString("en-IN") + "\n" +
+      "Address: " + [a.flat, a.street, a.city, a.state, a.pincode].filter(Boolean).join(", ") + "\n\n" +
+      "Kripya *YES* reply karein taaki hum order dispatch kar sakein. 🙏";
+    return "https://wa.me/91" + digits + "?text=" + encodeURIComponent(msg);
+  }
+
   // View Order Details Modal
   window.viewOrderDetail = function(id) {
     const order = ALL_ORDERS.find(o => o.id === id || o.orderId === id);
@@ -1662,7 +1697,15 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
           <b>${order.payment.status === "paid" ? "✅ Payment received" : "⏳ Match this UTR in your PhonePe business app"}</b>
         </div>` : ""}
 
-      <div style="display:flex;justify-content:flex-end;gap:0.75rem">
+      ${order.payment && order.payment.method === "cod" ? `
+        <div style="font-size:0.85rem;margin-bottom:1rem">
+          <b style="color:var(--admin-forest)">Cash on Delivery:</b>
+          <b>${order.payment.status === "cod_confirmed" ? "✅ Confirmed by customer — ready to dispatch" : "⏳ Not confirmed yet — WhatsApp the customer before dispatch"}</b>
+        </div>` : ""}
+
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;flex-wrap:wrap">
+        ${order.payment && order.payment.method === "cod" && order.payment.status !== "cod_confirmed" && codWhatsAppLink(order) ? `<a class="btn-detail" style="text-decoration:none;background:#dcfce7;border-color:#bbf7d0" target="_blank" rel="noopener" href="${esc(codWhatsAppLink(order))}">💬 Confirm on WhatsApp</a>` : ""}
+        ${order.payment && order.payment.method === "cod" && order.payment.status !== "cod_confirmed" && order.id ? `<button type="button" class="btn-detail" onclick="window.markCodConfirmed('${esc(order.id)}')">✅ Mark COD confirmed</button>` : ""}
         ${order.payment && order.payment.status === "pending" && order.id ? `<button type="button" class="btn-detail" onclick="window.markOrderPaid('${esc(order.id)}')">✅ Mark payment received</button>` : ""}
         <button type="button" class="btn-detail" onclick="window.print()">🖨️ Print Invoice</button>
       </div>

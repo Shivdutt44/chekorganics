@@ -573,19 +573,30 @@
             <span>ORDERED ITEMS (${items.length})</span>
             <span>${total}</span>
           </div>
-          <div style="display:flex;flex-direction:column;gap:0.4rem">
-            ${items.map(it => `
-              <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:#334155">
-                <span>• ${it.title ? esc(String(it.title).slice(0, 38)) + "…" : "Ayurvedic Product"} × ${Number(it.qty) || 1}</span>
-                <b>₹${(Number(it.price) || 0) * (Number(it.qty) || 1)}</b>
-              </div>
-            `).join('')}
+          <div class="track-items">
+            ${items.map(it => {
+              const qty = Number(it.qty) || 1;
+              const price = Number(it.price) || 0;
+              // order items carry the product photo saved at checkout (bundled asset or https URL)
+              const img = /^(https:\/\/|assets\/)[^"'<>\s]+$/.test(it.image || "") ? it.image : "assets/brand/logo.webp";
+              return `
+              <div class="track-item">
+                <img class="track-item__img" src="${esc(img)}" alt="" loading="lazy">
+                <div class="track-item__info">
+                  <span class="track-item__title">${esc(it.title || "Ayurvedic Product")}</span>
+                  <span class="track-item__meta">Qty: <b>${qty}</b> · ₹${price.toLocaleString("en-IN")} each</span>
+                </div>
+                <b class="track-item__total">₹${(price * qty).toLocaleString("en-IN")}</b>
+              </div>`;
+            }).join("")}
           </div>
         </div>
       </div>
     `;
 
     resBox.style.display = "block";
+    // the dialog body scrolls (auth.css); bring the result into view on short screens
+    resBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   // Update Navigation UI when user signs in or out

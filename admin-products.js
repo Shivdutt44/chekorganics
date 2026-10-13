@@ -559,7 +559,7 @@
     btn.textContent = "Saving…";
     try {
       await persist(handle, Object.assign(data, { isNew: !base[handle] }));
-      toast("Product saved — live on the store within a few seconds");
+      toast("Product saved — shoppers see it within 5 minutes");
       openEditor(handle);
     } catch (err) {
       toast(friendlyError(err), true);

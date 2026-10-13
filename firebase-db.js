@@ -182,27 +182,32 @@
         cloudSynced: isReady && !!db
       };
 
-      // Always backup locally
-      try {
-        const localOrders = JSON.parse(localStorage.getItem("chek_orders_v1")) || [];
-        localOrders.unshift(orderPayload);
-        localStorage.setItem("chek_orders_v1", JSON.stringify(localOrders));
-      } catch (e) {}
+      const backupLocally = () => {
+        try {
+          const localOrders = JSON.parse(localStorage.getItem("chek_orders_v1")) || [];
+          localOrders.unshift(orderPayload);
+          localStorage.setItem("chek_orders_v1", JSON.stringify(localOrders));
+        } catch (e) {}
+      };
 
       // If Firestore is ready, save to cloud
       if (isReady && db) {
         try {
           const docRef = await db.collection("orders").add(orderPayload);
           console.log("🌿 [Firebase DB] Order saved to Firestore with ID:", docRef.id);
+          backupLocally();
           return { success: true, cloudId: docRef.id };
         } catch (err) {
+          // not backed up: the shopper is asked to retry, so a failed order never looks placed
           console.error("🌿 [Firebase DB] Order cloud sync failed:", err);
-          return { success: false, error: err.message };
+          return { success: false, error: err.message, code: err.code };
         }
       }
 
+      backupLocally();
       return { success: true, localOnly: true };
     },
+
 
     /**
      * Get orders for the logged-in customer

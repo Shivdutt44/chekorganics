@@ -3313,3 +3313,12 @@ body.page-enter { animation: pageIn 0.45s var(--ease); }
 
 /* descriptions edited in the admin portal keep their line breaks */
 #pdp-desc { white-space: pre-line; }
+
+/* ---- checkout confirmation: create-account offer for guests ---- */
+.conf-account {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  margin: 1.5rem 0 0; padding: 1rem 1.2rem; border: 1px dashed var(--gold); border-radius: 14px;
+  background: var(--cream); text-align: left;
+}
+.conf-account b { color: var(--forest); }
+.conf-account p { margin: 0.25rem 0 0; font-size: 14px; color: var(--muted); }

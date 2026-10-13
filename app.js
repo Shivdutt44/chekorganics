@@ -188,14 +188,23 @@
   if (LOCAL && Array.isArray(LOCAL.products)) applyRatings(LOCAL.products);
   applyRatings(STORE.products); // includes products added in the admin portal
 
+  // Firestore's free (Spark) plan allows 50,000 document reads a day, and these two loads read
+  // every product-edit and review document. A visitor re-reads them at most every 5 minutes;
+  // in between, the copy saved in localStorage is used.
+  const FRESH_MS = 5 * 60 * 1000;
+  const cacheAge = key => { try { return Date.now() - Number(localStorage.getItem(key + "_at") || 0); } catch (e) { return Infinity; } };
+  const stamp = key => { try { localStorage.setItem(key + "_at", String(Date.now())); } catch (e) {} };
+
   // Fetch the admin's product edits, cache them for the next page view, repaint if they changed
   async function loadProductOverrides() {
     if (!window.FirebaseDB || !window.FirebaseDB.getProductOverrides) return;
+    if (cacheAge(OVERRIDES_KEY) < FRESH_MS) return; // the cached edits were applied at startup
     const map = await window.FirebaseDB.getProductOverrides();
     if (!map) return; // offline / not configured: keep the cached edits
     const before = JSON.stringify(OVERRIDES);
     OVERRIDES = map;
     try { localStorage.setItem(OVERRIDES_KEY, JSON.stringify(map)); } catch (e) {}
+    stamp(OVERRIDES_KEY);
     if (JSON.stringify(map) === before) return;
     // edits were applied in place; an edit that was removed needs a reload to restore store data
     STORE = { products: withOverrides(BASE), collections: STORE.collections };
@@ -203,10 +212,19 @@
     rerender();
   }
 
-  // Pull every shopper's reviews from Firestore once per page, then repaint ratings
+  // Pull every shopper's reviews from Firestore (or the 5-minute cache), then repaint ratings
+  const REVIEWS_CACHE_KEY = "chek_remote_reviews_v1";
   async function loadRemoteReviews() {
     if (!window.FirebaseDB || !window.FirebaseDB.getAllReviews) return;
-    const list = await window.FirebaseDB.getAllReviews();
+    let list = null;
+    if (cacheAge(REVIEWS_CACHE_KEY) < FRESH_MS) {
+      try { list = JSON.parse(localStorage.getItem(REVIEWS_CACHE_KEY)); } catch (e) {}
+    }
+    if (!Array.isArray(list)) {
+      list = await window.FirebaseDB.getAllReviews();
+      try { localStorage.setItem(REVIEWS_CACHE_KEY, JSON.stringify(list)); } catch (e) {}
+      stamp(REVIEWS_CACHE_KEY);
+    }
     if (!list.length) return;
     const byProduct = {};
     list.forEach(r => { if (r && r.productHandle) (byProduct[r.productHandle] = byProduct[r.productHandle] || []).push(r); });
@@ -1899,44 +1917,36 @@
         return;
       }
 
-      // Show authentic Payment Gateway Handshake Modal
-      const overlay = $("#gateway-overlay");
-      const titleEl = $("#gateway-status-title");
-      const descEl = $("#gateway-status-desc");
+      placeOrder();
 
-      if (overlay) overlay.style.display = "grid";
+      async function placeOrder() {
+        const overlay = $("#gateway-overlay");
+        const titleEl = $("#gateway-status-title");
+        const descEl = $("#gateway-status-desc");
+        if (titleEl) titleEl.textContent = "Placing your order…";
+        if (descEl) descEl.textContent = "Saving your order details. Please do not refresh or close this window.";
+        if (overlay) overlay.style.display = "grid";
 
-      const subtotal = Cart.total();
-      let shipFee = selectedShipping === "express" ? 149 : (subtotal >= FREE_SHIP ? 0 : 99);
-      const totalAmount = Math.max(0, subtotal - couponDiscount + shipFee);
+        const subtotal = Cart.total();
+        const shipFee = selectedShipping === "express" ? 149 : (subtotal >= FREE_SHIP ? 0 : 99);
+        const totalAmount = Math.max(0, subtotal - couponDiscount + shipFee);
 
-      // Time-based ID with a random suffix: a bare 5-digit number collides and is guessable,
-      // and the tracker looks orders up by this ID
-      const orderNum = "CHEK-" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
+        // Time-based ID with a random suffix: a bare 5-digit number collides and is guessable,
+        // and the tracker looks orders up by this ID
+        const orderNum = "CHEK-" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
 
-      // Estimated Delivery: 4 days from today
-      const today = new Date();
-      const deliveryDate = new Date(today);
-      deliveryDate.setDate(today.getDate() + 4);
-      const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
-      const formattedEta = deliveryDate.toLocaleDateString("en-IN", options);
+        // Estimated Delivery: 4 days from today
+        const deliveryDate = new Date();
+        deliveryDate.setDate(deliveryDate.getDate() + 4);
+        const formattedEta = deliveryDate.toLocaleDateString("en-IN", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
 
-      setTimeout(() => {
-        if (titleEl) titleEl.textContent = "Saving your order…";
-        if (descEl) descEl.textContent = "Generating your order ID…";
-      }, 700);
-
-      setTimeout(() => {
-        if (overlay) overlay.style.display = "none";
-
-        // Save order to localStorage
         const orderData = {
           orderId: orderNum,
           date: new Date().toISOString(),
           customer: { name, mobile, email, sendWhatsApp },
           address: { flat, street, landmark, city, state, pincode, type: selectedAddressType },
           shipping: { method: selectedShipping, fee: shipFee, eta: formattedEta },
-          // nothing on this page confirms a UPI/card transfer, so prepaid orders start unverified
+          // nothing on this page confirms a UPI transfer, so prepaid orders start unverified
           payment: Object.assign(
             { method: selectedPayment, total: totalAmount, status: selectedPayment === "cod" ? "cod" : "pending" },
             selectedPayment === "upi" ? { utr } : {}
@@ -1953,25 +1963,30 @@
         };
 
         // FirebaseDB.saveOrder keeps its own local backup, so only write here when it is absent
+        let result = { success: true };
+        const minWait = new Promise(r => setTimeout(r, 900));
         if (window.FirebaseDB && window.FirebaseDB.saveOrder) {
-          window.FirebaseDB.saveOrder(orderData);
+          [result] = await Promise.all([window.FirebaseDB.saveOrder(orderData), minWait]);
         } else {
           try {
             const orders = JSON.parse(localStorage.getItem("chek_orders_v1")) || [];
             orders.unshift(orderData);
             localStorage.setItem("chek_orders_v1", JSON.stringify(orders));
           } catch (err) {}
+          await minWait;
+        }
+        if (overlay) overlay.style.display = "none";
+
+        // never show "order placed" for an order the store didn't receive; keep the bag for a retry
+        if (!result || result.success === false) {
+          toast("We couldn't place your order — please check your connection and try again.");
+          return;
         }
 
-        // Clear user cart
         Cart.clear();
-
-        // Render Order Confirmation
         renderConfirmation(orderData);
-
-        // Smooth scroll to top
         window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 1500);
+      }
     };
 
     function renderConfirmation(order) {
@@ -1996,9 +2011,37 @@
       const confId = $("#conf-order-id"); if (confId) confId.textContent = order.orderId;
       const confEta = $("#conf-delivery-date"); if (confEta) confEta.textContent = order.shipping.eta;
 
+      // guest? offer an account with the email just used: firestore.rules lets a signed-in
+      // customer read orders saved under their email, so this order shows in their history
+      const signedIn = window.FirebaseDB && window.FirebaseDB.getCurrentUser && window.FirebaseDB.getCurrentUser();
+      const actions = $(".confirmation-actions");
+      if (!signedIn && actions && window.openAuth && !$("#conf-account")) {
+        const card = document.createElement("div");
+        card.id = "conf-account";
+        card.className = "conf-account";
+        card.innerHTML =
+          '<div><b>Save your details for next time</b>' +
+          "<p>Create a free account with <b>" + esc(order.customer.email) + "</b> to see this order in your order history and check out faster.</p></div>" +
+          '<button type="button" class="btn btn--primary btn--sm" data-conf-signup>Create account</button>';
+        actions.before(card);
+        $("[data-conf-signup]", card).onclick = () => {
+          window.openAuth("signup");
+          const n = $("#signup-name"), m = $("#signup-email");
+          if (n && !n.value) n.value = order.customer.name || "";
+          if (m && !m.value) m.value = order.customer.email || "";
+          const pw = $("#signup-password");
+          if (pw) setTimeout(() => pw.focus(), 60);
+        };
+        if (window.FirebaseDB.onAuthStateChanged) window.FirebaseDB.onAuthStateChanged(u => { if (u) card.remove(); });
+      }
+
       const waNote = $("#conf-whatsapp-note");
       if (waNote) {
-        waNote.innerHTML = `📦 Save your order ID <b>${esc(order.orderId)}</b> — track it any time from "Track Order" with this ID or <b>+91 ${esc(order.customer.mobile)}</b>.`;
+        // COD orders are confirmed by the admin on WhatsApp before dispatch (admin.html)
+        waNote.innerHTML = (order.payment.method === "cod"
+          ? `📲 We'll WhatsApp you at <b>+91 ${esc(order.customer.mobile)}</b> to confirm this Cash on Delivery order before we dispatch it. `
+          : "") +
+          `📦 Save your order ID <b>${esc(order.orderId)}</b> — track it any time from "Track Order" with this ID or <b>+91 ${esc(order.customer.mobile)}</b>.`;
       }
 
       // Address box

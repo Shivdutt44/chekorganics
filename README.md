@@ -231,7 +231,22 @@ Firestore (`orders`) through `firebase-db.js`.
   **Cash on Delivery**. There is no payment gateway, so card and net banking are not offered.
 - UPI orders are saved with `payment.status: "pending"`. In the admin portal, match the UTR in the
   PhonePe business app, then press **Mark payment received**.
+- COD orders are saved with `payment.status: "cod"` (unconfirmed). Fake-order guard on the free
+  plan (SMS OTP needs the paid Blaze plan): open the order, press **Confirm on WhatsApp** (a
+  pre-filled message to the shopper), and once they reply, **Mark COD confirmed**. Dispatch only
+  confirmed COD orders.
+- If an order can't be saved to Firestore, checkout shows an error and keeps the bag; it never
+  shows "order placed" for an order the store didn't receive.
 - Order tracking (`auth.js`) follows the delivery status set in the admin portal.
+
+## Free (Spark) plan
+
+The site is built to run on Firebase's free plan:
+
+- Firestore allows 50,000 reads a day. Product edits and reviews are read once per visitor per
+  5 minutes (`app.js`, localStorage cache), not on every page view.
+- SMS / phone OTP and Firebase Storage need the paid Blaze plan, so COD is confirmed on WhatsApp
+  and product photos are added by URL.
 
 ## Admin portal (`admin.html`)
 
@@ -244,19 +259,20 @@ status, type, collections, tags, card badge). New products can be added and exis
 duplicated.
 
 - Every save writes one Firestore document, `products/{handle}`. `app.js` layers these over the
-  catalog (bundled `data.js` or the live Shopify feed), so edits show on the site within seconds.
+  catalog (bundled `data.js` or the live Shopify feed); shoppers see edits within 5 minutes.
   They do **not** change the Shopify store at chekorganics.com.
 - Draft, archived and deleted products are hidden from the shop, product pages and carts.
 - "Discard all edits" deletes the product's document, so the store's own data shows again.
 - With **Track quantity** on, a product is sold out at 0. Orders don't reduce the count
   automatically; update it after dispatch.
-- Images: paste an `https://` URL, or upload (resized to WebP, max 1600px) to Firebase Storage.
-  Uploads need Firebase Storage set up first: Firebase console → Storage → Get started.
+- Images: paste an `https://` URL. Uploading (resized to WebP, max 1600px) needs Firebase
+  Storage, which is Blaze-only: Firebase console → Storage → Get started.
 
-Deploy the security rules after changing them (and once Storage is set up):
+Deploy the Firestore security rules after changing them:
 
 ```bash
 firebase deploy --only firestore:rules --project chekorganics-live
+# only after enabling Storage (Blaze plan):
 firebase deploy --only storage --project chekorganics-live
 ```
 
