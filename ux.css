@@ -312,7 +312,7 @@ a, button, input, select, textarea, label { -webkit-tap-highlight-color: transpa
 
 /* full-screen viewer */
 .vviewer {
-  position: fixed; inset: 0; z-index: 88; /* above the bottom nav, below the cart drawer */
+  position: fixed; inset: 0; z-index: 220; /* above header and page elements */
   display: none; grid-template-columns: minmax(0, 1fr) 360px;
   background: rgba(4, 12, 7, 0.96);
   color: var(--cream);
@@ -493,7 +493,7 @@ html.vviewer-lock, html.vviewer-lock body { overflow: hidden; }
 
 /* story player */
 .story {
-  position: fixed; inset: 0; z-index: 88; /* above the bottom nav, below the bag drawer */
+  position: fixed; inset: 0; z-index: 220; /* above header and page elements */
   display: none; align-items: center; justify-content: center; gap: 1.5rem;
   background: #0b0d0c; color: #fff;
   -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
@@ -577,10 +577,10 @@ html.vviewer-lock, html.vviewer-lock body { overflow: hidden; }
 
 /* drawer */
 html.wl-lock, html.wl-lock body { overflow: hidden; }
-.wl-scrim { position: fixed; inset: 0; z-index: 101; background: rgba(8, 20, 13, 0.5); backdrop-filter: blur(3px); opacity: 0; visibility: hidden; transition: opacity 0.35s, visibility 0s linear 0.35s; }
+.wl-scrim { position: fixed; inset: 0; z-index: 210; background: rgba(8, 20, 13, 0.5); backdrop-filter: blur(3px); opacity: 0; visibility: hidden; transition: opacity 0.35s, visibility 0s linear 0.35s; }
 .wl-scrim.is-open { opacity: 1; visibility: visible; transition-delay: 0s; }
 .wl-drawer {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 102;
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 220;
   width: min(420px, 100%); display: flex; flex-direction: column;
   background: var(--cream); box-shadow: -30px 0 60px -40px rgba(0, 0, 0, 0.6);
   transform: translateX(100%); visibility: hidden;
@@ -612,7 +612,7 @@ html.wl-lock, html.wl-lock body { overflow: hidden; }
 
 /* toast */
 .wl-toast {
-  position: fixed; left: 50%; bottom: calc(var(--ui-bottom, 0px) + 24px); z-index: 120;
+  position: fixed; left: 50%; bottom: calc(var(--ui-bottom, 0px) + 24px); z-index: 250;
   display: inline-flex; align-items: center; gap: 0.5rem;
   padding: 0.75rem 1.2rem; border-radius: 999px; background: var(--forest); color: var(--cream);
   font-size: 0.86rem; box-shadow: var(--shadow-lg);

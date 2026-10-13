@@ -631,3 +631,62 @@
   background: #16462c;
   transform: translateY(-1px);
 }
+
+/* ==========================================================================
+   Privacy / Refund pages use these class names — give them the same look as
+   About / Our Story (they had no styles of their own)
+   ========================================================================== */
+.company-hero__badge {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.74rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--page-gold-light); background: rgba(194, 154, 69, 0.18);
+  border: 1px solid rgba(194, 154, 69, 0.35); padding: 0.3rem 0.85rem; border-radius: 999px;
+  margin-bottom: 0.85rem;
+}
+.company-nav-title {
+  font-family: 'Fraunces', serif; font-size: 1.05rem; color: var(--page-forest);
+  margin: 0 0 0.85rem; padding-bottom: 0.65rem; border-bottom: 1px solid var(--page-border-light);
+}
+.company-nav-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+.company-nav-list a {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.55rem 0.75rem; border-radius: 10px; color: #334155; font-size: 0.88rem;
+  text-decoration: none; font-weight: 500; transition: all 0.2s ease;
+}
+.company-nav-list a::after { content: "›"; color: #94a3b8; font-size: 1.1rem; }
+.company-nav-list a:hover { background: var(--page-cream); color: var(--page-forest); }
+.company-nav-list a.active { background: var(--page-forest); color: #faf8f3; font-weight: 600; }
+.company-nav-list a.active::after { color: var(--page-gold-light); }
+
+/* ==========================================================================
+   Phones & tablets
+   ========================================================================== */
+@media (max-width: 960px) {
+  /* read the page first; the company links and help cards follow the content */
+  .company-sidebar { position: static; order: 2; }
+}
+@media (max-width: 720px) {
+  .company-hero { padding: 2.25rem 1rem 2rem; }
+  .company-layout { padding: 0 1rem; gap: 1.25rem; margin-bottom: 2.5rem; }
+  .company-card { border-radius: 16px; padding: 1.35rem 1.1rem; }
+  .company-card h2 { font-size: 1.35rem; }
+  .company-card h3 { font-size: 1.1rem; }
+
+  /* highlight cards: a tidy 2×2 grid instead of a sideways strip that looked cut off */
+  .company-highlights-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem;
+    overflow: visible; padding-bottom: 0; margin: 1.1rem 0 1.4rem;
+  }
+  .company-highlight-card, .highlight-item { flex: initial; min-height: 0; padding: 0.95rem 0.6rem 0.85rem; }
+  .company-highlight-title { font-size: 0.95rem; }
+  .company-highlight-desc, .highlight-item__label { font-size: 12.5px; margin-top: 0.15rem; }
+  .highlight-item__num { font-size: 1.15rem; }
+
+  /* finger-sized links */
+  .company-nav-link, .company-nav-list a { min-height: 44px; padding: 0.65rem 0.85rem; font-size: 15px; }
+  .company-card a[href^="tel:"], .company-card a[href^="mailto:"],
+  .contact-info-block a[href^="tel:"], .contact-info-block a[href^="mailto:"] { display: inline-block; padding: 0.4rem 0; }
+  .company-card small, .contact-info-block small { font-size: 12.5px; }
+  .awards-grid { grid-template-columns: 1fr; }
+  .founder-quote { padding-left: 1rem; padding-right: 1rem; }
+}
