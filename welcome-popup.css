@@ -1,0 +1,95 @@
+/* CHEKORGANICS — first-order discount popup (welcome-popup.js)
+   Compact so it fits any screen without scrolling: image beside the form on wider screens
+   (the banner is portrait), a short banner on phones, no banner on very short screens. */
+.wpop {
+  --wpop-brown: #904524;
+  --wpop-brown-dark: #6f2f1f;
+  --wpop-ink: #4b280b;
+  --wpop-paper: #f7f4ef;
+  position: fixed; inset: 0; z-index: 1300;
+  display: grid; place-items: center; padding: 1rem;
+}
+.wpop[hidden] { display: none; }
+.wpop__overlay {
+  position: absolute; inset: 0; background: rgba(20, 14, 8, 0.6);
+  opacity: 0; transition: opacity 0.25s ease;
+}
+.wpop__box {
+  position: relative; width: min(640px, 100%); max-height: calc(100dvh - 2rem); overflow: hidden;
+  display: grid; grid-template-columns: 40% 1fr;
+  background: var(--wpop-paper); border-radius: 14px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  opacity: 0; transform: translateY(12px) scale(0.98); transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.wpop.is-open .wpop__overlay { opacity: 1; }
+.wpop.is-open .wpop__box { opacity: 1; transform: none; }
+html.wpop-lock { overflow: hidden; }
+
+.wpop__close {
+  position: absolute; top: 10px; right: 10px; z-index: 2; width: 34px; height: 34px; border-radius: 50%;
+  border: 0; background: #ffffff; color: #1f1f1f; display: grid; place-items: center; cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18); transition: transform 0.2s ease;
+}
+.wpop__close:hover { transform: rotate(90deg); }
+.wpop__close svg { width: 16px; height: 16px; }
+
+.wpop__image { min-height: 100%; overflow: hidden; background: #efe6d6; }
+.wpop__image img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; }
+
+.wpop__content { padding: 1.75rem 1.6rem 1.6rem; align-self: center; min-width: 0; overflow-y: auto; max-height: calc(100dvh - 2rem); }
+.wpop__title {
+  margin: 0; padding-right: 1.5rem; font-family: var(--font-body, Arial, sans-serif); font-weight: 700;
+  font-size: 21px; line-height: 1.25; color: var(--wpop-brown-dark);
+}
+.wpop__text { margin: 0.6rem 0 0; font-family: Georgia, "Times New Roman", serif; font-size: 14px; line-height: 1.55; color: var(--wpop-ink); }
+.wpop__form { margin-top: 1.1rem; display: grid; gap: 0.65rem; }
+.wpop__input {
+  width: 100%; box-sizing: border-box; height: 46px; padding: 0 1rem; font: 15px var(--font-body, Arial, sans-serif);
+  color: #222; background: #ffffff; border: 1.5px solid #d9cdbf; border-radius: 4px; outline: none;
+  transition: border-color 0.2s ease;
+}
+.wpop__input:focus { border-color: var(--wpop-brown); }
+.wpop__error { margin: -0.2rem 0 0; font-size: 12px; color: #b42318; }
+.wpop__error:empty { display: none; }
+.wpop__btn {
+  display: block; width: 100%; height: 46px; border: 0; border-radius: 4px; cursor: pointer;
+  background: var(--wpop-brown); color: #ffffff; font: 700 15px var(--font-body, Arial, sans-serif);
+  text-align: center; line-height: 46px; text-decoration: none; transition: background-color 0.2s ease;
+}
+.wpop__btn:hover { background: var(--wpop-brown-dark); }
+.wpop__btn:disabled { opacity: 0.7; cursor: default; }
+
+.wpop__success[hidden], .wpop__step[hidden] { display: none; }
+.wpop__ok { margin: 0.5rem 0 0.8rem; font-size: 14px; color: #2e7d32; line-height: 1.45; }
+.wpop__code {
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  padding: 0.85rem; margin-bottom: 0.7rem; text-align: center;
+  background: #ffffff; border: 2px dashed var(--wpop-brown); border-radius: 8px;
+}
+.wpop__code-label { font-size: 12px; color: var(--wpop-ink); }
+.wpop__code-value { font: 800 23px/1.1 var(--font-body, Arial, sans-serif); letter-spacing: 0.12em; color: var(--wpop-brown); }
+.wpop__copy {
+  margin-top: 0.2rem; padding: 0.4rem 1.1rem; border: 1.5px solid var(--wpop-brown); border-radius: 999px;
+  background: transparent; color: var(--wpop-brown); font: 600 13px var(--font-body, Arial, sans-serif); cursor: pointer;
+}
+.wpop__copy:hover { background: var(--wpop-brown); color: #ffffff; }
+.wpop__note { margin: 0 0 0.8rem; font-size: 12px; color: #6b5a4a; line-height: 1.45; text-align: center; }
+.wpop__note b { color: var(--wpop-ink); word-break: break-all; }
+
+/* phones: short banner on top, everything in one screen */
+@media (max-width: 640px) {
+  .wpop { padding: 0.75rem; }
+  .wpop__box { grid-template-columns: 1fr; width: min(400px, 100%); border-radius: 14px; }
+  .wpop__image { height: 130px; min-height: 0; }
+  .wpop__content { padding: 1.1rem 1.1rem 1.2rem; max-height: none; }
+  .wpop__title { font-size: 19px; }
+  .wpop__text { font-size: 13px; }
+}
+/* very short screens (landscape phones, zoomed laptops): drop the banner instead of scrolling */
+@media (max-height: 520px) {
+  .wpop__box { grid-template-columns: 1fr; width: min(460px, 100%); }
+  .wpop__image { display: none; }
+  .wpop__content { padding: 1.1rem 1.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wpop__overlay, .wpop__box, .wpop__close { transition: none; }
+}

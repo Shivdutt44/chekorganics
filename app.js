@@ -638,8 +638,10 @@
       const input = form.querySelector('input[type="email"]') || form.querySelector("input");
       const email = input ? input.value : "";
       if (window.FirebaseDB && window.FirebaseDB.saveNewsletter && email) {
-        window.FirebaseDB.saveNewsletter(email);
+        window.FirebaseDB.saveNewsletter(email, "home-newsletter");
       }
+      // same code as the welcome popup: remembered for checkout, and the popup stays away
+      try { localStorage.setItem("chek_welcome_code", "WELCOME10"); localStorage.setItem("chek_popup_subscribed", "true"); } catch (err) {}
       const c = $("#coupon");
       if (c) c.classList.add("is-on");
       form.reset();
@@ -2245,6 +2247,11 @@
     }
 
     renderSummary();
+
+    // first-order code claimed in the welcome popup / newsletter form: apply it automatically
+    let welcomeCode = "";
+    try { welcomeCode = localStorage.getItem("chek_welcome_code") || ""; } catch (e) {}
+    if (welcomeCode && VALID_COUPONS[welcomeCode] && !appliedCoupon && Cart.items().length) applyCoupon(welcomeCode);
   }
 
   /* ---------------------------------------------------------------- boot */

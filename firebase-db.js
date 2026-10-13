@@ -441,20 +441,29 @@
      * Save newsletter subscriber email
      * @param {string} email
      */
-    async saveNewsletter(email) {
-      if (!email) return { success: false };
+    async saveNewsletter(email, source) {
+      const clean = String(email || "").trim().toLowerCase();
+      if (!/^[^\s@/]+@[^\s@/]+\.[^\s@/]{2,}$/.test(clean)) return { success: false, error: "invalid email" };
 
       const subPayload = {
-        email: email.trim().toLowerCase(),
-        subscribedAt: new Date().toISOString()
+        email: clean,
+        subscribedAt: new Date().toISOString(),
+        source: source || "newsletter",
+        discountCode: "WELCOME10"
       };
 
       if (isReady && db) {
         try {
-          await db.collection("subscribers").add(subPayload);
+          // One document per address (id = email). A repeat sign-up would be an update, which
+          // firestore.rules refuses, so each address gets the welcome email (email/Code.gs) once.
+          await db.collection("subscribers").doc(clean).set({
+            ...subPayload,
+            emailQueueAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
           console.log("🌿 [Firebase DB] Newsletter subscriber saved to Firestore!");
           return { success: true };
         } catch (err) {
+          if (/permission/i.test(err.code || err.message || "")) return { success: true, alreadySubscribed: true };
           console.warn("🌿 [Firebase DB] Newsletter sync failed:", err.message);
           return { success: false, error: err.message };
         }

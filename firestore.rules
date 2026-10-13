@@ -83,8 +83,13 @@ service cloud.firestore {
     // 3. NEWSLETTER SUBSCRIBERS:
     // - Public can subscribe (create)
     // - ONLY Super Admin can view the subscriber email list or delete
+    // One document per address (id = the lower-cased email), created once: a repeat sign-up
+    // is an update and is refused, so nobody can re-trigger the welcome email for an address.
     match /subscribers/{subscriberId} {
-      allow create: if true;
+      allow create: if request.resource.data.email is string
+                    && request.resource.data.email == subscriberId
+                    && subscriberId.size() <= 200
+                    && subscriberId.matches('^[^@/ ]+@[^@/ ]+[.][^@/ ]+$');
       allow read, update, delete: if isAdmin();
     }
 

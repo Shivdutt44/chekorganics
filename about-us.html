@@ -12,13 +12,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=202610131004">
-<link rel="stylesheet" href="ux.css?v=202610131004">
-<link rel="stylesheet" href="auth.css?v=202610131004">
-<link rel="stylesheet" href="header.css?v=202610131004">
-<link rel="stylesheet" href="search.css?v=202610131004">
-<link rel="stylesheet" href="typography.css?v=202610131004">
-<link rel="stylesheet" href="pages.css?v=202610131004">
+<link rel="stylesheet" href="styles.css?v=202610131031">
+<link rel="stylesheet" href="ux.css?v=202610131031">
+<link rel="stylesheet" href="auth.css?v=202610131031">
+<link rel="stylesheet" href="header.css?v=202610131031">
+<link rel="stylesheet" href="search.css?v=202610131031">
+<link rel="stylesheet" href="typography.css?v=202610131031">
+<link rel="stylesheet" href="pages.css?v=202610131031">
 </head>
 <body>
 
@@ -61,6 +61,16 @@
       <button class="amz-orders amz-hit" type="button" data-amz-orders>
         <span class="amz-two"><span class="amz-two__sm">Returns</span><b>&amp; Orders</b></span>
       </button>
+            <button class="amz-wishlist amz-hit" type="button" data-wishlist-open aria-label="Open wishlist" aria-haspopup="dialog">
+        <span class="amz-wishlist__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="amz-wishlist__count" data-wishlist-count style="display:none">0</span>
+        </span>
+        <span class="amz-two amz-wishlist__text">
+          <span class="amz-two__sm">Your</span>
+          <b>Wishlist</b>
+        </span>
+      </button>
       <button class="amz-cart amz-hit" type="button" data-open-cart aria-label="Open cart">
         <span class="amz-cart__icon"><svg viewBox="0 0 40 34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 4h5l4.3 18.5h20.4l4.3-13H11"/><circle cx="14" cy="28.5" r="2.4"/><circle cx="28" cy="28.5" r="2.4"/></svg><span class="amz-cart__count" data-cart-count>0</span></span>
         <b class="amz-cart__label">Cart</b>
@@ -81,7 +91,6 @@
       <nav class="amz-nav__links" aria-label="Categories">
         <a class="amz-hit" href="shop.html?deals=1">Today's Deals</a>
         <a class="amz-hit" href="shop.html">Shop All</a>
-        <button class="amz-hit" type="button" data-wishlist-open>Wishlist<span class="amz-badge" data-wishlist-count style="display:none">0</span></button>
         <a class="amz-hit" href="shop.html?c=Superfoods">Superfoods</a>
         <a class="amz-hit" href="shop.html?c=Haircare">Haircare</a>
         <a class="amz-hit" href="shop.html?c=Skin%20Care">Skin Care</a>
@@ -276,16 +285,16 @@
   </div>
 </footer>
 
-<script src="data.js?v=202610131004"></script>
-<script src="header.js?v=202610131004"></script>
-<script src="search.js?v=202610131004"></script>
-<script src="wishlist.js?v=202610131004"></script>
+<script src="data.js?v=202610131031"></script>
+<script src="header.js?v=202610131031"></script>
+<script src="search.js?v=202610131031"></script>
+<script src="wishlist.js?v=202610131031"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script src="firebase-db.js?v=202610131004"></script>
-<script src="ux.js?v=202610131004"></script>
-<script src="auth.js?v=202610131004"></script>
-<script src="app.js?v=202610131004"></script>
+<script src="firebase-db.js?v=202610131031"></script>
+<script src="ux.js?v=202610131031"></script>
+<script src="auth.js?v=202610131031"></script>
+<script src="app.js?v=202610131031"></script>
 </body>
 </html>

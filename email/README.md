@@ -9,6 +9,11 @@
 - **Payment updates:** UPI payment received, COD order confirmed.
 - **Tracking details:** courier, AWB number and tracking link from the admin portal's
   "Shipment tracking" box.
+- **Welcome / discount email:** everyone who subscribes through the first-order popup or the
+  home page newsletter form gets the `WELCOME10` code by email, once per address.
+
+Already set up from an earlier version? Paste the new `Code.gs` over the old one and click
+**Save**. The 5-minute trigger keeps running, so you don't need to run `setup` again.
 
 It runs every 5 minutes, so emails arrive within about 5 minutes of the change. The website
 can't trigger it, and each email is sent once (recorded in the order's `emailLog`).

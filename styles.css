@@ -1153,6 +1153,22 @@ h1, h2, h3, h4 {
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(223, 192, 138, 0.5);
 }
 
+/* phones: a centred card with two equal, full-width store badges */
+@media (max-width: 640px) {
+  .footer__apps {
+    margin-bottom: 1.75rem;
+    padding: 1rem 1rem 1.1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    text-align: center;
+  }
+  .footer__apps-header { justify-content: center; margin-bottom: 0.85rem; }
+  .footer__app-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+  .footer__app-btn { display: block; }
+  .footer__app-btn img { width: 100%; height: auto; max-height: 50px; object-fit: contain; }
+}
+
 /* ---------------------------- page hero (inner) ------------------------ */
 .page-hero {
   background: linear-gradient(160deg, var(--forest) 0%, #0b2717 100%);

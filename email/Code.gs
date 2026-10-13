@@ -32,9 +32,11 @@ function setup() {
     .filter(t => t.getHandlerFunction() === "processOrderEmails")
     .forEach(t => ScriptApp.deleteTrigger(t));
   ScriptApp.newTrigger("processOrderEmails").timeBased().everyMinutes(5).create();
-  // start from now: older orders are not emailed retroactively
-  PropertiesService.getScriptProperties().setProperty("lastSeen", new Date().toISOString());
-  Logger.log("Order emails are on. Remaining Gmail quota today: " + MailApp.getRemainingDailyQuota());
+  // start from now: older orders / subscribers are not emailed retroactively
+  const props = PropertiesService.getScriptProperties();
+  props.setProperty("lastSeen", new Date().toISOString());
+  props.setProperty("lastSeenSubscribers", new Date().toISOString());
+  Logger.log("Order & welcome emails are on. Remaining Gmail quota today: " + MailApp.getRemainingDailyQuota());
 }
 
 /** Optional: run from the editor to email the newest order again (to check the design). */
@@ -69,9 +71,57 @@ function processOrderEmails() {
       lastSeen = doc.fields.emailQueueAt.timestampValue;
       props.setProperty("lastSeen", lastSeen);
     }
+    processSubscribers_(props);
   } finally {
     lock.releaseLock();
   }
+}
+
+/* ------------------------------------------------- welcome / discount email */
+
+/** New subscribers (welcome popup, newsletter form) get the WELCOME10 code by email, once. */
+function processSubscribers_(props) {
+  // existing installs: start from the time this code first runs, not from the beginning
+  let lastSeen = props.getProperty("lastSeenSubscribers") || new Date().toISOString();
+  if (!props.getProperty("lastSeenSubscribers")) props.setProperty("lastSeenSubscribers", lastSeen);
+  const rows = runQuery_(lastSeen, BATCH, "ASCENDING", "subscribers");
+  for (const row of rows) {
+    const doc = row.document;
+    const sub = decode_(doc.fields);
+    try {
+      const to = String(sub.email || "").trim();
+      if (!(sub.emailLog && sub.emailLog.welcomeAt) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+        const mail = buildWelcomeEmail_(sub.discountCode || "WELCOME10");
+        MailApp.sendEmail({ to: to, subject: mail.subject, htmlBody: mail.html, name: BRAND, replyTo: REPLY_TO });
+        patchEmailLog_(doc.name, { welcomeAt: new Date().toISOString() });
+      }
+    } catch (err) {
+      console.error("Welcome email failed for " + doc.name + ": " + err);
+      break; // retry this subscriber next run
+    }
+    lastSeen = doc.fields.emailQueueAt.timestampValue;
+    props.setProperty("lastSeenSubscribers", lastSeen);
+  }
+}
+
+function buildWelcomeEmail_(code) {
+  const html =
+    '<div style="margin:0;padding:24px 12px;background:#f1e9d9;font-family:Arial,Helvetica,sans-serif">' +
+    '<table role="presentation" width="100%" style="max-width:600px;margin:0 auto;background:#fffdf8;border-radius:16px;overflow:hidden;border-collapse:collapse">' +
+      '<tr><td style="padding:0"><img src="' + STORE_URL + 'assets/brand/welcome-email.jpg" width="600" height="300" alt="CHEKORGANICS — Route to Roots" style="display:block;width:100%;height:auto"></td></tr>' +
+      '<tr><td style="padding:28px 30px 8px;text-align:center">' +
+        '<div style="font-size:24px;font-weight:bold;color:#6f2f1f">Welcome to the CHEKORGANICS family 🌿</div>' +
+        '<p style="font-size:15px;line-height:1.6;color:#4b280b;margin:12px 0 0">Thank you for joining us. Here is your exclusive code for <b>10% off your first order</b>:</p></td></tr>' +
+      '<tr><td style="padding:18px 30px"><div style="background:#ffffff;border:2px dashed #904524;border-radius:8px;padding:18px;text-align:center">' +
+        '<div style="font-size:13px;color:#4b280b">Your discount code</div>' +
+        '<div style="font-size:30px;font-weight:800;letter-spacing:4px;color:#904524;margin-top:6px">' + esc_(code) + "</div></div></td></tr>" +
+      '<tr><td style="padding:4px 30px 10px;text-align:center;font-size:14px;color:#4b280b;line-height:1.6">' +
+        "Enter it at checkout — or just shop on the same browser and it's applied for you.</td></tr>" +
+      '<tr><td style="padding:14px 30px 30px;text-align:center">' +
+        '<a href="' + STORE_URL + 'shop.html" style="display:inline-block;background:#904524;color:#ffffff;text-decoration:none;padding:13px 28px;border-radius:4px;font-weight:700;font-size:15px">Start Shopping</a>' +
+        '<p style="font-size:12px;color:#6c7a70;margin:18px 0 0">Farm-grown Noni and Ayurvedic rituals from our Telangana farm. Questions? Just reply to this email.</p></td></tr>' +
+    "</table></div>";
+  return { subject: "Your 10% off code: " + code + " | " + BRAND, html: html };
 }
 
 /** Decide which email (if any) the order needs, send it, and record it on the order. */
@@ -248,10 +298,10 @@ function request_(method, url, body) {
   return JSON.parse(res.getContentText() || "{}");
 }
 
-function runQuery_(afterIso, limit, direction) {
+function runQuery_(afterIso, limit, direction, collection) {
   const rows = request_("post", API + ":runQuery", {
     structuredQuery: {
-      from: [{ collectionId: "orders" }],
+      from: [{ collectionId: collection || "orders" }],
       where: { fieldFilter: { field: { fieldPath: "emailQueueAt" }, op: "GREATER_THAN", value: { timestampValue: afterIso } } },
       orderBy: [{ field: { fieldPath: "emailQueueAt" }, direction: direction }],
       limit: limit
