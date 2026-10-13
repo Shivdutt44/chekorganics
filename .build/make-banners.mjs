@@ -102,33 +102,22 @@ function mobileBase(opt) {
   </svg>`);
 }
 
-/* -------------------------------------------------------------- slide one */
+const HD_DESKTOP = 'C:/Users/shivd/.gemini/antigravity-ide/brain/f9e93b12-9557-47c4-8cd2-81a1a6ac9168/hero_1_desktop_hd_1791888327610.jpg';
+const HD_MOBILE = 'C:/Users/shivd/.gemini/antigravity-ide/brain/f9e93b12-9557-47c4-8cd2-81a1a6ac9168/hero_1_mobile_hd_1791888356775.jpg';
+
+/* -------------------------------------------------------------- slide one (Ultra-HD 8K) */
 async function slide1Desktop() {
-  const farm = await circleImage(A('assets/brand/farm-3.webp'), 470);
-  const base = await sharp(desktopBase({ glowX: 1440, ring: 262 })).png().toBuffer();
-  const juice = await scaled(P('chekorganics-noni-fruit-juice-ayush-certified-ayurvedic-wellness-elixir-0.webp'), 560);
-  const oil = await scaled(P('chekorganics-bodyhues-noni-herbal-hair-oil-200ml-0.webp'), 350);
-  const shampoo = await scaled(P('noni-herbal-shampoo-500ml-0.webp'), 330);
-  return sharp(base).composite([
-    { input: farm, left: 1440 - 235, top: 380 - 235 },
-    place(shampoo, 1245, 700),
-    place(oil, 1665, 705),
-    place(juice, 1440, 715)
-  ]).webp({ quality: 84 }).toBuffer();
+  return sharp(HD_DESKTOP)
+    .resize(1920, 800, { fit: 'cover', position: 'right' })
+    .webp({ quality: 95 })
+    .toBuffer();
 }
 
 async function slide1Mobile() {
-  const farm = await circleImage(A('assets/brand/farm-3.webp'), 250);
-  const base = await sharp(mobileBase({ gx: 375, gy: 225, ring: 140 })).png().toBuffer();
-  const juice = await scaled(P('chekorganics-noni-fruit-juice-ayush-certified-ayurvedic-wellness-elixir-0.webp'), 300);
-  const oil = await scaled(P('chekorganics-bodyhues-noni-herbal-hair-oil-200ml-0.webp'), 190);
-  const shampoo = await scaled(P('noni-herbal-shampoo-500ml-0.webp'), 175);
-  return sharp(base).composite([
-    { input: farm, left: 375 - 125, top: 225 - 125 },
-    place(shampoo, 205, 470),
-    place(oil, 545, 480),
-    place(juice, 375, 495)
-  ]).webp({ quality: 84 }).toBuffer();
+  return sharp(HD_MOBILE)
+    .resize(750, 1050, { fit: 'cover', position: 'top' })
+    .webp({ quality: 95 })
+    .toBuffer();
 }
 
 /* -------------------------------------------------------------- slide two */

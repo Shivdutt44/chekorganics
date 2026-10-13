@@ -228,8 +228,14 @@
   function placeAccount() {
     if (mqMobile.matches || !acctTrigger) return;
     const r = acctTrigger.getBoundingClientRect();
-    acctPop.style.top = Math.round(r.bottom + 10) + "px";
-    acctPop.style.left = Math.round(Math.max(12, Math.min(window.innerWidth - 302, r.right - 290))) + "px";
+    const header = document.querySelector(".amz-header") || document.querySelector("#site-header") || document.querySelector("header");
+    const headerBottom = header ? header.getBoundingClientRect().bottom : r.bottom;
+    acctPop.style.top = Math.round(headerBottom + 10) + "px";
+    const triggerCenter = r.left + r.width / 2;
+    // Align so the popup's top pointer arrow (around 70px from its right) aligns with triggerCenter
+    const idealLeft = Math.round(triggerCenter - 225);
+    const clampedLeft = Math.max(16, Math.min(window.innerWidth - 316, idealLeft));
+    acctPop.style.left = clampedLeft + "px";
   }
 
   function openAccount(trigger) {

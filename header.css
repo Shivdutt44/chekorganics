@@ -767,17 +767,20 @@
 @media (max-width: 767px) {
   .amz-top__inner {
     display: grid;
-    grid-template-columns: auto auto 1fr auto auto auto;
+    /* the logo takes the leftover space and may shrink (minmax 0), so it can never run
+       under the account / wishlist / cart icons */
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
     grid-template-areas:
-      "burger logo . acct wishlist cart"
-      "search search search search search search";
+      "burger logo acct wishlist cart"
+      "search search search search search";
     gap: 0.25rem 0.1rem;
     padding: 0.35rem 0.6rem 0.6rem;
   }
   .amz-burger { display: grid; grid-area: burger; padding: 0.3rem; }
-  .amz-logo { grid-area: logo; }
-  .amz-logo img { width: 32px; height: 32px; }
-  .amz-logo__name { font-size: 1rem; }
+  .amz-logo { grid-area: logo; min-width: 0; justify-self: start; max-width: 100%; }
+  .amz-logo img { width: 32px; height: 32px; flex-shrink: 0; }
+  .amz-logo__text { min-width: 0; }
+  .amz-logo__name { font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .amz-logo__tag { display: none; }
   .amz-logo__text { padding-bottom: 6px; }
   .amz-acct { grid-area: acct; display: flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.4rem; }
@@ -813,9 +816,17 @@
 @media (min-width: 768px) {
   .amz-loc--strip { display: none !important; }
 }
-@media (max-width: 380px) {
+/* phones: with account, wishlist and cart icons there's no room for "Sign in ›" text */
+@media (max-width: 440px) {
   .amz-acct__mobile { display: none; }
-  .amz-logo__name { font-size: 0.92rem; letter-spacing: 0.02em; }
+}
+@media (max-width: 380px) {
+  .amz-top__inner { padding-left: 0.4rem; padding-right: 0.4rem; }
+  .amz-logo { gap: 0.4rem; padding-left: 0.2rem; padding-right: 0.2rem; }
+  .amz-logo img { width: 28px; height: 28px; }
+  .amz-logo__name { font-size: 0.84rem; letter-spacing: 0; }
+  .amz-burger { padding: 0.25rem; }
+  .amz-acct, .amz-wishlist, .amz-cart { padding-left: 0.25rem; padding-right: 0.25rem; }
 }
 
 /* links header.js hides (e.g. Today's Deals with no deals) */
