@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Check if user is Super Admin
+    function isAdmin() {
+      return request.auth != null &&
+             request.auth.token.email != null &&
+             request.auth.token.email.lower() == 'shivduttchauhan2@gmail.com';
+    }
+
+    // 1. ORDERS:
+    // - Anyone can create an order (guest checkout), but cannot pre-set the delivery
+    //   status, mark it paid, or attach it to someone else's account
+    // - Orders hold names, phones and addresses, so reads are limited to the admin and
+    //   the signed-in customer who placed them (public read let anyone download every
+    //   customer's address with the site's public API key)
+    // - ONLY Super Admin can update status (batching, dispatched, delivered) or delete
+    match /orders/{orderId} {
+      allow create: if request.resource.data.keys().hasAll(['orderId', 'customer', 'address', 'items', 'payment'])
+                    && !('deliveryStatus' in request.resource.data)
+                    && !(request.resource.data.payment.get('status', 'pending') in ['paid', 'verified'])
+                    && (request.resource.data.userId == null
+                        || (request.auth != null && request.resource.data.userId == request.auth.uid));
+      allow read: if isAdmin()
+                  || (request.auth != null && resource.data.userId == request.auth.uid)
+                  || (request.auth != null && request.auth.token.email != null
+                      && resource.data.userEmail == request.auth.token.email.lower());
+      allow update, delete: if isAdmin();
+    }
+
+    // 2. CUSTOMER REVIEWS:
+    // - Public can read reviews and submit new reviews (shown on product pages), within
+    //   sane limits and never self-labelled as a verified purchase
+    // - ONLY Super Admin can edit or delete reviews
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if request.resource.data.productHandle is string
+                    && request.resource.data.productHandle.size() <= 200
+                    && request.resource.data.rating is int
+                    && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+                    && request.resource.data.get('author', '') is string
+                    && request.resource.data.get('author', '').size() <= 60
+                    && request.resource.data.get('title', '') is string
+                    && request.resource.data.get('title', '').size() <= 120
+                    && request.resource.data.get('body', '') is string
+                    && request.resource.data.get('body', '').size() <= 1000
+                    && request.resource.data.get('verified', false) == false;
+      allow update, delete: if isAdmin();
+    }
+
+    // 3. NEWSLETTER SUBSCRIBERS:
+    // - Public can subscribe (create)
+    // - ONLY Super Admin can view the subscriber email list or delete
+    match /subscribers/{subscriberId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 4. USER PROFILES:
+    // - User can manage their own profile, or Super Admin can access
+    match /users/{userId} {
+      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+  }
+}

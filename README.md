@@ -10,7 +10,10 @@ more polished storefront.
 node .build/server.mjs     # → http://localhost:4173
 ```
 
-Any static file server also works (`npx serve .`). The bundled server adds a **live catalog proxy**:
+Links use clean URLs (`shop`, not `shop.html`), so the local server must resolve
+extensionless paths the way GitHub Pages does. The bundled server and `npx serve .` do;
+VS Code Live Server and `python -m http.server` don't, and they show "page not found".
+The bundled server also adds a **live catalog proxy**:
 
 | Route | What it does |
 |---|---|

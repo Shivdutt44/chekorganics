@@ -2,7 +2,7 @@
    CHEKORGANICS — "Buy Now" on product cards
    Turns each card's "Add" button into "Buy Now": one tap puts the product in
    the bag (qty 1 if it isn't there yet; an existing quantity is kept) and
-   opens the site's checkout page (checkout.html) — the same destination as
+   opens the site's checkout page (checkout) — the same destination as
    the product page's Buy Now.
    Load after app.js (it renders the cards and owns the bag).
    ========================================================================== */
@@ -10,7 +10,7 @@
   "use strict";
 
   const CART_KEY = "chek_cart_v1"; // the bag used by app.js and checkout.html
-  const CHECKOUT = "checkout.html";
+  const CHECKOUT = "checkout";
   const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
   const snapshot = new Map(((window.STORE && window.STORE.products) || []).map(p => [p.handle, p]));
 

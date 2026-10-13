@@ -18,6 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="ux.css">
+<link rel="stylesheet" href="auth.css">
 </head>
 <body>
 
@@ -36,17 +37,17 @@
 
 <header class="header">
   <div class="container header__inner">
-    <a class="brand" href="index.html" aria-label="CHEKORGANICS home">
+    <a class="brand" href="./" aria-label="CHEKORGANICS home">
       <img class="brand__mark" src="assets/brand/logo.webp" alt="CHEKORGANICS logo">
       <span><span class="brand__name">CHEKORGANICS</span><span class="brand__tag">Route to Roots</span></span>
     </a>
     <nav class="nav" aria-label="Primary">
-      <a href="index.html">Home</a>
-      <a href="shop.html">Shop</a>
-      <a href="shop.html?c=Superfoods">Superfoods</a>
-      <a href="shop.html?c=Haircare">Haircare</a>
-      <a href="shop.html?c=Skin%20Care">Skin Care</a>
-      <a href="index.html#story">Our Story</a>
+      <a href="./">Home</a>
+      <a href="shop">Shop</a>
+      <a href="shop?c=Superfoods">Superfoods</a>
+      <a href="shop?c=Haircare">Haircare</a>
+      <a href="shop?c=Skin%20Care">Skin Care</a>
+      <a href="./#story">Our Story</a>
     </nav>
     <div class="header__actions">
       <span class="sync-pill" id="sync-pill" aria-live="polite"><span class="dot"></span> Loading live catalog…</span>
@@ -65,19 +66,19 @@
   <button class="icon-btn mobile-nav__close" type="button" data-burger-close aria-label="Close menu">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </button>
-  <a href="index.html">Home</a>
-  <a href="shop.html">Shop all</a>
-  <a href="shop.html?c=Superfoods">Superfoods</a>
-  <a href="shop.html?c=Haircare">Haircare</a>
-  <a href="shop.html?c=Skin%20Care">Skin Care</a>
-  <a href="index.html#story">Our story</a>
+  <a href="./">Home</a>
+  <a href="shop">Shop all</a>
+  <a href="shop?c=Superfoods">Superfoods</a>
+  <a href="shop?c=Haircare">Haircare</a>
+  <a href="shop?c=Skin%20Care">Skin Care</a>
+  <a href="./#story">Our story</a>
 </nav>
 
 <main>
   <section class="section section--tight">
     <div class="container">
       <div class="breadcrumb" style="color:var(--muted);margin-bottom:1.75rem">
-        <a href="index.html">Home</a><span>/</span><a href="shop.html">Shop</a><span>/</span><span id="pdp-crumb">Product</span>
+        <a href="./">Home</a><span>/</span><a href="shop">Shop</a><span>/</span><span id="pdp-crumb">Product</span>
       </div>
 
       <div class="pdp" id="pdp">
@@ -139,7 +140,7 @@
         <div class="section-head__text">
           <span class="eyebrow eyebrow--center">Ayurvedic Community</span>
           <h2>Customer Reviews &amp; Ratings</h2>
-          <p>Real experiences from verified buyers who transformed their daily rituals with CHEKORGANICS farm-grown Ayurveda.</p>
+          <p>Experiences shared by CHEKORGANICS customers with our farm-grown Ayurveda.</p>
         </div>
       </div>
 
@@ -147,11 +148,11 @@
         <!-- left: rating summary breakdown -->
         <aside class="reviews-summary-card">
           <div class="reviews-summary__score-box">
-            <div class="reviews-summary__big-score" id="summary-score">4.9</div>
+            <div class="reviews-summary__big-score" id="summary-score">–</div>
             <div class="reviews-summary__meta">
-              <div class="stars__glyphs stars__glyphs--lg" id="summary-stars">★★★★★</div>
-              <div class="reviews-summary__count" id="summary-count">Based on 48 verified ratings</div>
-              <div class="reviews-summary__badge">🌿 98% of customers recommend this</div>
+              <div class="stars__glyphs stars__glyphs--lg" id="summary-stars">☆☆☆☆☆</div>
+              <div class="reviews-summary__count" id="summary-count"></div>
+              <div class="reviews-summary__badge" id="summary-recommend" style="display:none"></div>
             </div>
           </div>
 
@@ -232,7 +233,7 @@
           <span class="eyebrow">Pairs beautifully with</span>
           <h2>Complete the ritual.</h2>
         </div>
-        <a class="link-arrow" href="shop.html">Shop all <span>→</span></a>
+        <a class="link-arrow" href="shop">Shop all <span>→</span></a>
       </div>
       <div class="grid-products" id="related-grid"></div>
     </div>
@@ -284,7 +285,7 @@
             </a>
           </div>
         </div>
-        <a class="brand" href="index.html">
+        <a class="brand" href="./">
           <img class="brand__mark" src="assets/brand/logo.webp" alt="">
           <span><span class="brand__name">CHEKORGANICS</span><span class="brand__tag">Route to Roots</span></span>
         </a>
@@ -298,18 +299,18 @@
       <div>
         <h4>Shop</h4>
         <ul>
-          <li><a href="shop.html">All products</a></li>
-          <li><a href="shop.html?c=Superfoods">Superfoods</a></li>
-          <li><a href="shop.html?c=Haircare">Haircare</a></li>
-          <li><a href="shop.html?c=Skin%20Care">Skin care</a></li>
-          <li><a href="shop.html?c=Handmade%20Soaps">Handmade soaps</a></li>
-          <li><a href="shop.html?c=Men%27s%20Grooming">Men's grooming</a></li>
+          <li><a href="shop">All products</a></li>
+          <li><a href="shop?c=Superfoods">Superfoods</a></li>
+          <li><a href="shop?c=Haircare">Haircare</a></li>
+          <li><a href="shop?c=Skin%20Care">Skin care</a></li>
+          <li><a href="shop?c=Handmade%20Soaps">Handmade soaps</a></li>
+          <li><a href="shop?c=Men%27s%20Grooming">Men's grooming</a></li>
         </ul>
       </div>
       <div>
         <h4>Company</h4>
         <ul>
-          <li><a href="index.html#story">Our story</a></li>
+          <li><a href="./#story">Our story</a></li>
           <li><a href="https://www.chekorganics.com/pages/about-us" target="_blank" rel="noopener">About us</a></li>
           <li><a href="https://www.chekorganics.com/pages/contact" target="_blank" rel="noopener">Contact</a></li>
           <li><a href="https://www.chekorganics.com/pages/shipping-policy" target="_blank" rel="noopener">Shipping policy</a></li>
@@ -339,10 +340,16 @@
     <div class="footer__bottom">
       <span>© 2026 CHEKORGANICS · Route to Roots</span>
       <span>Preview rebuild of chekorganics.com — all imagery and copy belong to CHEKORGANICS.</span>
+      <a href="admin" style="font-size:0.75rem;opacity:0.65;color:inherit;text-decoration:none">🔒 Admin Portal</a>
     </div>
   </div>
 </footer>
 
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="firebase-db.js"></script>
+<script src="auth.js"></script>
 <script src="data.js"></script>
 <script src="ux.js"></script>
 <script src="app.js"></script>

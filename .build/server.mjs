@@ -38,7 +38,9 @@ http.createServer(async (req, res) => {
   if (p === '/api/products.json') return proxy(res, '/products.json?limit=250', 'application/json; charset=utf-8');
   if (p === '/api/collections.json') return proxy(res, '/collections.json', 'application/json; charset=utf-8');
 
-  const file = path.join(root, p);
+  let file = path.join(root, p);
+  // clean URLs like GitHub Pages: /shop → shop.html
+  if (!fs.existsSync(file) && fs.existsSync(file + '.html')) file += '.html';
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
     res.writeHead(404); return res.end('not found');
   }

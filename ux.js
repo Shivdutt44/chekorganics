@@ -14,8 +14,7 @@
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const mqMobile = window.matchMedia("(max-width: 768px)");
   const mqFooter = window.matchMedia("(max-width: 640px)");
-  const page = (location.pathname.split("/").pop() || "index.html").toLowerCase();
-
+  const page = (location.pathname.split("/").pop() || "").toLowerCase().replace(/\.html$/, "") || "index";
   /* Real ratings collected from the store's review widgets (data.js), captured
      before anything else can modify window.STORE. Social proof only ever uses
      these numbers or a real orders feed — nothing is invented. */
@@ -136,18 +135,45 @@
     acctPop.setAttribute("role", "dialog");
     acctPop.setAttribute("aria-modal", "false");
     acctPop.setAttribute("aria-label", "Account");
-    acctPop.innerHTML =
-      '<div class="acct-pop__head"><span class="acct-pop__avatar">' + ICON.user + '</span>' +
-      '<div><b>Namaste!</b><span>Sign in to track orders &amp; reorder faster</span></div></div>' +
-      '<div class="acct-pop__actions">' +
-      '<a class="btn btn--primary" href="' + LIVE + '/account/login" target="_blank" rel="noopener">Log in</a>' +
-      '<a class="btn btn--ghost" href="' + LIVE + '/account/register" target="_blank" rel="noopener">Sign up</a></div>' +
-      '<ul class="acct-pop__list">' +
-      '<li><a href="' + LIVE + '/account" target="_blank" rel="noopener">' + ICON.box + "My orders</a></li>" +
-      '<li><a href="' + LIVE + '/account" target="_blank" rel="noopener">' + ICON.truck + "Track an order</a></li>" +
-      '<li><a href="' + LIVE + '/pages/contact" target="_blank" rel="noopener">' + ICON.help + "Help &amp; support</a></li></ul>" +
-      '<p class="acct-pop__note">' + ICON.lock + "Your account is secured by chekorganics.com (Shopify). We never see your password.</p>";
+    function renderAcctPop(user) {
+      if (!acctPop) return;
+      if (user) {
+        const name = user.displayName || user.email.split("@")[0];
+        const initial = name.charAt(0).toUpperCase();
+        acctPop.innerHTML =
+          '<div class="acct-pop__head"><span class="acct-pop__avatar" style="font-weight:700;font-size:1.1rem;background:var(--forest);color:#c29a45">' + esc(initial) + '</span>' +
+          '<div><b>Namaste, ' + esc(name) + '!</b><span style="font-size:0.75rem;color:var(--muted)">' + esc(user.email) + '</span></div></div>' +
+          '<div class="acct-pop__actions" style="grid-template-columns:1fr;margin-bottom:0.6rem">' +
+          '<button type="button" class="btn btn--primary" data-auth-action="orders" style="justify-content:center">📦 My Orders &amp; Profile</button></div>' +
+          '<ul class="acct-pop__list">' +
+          '<li><a href="#orders" data-auth-action="orders">' + ICON.box + "My orders</a></li>" +
+          '<li><a href="#track" data-auth-action="track">' + ICON.truck + "Track an order</a></li>" +
+          '<li><a href=\"https://www.chekorganics.com/pages/contact\" target=\"_blank\" rel=\"noopener\">' + ICON.help + "Help &amp; support</a></li>" +
+          '<li><button type=\"button\" data-auth-action=\"logout\" style=\"display:flex;align-items:center;gap:0.7rem;min-height:44px;width:100%;border:none;background:none;font-size:0.92rem;color:#b91c1c;cursor:pointer;padding:0 0.5rem;font-family:inherit;border-radius:12px\">' + ICON.lock + "Sign Out</button></li></ul>" +
+          '<p class="acct-pop__note">' + ICON.lock + "Signed in with ChekOrganics Cloud Account.</p>";
+      } else {
+        acctPop.innerHTML =
+          '<div class="acct-pop__head"><span class="acct-pop__avatar">' + ICON.user + '</span>' +
+          '<div><b>Namaste!</b><span>Sign in to track orders &amp; reorder faster</span></div></div>' +
+          '<div class="acct-pop__actions">' +
+          '<button type="button" class="btn btn--primary" data-auth-action="login">Log in</button>' +
+          '<button type="button" class="btn btn--ghost" data-auth-action="signup">Sign up</button></div>' +
+          '<ul class="acct-pop__list">' +
+          '<li><a href="#orders" data-auth-action="orders">' + ICON.box + "My orders</a></li>" +
+          '<li><a href="#track" data-auth-action="track">' + ICON.truck + "Track an order</a></li>" +
+          '<li><a href=\"https://www.chekorganics.com/pages/contact\" target=\"_blank\" rel=\"noopener\">' + ICON.help + "Help &amp; support</a></li></ul>" +
+          '<p class="acct-pop__note">' + ICON.lock + "Your account is secured by ChekOrganics. 100% private &amp; safe.</p>";
+      }
+    }
+
+    renderAcctPop(null);
     document.body.append(acctScrim, acctPop);
+
+    if (window.FirebaseDB && window.FirebaseDB.onAuthStateChanged) {
+      window.FirebaseDB.onAuthStateChanged(user => {
+        renderAcctPop(user);
+      });
+    }
 
     // header icon, placed before the bag
     const actions = $(".header__actions");
@@ -176,6 +202,21 @@
     });
     acctScrim.addEventListener("click", () => closeAccount());
     acctPop.addEventListener("click", e => {
+      const authBtn = e.target.closest("[data-auth-action]");
+      if (authBtn) {
+        e.preventDefault();
+        const action = authBtn.dataset.authAction;
+        closeAccount(false);
+        if (action === "logout") {
+          if (window.FirebaseDB && window.FirebaseDB.signOut) {
+            window.FirebaseDB.signOut();
+            window.toast && window.toast("Signed out successfully.");
+          }
+        } else if (window.openAuth) {
+          window.openAuth(action === "orders" ? "profile" : action);
+        }
+        return;
+      }
       if (e.target.closest("a")) closeAccount(false);
     });
     document.addEventListener("keydown", e => {
@@ -213,10 +254,10 @@
     const nav = document.createElement("nav");
     nav.className = "bnav";
     nav.setAttribute("aria-label", "App navigation");
-    const current = href => (href === page || (page === "" && href === "index.html") ? ' aria-current="page"' : "");
+    const current = name => (name === page ? ' aria-current="page"' : "");
     nav.innerHTML =
-      '<a class="bnav__item" href="index.html"' + current("index.html") + '><span class="bnav__icon">' + ICON.home + "</span>Home</a>" +
-      '<a class="bnav__item" href="shop.html"' + (page === "shop.html" || page === "product.html" ? ' aria-current="page"' : "") + '><span class="bnav__icon">' + ICON.shop + "</span>Shop</a>" +
+      '<a class="bnav__item" href="./"' + current("index") + '><span class="bnav__icon">' + ICON.home + "</span>Home</a>" +
+      '<a class="bnav__item" href="shop"' + (page === "shop" || page === "product" ? ' aria-current="page"' : "") + '><span class="bnav__icon">' + ICON.shop + "</span>Shop</a>" +
       '<button class="bnav__item" type="button" data-bnav-menu aria-label="Browse categories"><span class="bnav__icon">' + ICON.grid + "</span>Categories</button>" +
       '<button class="bnav__item" type="button" data-account aria-haspopup="dialog" aria-expanded="false" aria-controls="account-menu"><span class="bnav__icon">' + ICON.user + "</span>Account</button>" +
       '<button class="bnav__item" type="button" data-open-cart aria-label="Open shopping bag"><span class="bnav__icon">' + ICON.bag +
@@ -352,7 +393,7 @@
     } catch (e) { /* storage blocked: still fine */ }
 
     const sales = await loadSalesFeed();
-    const currentHandle = page === "product.html" ? new URLSearchParams(location.search).get("p") : null;
+    const currentHandle = page === "product" ? new URLSearchParams(location.search).get("p") : null;
     let queue = (sales.length ? sales : ratingItems()).filter(i => i.handle !== currentHandle);
     if (!queue.length) return;
     if (!sales.length) queue = shuffle(queue);
@@ -373,7 +414,7 @@
     }
 
     function render(item) {
-      const href = "product.html?p=" + encodeURIComponent(item.handle);
+      const href = "product?p=" + encodeURIComponent(item.handle);
       const meta = item.kind === "sale" ? esc(relTime(item.at) || "") + " · verified order" : item.meta;
       el.innerHTML =
         (item.image ? '<img class="proof__img" src="' + esc(item.image) + '" alt="" width="56" height="56" loading="lazy" decoding="async">' : "<span></span>") +

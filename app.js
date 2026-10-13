@@ -5,6 +5,13 @@
 (function () {
   "use strict";
 
+  // Old ".html" links and bookmarks still open (GitHub Pages serves both forms),
+  // but the address bar shows the clean URL. Skipped locally, where a plain static
+  // server may not resolve extensionless paths on refresh.
+  if (/\.html$/.test(location.pathname) && location.protocol.startsWith("http") && !/^(localhost|127\.|192\.168\.)/.test(location.hostname)) {
+    history.replaceState(history.state, "", location.pathname.replace(/(index)?\.html$/, "") + location.search + location.hash);
+  }
+
   /* ------------------------------------------------------------ catalog */
   const LOCAL = window.STORE || { products: [], collections: [] };
   let STORE = LOCAL;                 // working catalog — local first for instant paint
@@ -36,68 +43,15 @@
   /* ------------------------------------------------- reviews & ratings engine */
   const REVIEWS_STORAGE_KEY = "chek_reviews_store_v2";
 
-  // Pre-seeded authentic reviews for CHEKORGANICS rituals
-  const SEED_REVIEWS = [
-    {
-      handles: ["chekorganics-noni-fruit-juice-ayush-certified-ayurvedic-wellness-elixir", "chekorganics-superfoods-noni-fruit-powder-200g"],
-      author: "Dr. Ananya Reddy", city: "Hyderabad, Telangana", rating: 5, date: "3 days ago", verified: true,
-      title: "Pure, potent and noticeably energizing",
-      body: "Being an Ayurveda doctor, I personally visited the farm in Telangana. The Noni juice is cold-extracted without synthetic preservatives. Helped digestion and daily energy immensely."
-    },
-    {
-      handles: ["chekorganics-bodyhues-noni-herbal-hair-oil-200ml", "chekorganics-bodyhues-noni-herbal-hair-oil-500ml", "chekorganics-bodyhues-men-dude-hair-oil-100ml"],
-      author: "Sneha Varadharajan", city: "Bengaluru, Karnataka", rating: 5, date: "1 week ago", verified: true,
-      title: "Hair fall reduced drastically in 3 weeks!",
-      body: "Tried so many commercial oils but this 21+ herb blend actually works. Non-sticky, smells like real garden herbs and baby hair growth is already visible around temples."
-    },
-    {
-      handles: ["noni-herbal-shampoo-500ml", "noni-herbal-shampoo", "chekorganics-bodyhues-men-dude-herbal-shampoo-100ml"],
-      author: "Vikram Chauhan", city: "Pune, Maharashtra", rating: 5, date: "5 days ago", verified: true,
-      title: "Zero chemical lather with real herbs",
-      body: "Leaves hair clean without drying the scalp out. Completely sulfate-free and naturally controls dandruff. Huge fan of the Noni infusion."
-    },
-    {
-      handles: ["chekorganics-bodyhues-noni-turmeric-soap-100gm", "chekorganics-bodyhues-organic-pulpy-papaya-de-tanning-bath-bar-100g", "chekorganics-bodyhues-organic-noni-neem-bath-bar-100-g", "chekorganics-bodyhues-kesar-malai-soap-handmade-ayurvedic-luxury"],
-      author: "Pooja Deshmukh", city: "Mumbai, Maharashtra", rating: 5, date: "2 weeks ago", verified: true,
-      title: "Artisanal cold-process soap, heavenly fragrance",
-      body: "You can feel the pure cold-pressed oils. It cured the dryness on my elbows and leaves skin with a natural glow. Zero chemical tight feeling."
-    },
-    {
-      handles: ["chekorganics-ashyukavach-organic-noni-sun-defence-cream-spf-30-natural-ayurvedic-sunscreen-broad-spectrum-protection"],
-      author: "Radhika Menon", city: "Chennai, Tamil Nadu", rating: 5, date: "4 days ago", verified: true,
-      title: "Zero white cast, completely herbal sunscreen!",
-      body: "Finding a chemical-free SPF that does not feel heavy in Indian summers was impossible until this. Pure Noni protection with zero pore clogging."
-    },
-    {
-      handles: ["chekorganics-ashyukajal-noni-kajal"],
-      author: "Meera Krishnan", city: "Coimbatore, Tamil Nadu", rating: 5, date: "6 days ago", verified: true,
-      title: "Prepared on Amavasya — cooling for tired eyes",
-      body: "My eyes feel instantly refreshed after long screen hours. Traditional soot formulation that stays smudge-proof without burning or redness."
-    },
-    {
-      handles: ["chekorganics-mulika-manjan-ayurvedic-herbal-tooth-paste-18-herbs-fluoride-free"],
-      author: "Rajeshwar Rao", city: "Warangal, Telangana", rating: 5, date: "1 week ago", verified: true,
-      title: "Stopped gum sensitivity in just 5 days",
-      body: "Ancient tooth cleansing with modern ease. 18+ herbs leave breath genuinely clean without artificial sweeteners or fluoride."
-    },
-    {
-      handles: ["chekorganics-pure-ashwagandha-powder-100g", "chekorganics-superfoods-spirulina-powder-100g", "chekorganics-superfoods-amla-powder-100g", "chekorganics-superfoods-moringa-powder-100g"],
-      author: "Kavita Nair", city: "Kochi, Kerala", rating: 5, date: "2 weeks ago", verified: true,
-      title: "Unadulterated single origin superfoods",
-      body: "Fine texture and dissolves effortlessly. You can immediately taste the potency compared to mass-produced brands."
-    }
-  ];
+  // Real aggregate ratings from the store's review widgets (data.js), captured before the
+  // boot code below writes computed values back onto the products. Nothing here is invented:
+  // a product with no real rating and no customer review shows "No reviews yet".
+  const REAL_RATINGS = Object.fromEntries((LOCAL.products || [])
+    .filter(p => Number(p.rating) > 0 && Number(p.reviews) > 0)
+    .map(p => [p.handle, { rating: Number(p.rating), count: Number(p.reviews) }]));
 
-  function getProductBaseline(handle, title) {
-    let hash = 0;
-    const str = String(handle || title || "chek");
-    for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
-    const abs = Math.abs(hash);
-    const scoreOffsets = [4.9, 4.8, 5.0, 4.9, 4.85, 4.95, 4.9, 4.8];
-    const baseScore = scoreOffsets[abs % scoreOffsets.length];
-    const baseCount = 28 + (abs % 64);
-    return { rating: baseScore, reviewsCount: baseCount };
-  }
+  // handle -> reviews other shoppers submitted (Firestore), filled by loadRemoteReviews()
+  let REMOTE_REVIEWS = {};
 
   function readStoredReviews() {
     try { return JSON.parse(localStorage.getItem(REVIEWS_STORAGE_KEY)) || {}; } catch (e) { return {}; }
@@ -109,36 +63,35 @@
 
   const Ratings = {
     get(p) {
-      if (!p) return { rating: 4.9, reviewsCount: 36, reviews: [], breakdown: { 5: 88, 4: 10, 3: 2, 2: 0, 1: 0 } };
-      const handle = typeof p === "string" ? p : p.handle;
-      const title = typeof p === "string" ? p : p.title;
-      const base = getProductBaseline(handle, title);
-      const stored = readStoredReviews()[handle] || [];
+      const handle = typeof p === "string" ? p : p && p.handle;
+      const real = REAL_RATINGS[handle];
 
-      const matchedSeeds = SEED_REVIEWS.filter(r => r.handles.includes(handle));
-      const fallbackSeeds = SEED_REVIEWS.filter(r => !r.handles.includes(handle)).slice(0, 2).map(r => ({
-        ...r,
-        title: "Authentic Ayurvedic formulation",
-        body: "Very satisfied with the purity, herbal aroma, and speedy delivery from the Telangana farm. Works wonderfully."
-      }));
+      // this browser's reviews + everyone's reviews from Firestore; the shopper's own review
+      // is in both, so de-duplicate on the id it was saved with
+      const seen = new Set();
+      const written = (readStoredReviews()[handle] || []).concat(REMOTE_REVIEWS[handle] || [])
+        .filter(r => {
+          const key = r.id || [r.author, r.title, r.body].join("|");
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
 
-      const seedsToUse = matchedSeeds.length ? matchedSeeds : fallbackSeeds;
-      const allReviews = stored.concat(seedsToUse);
+      const count = (real ? real.count : 0) + written.length;
+      const points = (real ? real.rating * real.count : 0) + written.reduce((s, r) => s + (Number(r.rating) || 0), 0);
 
-      let totalPoints = base.rating * base.reviewsCount;
-      stored.forEach(r => { totalPoints += Number(r.rating) || 5; });
-      const totalCount = base.reviewsCount + stored.length;
-      const average = Math.min(5, Math.max(4.6, totalPoints / totalCount));
-
-      const p5 = Math.min(94, Math.max(78, Math.round(84 + ((handle ? handle.length : 8) * 3) % 12)));
-      const p4 = Math.round(100 - p5 - 3);
-      const p3 = 3;
+      // star-by-star split is only known for written reviews (the store widget gave averages)
+      const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      written.forEach(r => { const s = Math.round(Number(r.rating)); if (s in breakdown) breakdown[s]++; });
+      if (written.length) Object.keys(breakdown).forEach(k => { breakdown[k] = Math.round(breakdown[k] * 100 / written.length); });
 
       return {
-        rating: Math.round(average * 10) / 10,
-        reviewsCount: totalCount,
-        reviews: allReviews,
-        breakdown: { 5: p5, 4: p4, 3: p3, 2: 0, 1: 0 }
+        rating: count ? Math.round((points / count) * 10) / 10 : 0,
+        reviewsCount: count,
+        reviews: written,
+        breakdown,
+        hasBreakdown: written.length > 0
       };
     },
 
@@ -146,20 +99,27 @@
       if (!handle) return false;
       const all = readStoredReviews();
       const list = all[handle] || [];
+      const clean = s => String(s || "").trim().slice(0, 1000);
       const newRev = {
         id: "rev_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
-        author: review.name ? review.name.trim() : "Ayurvedic Customer",
-        city: review.city ? review.city.trim() : "Verified Buyer",
-        rating: Math.min(5, Math.max(1, Number(review.rating) || 5)),
-        title: review.title ? review.title.trim() : (review.rating >= 4 ? "Loved this ritual!" : "Feedback on product"),
-        body: review.body ? review.body.trim() : "Very satisfied with the chemical-free herbal formulation.",
-        date: "Just now",
-        verified: true,
-        helpful: 1
+        author: clean(review.name).slice(0, 60) || "Customer",
+        city: clean(review.city).slice(0, 60),
+        rating: Math.min(5, Math.max(1, Math.round(Number(review.rating)) || 5)),
+        title: clean(review.title).slice(0, 120),
+        body: clean(review.body),
+        createdAt: new Date().toISOString(),
+        // not tied to an order, so never labelled as a verified purchase
+        verified: false,
+        helpful: 0
       };
       list.unshift(newRev);
       all[handle] = list;
       writeStoredReviews(all);
+
+      // Cloud Firestore sync
+      if (window.FirebaseDB && window.FirebaseDB.saveReview) {
+        window.FirebaseDB.saveReview(handle, newRev);
+      }
 
       const prod = byHandle(handle);
       if (prod) {
@@ -173,29 +133,60 @@
     }
   };
 
-  // Synchronize initial products with Ratings baseline
-  if (LOCAL && Array.isArray(LOCAL.products)) {
-    LOCAL.products.forEach(p => {
+  function applyRatings(products) {
+    (products || []).forEach(p => {
       const s = Ratings.get(p);
       p.rating = s.rating;
       p.reviews = s.reviewsCount;
     });
   }
 
+  // Synchronize initial products with their real ratings
+  if (LOCAL && Array.isArray(LOCAL.products)) applyRatings(LOCAL.products);
+
+  // Pull every shopper's reviews from Firestore once per page, then repaint ratings
+  async function loadRemoteReviews() {
+    if (!window.FirebaseDB || !window.FirebaseDB.getAllReviews) return;
+    const list = await window.FirebaseDB.getAllReviews();
+    if (!list.length) return;
+    const byProduct = {};
+    list.forEach(r => { if (r && r.productHandle) (byProduct[r.productHandle] = byProduct[r.productHandle] || []).push(r); });
+    REMOTE_REVIEWS = byProduct;
+    applyRatings(LOCAL.products);
+    if (STORE !== LOCAL) applyRatings(STORE.products);
+    rerender();
+  }
+
+  // "3 days ago"-style label from the saved timestamp (older saved reviews only have `date`)
+  function reviewDate(r) {
+    if (!r.createdAt) return r.date || "";
+    const days = Math.floor((Date.now() - new Date(r.createdAt).getTime()) / 864e5);
+    if (!(days >= 0)) return "";
+    if (days === 0) return "Today";
+    if (days === 1) return "Yesterday";
+    if (days < 30) return days + " days ago";
+    return new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  }
+
   function renderStars(rating) {
-    const r = Math.min(5, Math.max(0, Number(rating) || 5));
+    const r = Math.min(5, Math.max(0, Number(rating) || 0));
     const full = Math.round(r);
     return "★".repeat(full) + "☆".repeat(Math.max(0, 5 - full));
   }
 
+  // badge text for a Ratings.get() result; products nobody has rated say so instead of showing 0.0
+  const ratingScore = r => (r.reviewsCount ? r.rating.toFixed(1) : "");
+  const ratingCount = r => (r.reviewsCount ? "(" + r.reviewsCount + ")" : "No reviews yet");
+
   function ratingHtml(p) {
     const r = Ratings.get(p);
+    const label = r.reviewsCount ? "Rated " + r.rating.toFixed(1) + "★ (" + r.reviewsCount + " reviews) · Click to rate!" : "No reviews yet · Be the first to rate";
     return (
       '<div class="card__rating">' +
-        '<button class="rating-badge" type="button" data-rate-modal="' + esc(p.handle) + '" title="Rated ' + r.rating.toFixed(1) + '★ (' + r.reviewsCount + ' reviews) · Click to rate!">' +
+        '<button class="rating-badge" type="button" data-rate-modal="' + esc(p.handle) + '" title="' + label + '">' +
           '<span class="stars__glyphs" aria-hidden="true">' + renderStars(r.rating) + '</span>' +
-          '<span class="rating-badge__score">' + r.rating.toFixed(1) + '</span>' +
-          '<span class="rating-badge__count">(' + r.reviewsCount + ')</span>' +
+          '<span class="rating-badge__score">' + ratingScore(r) + '</span>' +
+          '<span class="rating-badge__count">' + ratingCount(r) + '</span>' +
           '<span class="rating-badge__cta">Rate</span>' +
         '</button>' +
       '</div>'
@@ -209,14 +200,14 @@
       : p.badge ? '<span class="card__badge">' + esc(p.badge) + "</span>" : "";
     return (
       '<article class="card">' +
-        '<a class="card__media" href="product.html?p=' + p.handle + '" aria-label="' + esc(t.name) + '">' +
+        '<a class="card__media" href="product?p=' + p.handle + '" aria-label="' + esc(t.name) + '">' +
           badge +
           '<img src="' + p.images[0] + '" alt="' + esc(t.name) + '" loading="lazy" decoding="async">' +
           '<div class="card__quick"><button class="btn btn--gold btn--sm btn--block" type="button" data-add="' + p.handle + '">Add to bag</button></div>' +
         "</a>" +
         '<div class="card__body">' +
           '<span class="card__eyebrow">' + esc(p.primaryCollection) + "</span>" +
-          '<h3 class="card__title"><a href="product.html?p=' + p.handle + '">' + esc(t.name) + "</a></h3>" +
+          '<h3 class="card__title"><a href="product?p=' + p.handle + '">' + esc(t.name) + "</a></h3>" +
           ratingHtml(p) +
           '<div class="card__foot">' +
             '<span class="price">' + money(p.price) + (p.compareAt ? "<s>" + money(p.compareAt) + "</s>" : "") + "</span>" +
@@ -245,7 +236,6 @@
   /* --------------------------------- live catalog sync (products.json) -- */
   function normalizeLive(raw) {
     if (!raw || !Array.isArray(raw.products)) return null;
-    const ratings = Object.fromEntries(LOCAL.products.filter(p => p.rating).map(p => [p.handle, { rating: p.rating, reviews: p.reviews }]));
     const colsOf = {};
     LOCAL.products.forEach(p => (colsOf[p.handle] = p.collections || []));
     const clean = s => String(s || "").replace(/\s+/g, " ").trim();
@@ -257,12 +247,14 @@
       const remote = (p.images || []).map(i => (typeof i === "string" ? i : i.src)).filter(Boolean);
       const keep = localByHandle(p.handle);
       const images = keep && keep.images.length ? keep.images : remote.map(src => src + (src.includes("?") ? "&" : "?") + "width=900");
-      const stats = Ratings.get({ handle: p.handle, title });
-      const cols = colsOf[p.handle] || ["All Products"];
+      // title must be declared before use: reading it first threw a ReferenceError, so every
+      // live sync silently failed and the site stayed on the bundled catalog
       const title = clean(p.title);
-      let badge = null;
+      const stats = Ratings.get(p.handle);
+      const cols = colsOf[p.handle] || ["All Products"];
+      let badge = keep ? keep.badge : null;
       if (stats.reviewsCount >= 50) badge = "Bestseller";
-      else if (/launch|spf|new/i.test(title)) badge = "New launch";
+      else if (!badge && /launch|spf|new/i.test(title)) badge = "New launch";
       return {
         id: p.id, title, handle: p.handle, price,
         compareAt: cmp && cmp > price ? cmp : null,
@@ -388,7 +380,7 @@
           '<div class="drawer__row"><span>Subtotal</span><b data-total>₹0</b></div>' +
           '<div class="drawer__row"><span>Shipping</span><span data-ship-cost>Calculated at checkout</span></div>' +
           '<p class="drawer__hint">100% Genuine Ayurvedic Formulations · Dispatched from our farm in Telangana.</p>' +
-          '<a class="btn btn--primary btn--block" data-checkout href="checkout.html">Proceed to Checkout</a>' +
+          '<a class="btn btn--primary btn--block" data-checkout href="checkout">Proceed to Checkout</a>' +
           '<div class="drawer__trust"><span>COD available</span><span>AYUSH certified</span><span>7-day returns</span></div>' +
         "</div>" +
       "</aside>";
@@ -407,7 +399,7 @@
     if (!body) return;
     const items = Cart.items();
     if (!items.length) {
-      body.innerHTML = '<div class="drawer__empty"><p>Your bag is empty.</p><a class="btn btn--ghost btn--sm" href="shop.html">Explore the apothecary</a></div>';
+      body.innerHTML = '<div class="drawer__empty"><p>Your bag is empty.</p><a class="btn btn--ghost btn--sm" href="shop">Explore the apothecary</a></div>';
     } else {
       body.innerHTML = items.map(({ product: p, qty }) =>
         '<div class="line-item">' +
@@ -437,7 +429,7 @@
 
     const chkBtn = $("[data-checkout]");
     if (chkBtn) {
-      chkBtn.href = items.length ? "checkout.html" : "shop.html";
+      chkBtn.href = items.length ? "checkout" : "shop";
       chkBtn.removeAttribute("target");
       chkBtn.removeAttribute("rel");
       chkBtn.textContent = items.length ? "Proceed to Checkout · " + money(total) : "Explore Products";
@@ -502,7 +494,7 @@
     // prefetch internal pages on hover → navigation feels instant (React-like)
     const prefetched = new Set();
     document.addEventListener("pointerenter", e => {
-      const a = e.target.closest && e.target.closest('a[href^="shop.html"], a[href^="product.html"], a[href^="index.html"]');
+      const a = e.target.closest && e.target.closest('a[href^="shop"], a[href^="product"], a[href^="./"]');
       if (!a) return;
       const href = a.getAttribute("href");
       if (!href || prefetched.has(href)) return;
@@ -543,6 +535,11 @@
     if (!form) return;
     form.addEventListener("submit", e => {
       e.preventDefault();
+      const input = form.querySelector('input[type="email"]') || form.querySelector("input");
+      const email = input ? input.value : "";
+      if (window.FirebaseDB && window.FirebaseDB.saveNewsletter && email) {
+        window.FirebaseDB.saveNewsletter(email);
+      }
       const c = $("#coupon");
       if (c) c.classList.add("is-on");
       form.reset();
@@ -555,7 +552,7 @@
     const cats = $("#cat-grid");
     if (cats) {
       cats.innerHTML = STORE.collections.map(c =>
-        '<a class="cat reveal" href="shop.html?c=' + encodeURIComponent(c.title) + '">' +
+        '<a class="cat reveal" href="shop?c=' + encodeURIComponent(c.title) + '">' +
           '<div class="cat__media"><img src="' + c.image + '" alt="' + esc(c.title) + '" loading="lazy" decoding="async"></div>' +
           '<div class="cat__body"><div><span>' + c.count + " products</span><h3>" + esc(c.title) + "</h3></div>" +
           '<span class="cat__arrow" aria-hidden="true">→</span></div>' +
@@ -624,25 +621,8 @@
           d: "05 May 2026",
           p: "Passion Fruit Lip Balm",
           img: "assets/reviews/jashmitha.webp"
-        },
-        {
-          q: "I am using this hair pack and herbal oil consistently. My hair is noticeably thicker and hairfall has completely stopped. All products of ChekOrganics feel genuinely pure.",
-          n: "Priya Nair",
-          role: "Verified Buyer",
-          loc: "Kochi",
-          d: "21 Sep 2026",
-          p: "Noni Herbal Hair Pack",
-          img: "assets/reviews/priya.webp"
-        },
-        {
-          q: "Regular customer for over 8 months — skincare, haircare and farm-fresh noni juice. The AYUSH certification and farm-to-bottle purity make a visible difference.",
-          n: "Arun Verma",
-          role: "Verified Buyer",
-          loc: "Pune",
-          d: "22 May 2026",
-          p: "Noni Herbal Shampoo",
-          img: "assets/reviews/arun.webp"
         }
+        // only testimonials published on chekorganics.com belong here
       ];
       reviews.innerHTML = REVIEWS.map(r =>
         '<article class="review reveal">' +
@@ -735,9 +715,31 @@
   function productPage() {
     const root = $("#pdp");
     if (!root) return;
-    const handle = new URLSearchParams(location.search).get("p") || (STORE.products[0] && STORE.products[0].handle);
-    const p = byHandle(handle) || STORE.products[0];
-    if (!p) return;
+    const asked = new URLSearchParams(location.search).get("p");
+    const handle = asked || (STORE.products[0] && STORE.products[0].handle);
+    // an unknown or retired handle gets a "not found" notice rather than some other product
+    const p = byHandle(handle) || localByHandle(handle) || (asked ? null : STORE.products[0]);
+    let missing = $("#pdp-missing");
+    if (!p) {
+      root.hidden = true;
+      $$("#reviews-section").forEach(s => (s.hidden = true));
+      if (!missing) {
+        missing = document.createElement("div");
+        missing.id = "pdp-missing";
+        missing.style.cssText = "text-align:center;padding:3rem 1rem";
+        missing.innerHTML = "<h1>Product not found</h1><p style=\"color:var(--muted);margin:0.75rem 0 1.5rem\">This product may have been renamed or is no longer available.</p>" +
+          '<a class="btn btn--primary" href="shop">Browse all products</a>';
+        root.after(missing);
+      }
+      document.title = "Product not found — CHEKORGANICS";
+      const crumb = $("#pdp-crumb");
+      if (crumb) crumb.textContent = "Not found";
+      return;
+    }
+    // the live catalog can arrive after a miss on the bundled one
+    root.hidden = false;
+    $$("#reviews-section").forEach(s => (s.hidden = false));
+    if (missing) missing.remove();
     const t = splitTitle(p.title);
     pushRecent(p.handle);
 
@@ -840,7 +842,7 @@
     if (!window.__pdpGalleryKeyBound) {
       window.__pdpGalleryKeyBound = true;
       window.addEventListener("keydown", (e) => {
-        if (!location.pathname.includes("product.html")) return;
+        if (!/\/product(\.html)?$/.test(location.pathname)) return;
         if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
         if (e.key === "ArrowLeft") {
           const pb = $("#gallery-prev");
@@ -861,8 +863,8 @@
       '<div class="pdp-rating-summary">' +
         '<button class="pdp-rating-badge" type="button" data-scroll-reviews aria-label="View ' + rStats.reviewsCount + ' reviews">' +
           '<span class="stars__glyphs stars__glyphs--lg" aria-hidden="true">' + renderStars(rStats.rating) + '</span>' +
-          '<span class="pdp-rating-score">' + rStats.rating.toFixed(1) + '</span>' +
-          '<span class="pdp-rating-count">(' + rStats.reviewsCount + ' customer reviews)</span>' +
+          '<span class="pdp-rating-score">' + ratingScore(rStats) + '</span>' +
+          '<span class="pdp-rating-count">' + (rStats.reviewsCount ? '(' + rStats.reviewsCount + ' customer review' + (rStats.reviewsCount === 1 ? '' : 's') + ')' : 'No reviews yet') + '</span>' +
         '</button>' +
         '<span class="pdp-rating-sep">·</span>' +
         '<button class="pdp-rate-btn" type="button" id="pdp-hero-rate-btn">✍️ Write a review</button>' +
@@ -893,7 +895,7 @@
       buyBtn.onclick = (e) => {
         e.preventDefault();
         Cart.add(p.handle, Math.max(1, +qty.value || 1));
-        window.location.href = "checkout.html";
+        window.location.href = "checkout";
       };
     }
     const crumb = $("#pdp-crumb"); if (crumb) crumb.textContent = t.name;
@@ -919,7 +921,7 @@
       stickyText.innerHTML = '<b data-sticky-title>' + esc(t.name) + '</b>' +
         '<div style="display:flex;align-items:center;gap:0.6rem;margin-top:2px">' +
           '<span class="price" data-sticky-price>' + money(p.price) + '</span>' +
-          '<span class="stars stars--sm"><span class="stars__glyphs">' + renderStars(rStats.rating) + '</span> <b>' + rStats.rating.toFixed(1) + '</b></span>' +
+          (rStats.reviewsCount ? '<span class="stars stars--sm"><span class="stars__glyphs">' + renderStars(rStats.rating) + '</span> <b>' + rStats.rating.toFixed(1) + '</b></span>' : '') +
         '</div>';
     }
     const stickyBuyNow = $("[data-sticky-buy-now]");
@@ -927,7 +929,7 @@
       stickyBuyNow.onclick = (e) => {
         e.preventDefault();
         Cart.add(p.handle, Math.max(1, +qty.value || 1));
-        window.location.href = "checkout.html";
+        window.location.href = "checkout";
       };
     }
     $("[data-sticky-add]").onclick = () => Cart.add(p.handle, Math.max(1, +qty.value || 1));
@@ -1121,7 +1123,7 @@
           '<div class="rate-modal__actions">' +
             '<button class="btn btn--gold btn--block" type="submit">Submit Rating &amp; Review</button>' +
           '</div>' +
-          '<p class="rate-modal__footer-note">🌿 Verified customer review · Saved to your Ayurvedic profile</p>' +
+          '<p class="rate-modal__footer-note">🌿 Your review is shown publicly on this product</p>' +
         '</form>' +
       '</div>';
     document.body.appendChild(overlay);
@@ -1163,7 +1165,9 @@
     const titleEl = $("#rate-modal-title");
     if (titleEl) titleEl.textContent = t.name;
     const curEl = $("#rate-modal-current");
-    if (curEl) curEl.innerHTML = renderStars(stats.rating) + ' <b>' + stats.rating.toFixed(1) + '</b> (' + stats.reviewsCount + ' reviews)';
+    if (curEl) curEl.innerHTML = stats.reviewsCount
+      ? renderStars(stats.rating) + ' <b>' + stats.rating.toFixed(1) + '</b> (' + stats.reviewsCount + ' review' + (stats.reviewsCount === 1 ? '' : 's') + ')'
+      : 'No reviews yet — be the first';
 
     $("#modal-rating-val").value = "5";
     setupStarPicker($("#modal-picker-stars"), $("#modal-rating-val"), $("#modal-picker-label"));
@@ -1191,14 +1195,24 @@
     const stats = Ratings.get(p);
 
     const scoreEl = $("#summary-score");
-    if (scoreEl) scoreEl.textContent = stats.rating.toFixed(1);
+    if (scoreEl) scoreEl.textContent = stats.reviewsCount ? stats.rating.toFixed(1) : "–";
     const starsEl = $("#summary-stars");
     if (starsEl) starsEl.innerHTML = renderStars(stats.rating);
     const countEl = $("#summary-count");
-    if (countEl) countEl.textContent = "Based on " + stats.reviewsCount + " verified customer ratings";
+    if (countEl) countEl.textContent = stats.reviewsCount
+      ? "Based on " + stats.reviewsCount + " customer rating" + (stats.reviewsCount === 1 ? "" : "s")
+      : "No reviews yet — be the first to share yours";
+
+    // share of written reviews rated 4★ or 5★ (hidden until someone has written one)
+    const recEl = $("#summary-recommend");
+    if (recEl) {
+      recEl.style.display = stats.hasBreakdown ? "" : "none";
+      recEl.textContent = stats.hasBreakdown ? "🌿 " + (stats.breakdown[5] + stats.breakdown[4]) + "% of written reviews are 4★ or 5★" : "";
+    }
 
     const barsEl = $("#summary-bars");
-    if (barsEl) {
+    if (barsEl) barsEl.style.display = stats.hasBreakdown ? "" : "none";
+    if (barsEl && stats.hasBreakdown) {
       barsEl.innerHTML = [5, 4, 3, 2, 1].map(star => {
         const pct = stats.breakdown[star] || 0;
         return '<div class="rating-bar-row">' +
@@ -1237,7 +1251,11 @@
 
     const listEl = $("#pdp-reviews-list");
     if (listEl) {
-      listEl.innerHTML = stats.reviews.map(r =>
+      listEl.innerHTML = !stats.reviews.length
+        ? '<p class="review-card__body" style="text-align:center;padding:1.5rem 0">' +
+            (stats.reviewsCount ? "Ratings so far came without written comments." : "No reviews yet.") +
+            " Bought this? Be the first to write one.</p>"
+        : stats.reviews.map(r =>
         '<article class="review-card">' +
           '<div class="review-card__header">' +
             '<div class="review-card__user">' +
@@ -1247,14 +1265,14 @@
               '</div>' +
               (r.city ? '<span class="review-card__city">' + esc(r.city) + '</span>' : '') +
             '</div>' +
-            '<span class="review-card__date">' + esc(r.date) + '</span>' +
+            '<span class="review-card__date">' + esc(reviewDate(r)) + '</span>' +
           '</div>' +
-          '<div class="stars__glyphs" aria-label="' + r.rating + ' stars">' + renderStars(r.rating) + '</div>' +
+          '<div class="stars__glyphs" aria-label="' + (Number(r.rating) || 0) + ' stars">' + renderStars(r.rating) + '</div>' +
           (r.title ? '<h4 class="review-card__title">' + esc(r.title) + '</h4>' : '') +
-          '<p class="review-card__body">' + esc(r.body) + '</p>' +
+          (r.body ? '<p class="review-card__body">' + esc(r.body) + '</p>' : '') +
           '<div class="review-card__footer">' +
-            '<span>Ritual: Authenticated purchase</span>' +
-            '<button class="helpful-btn" type="button" data-helpful="' + (r.id || 'r') + '">Helpful 👍 <span>' + (r.helpful || 3) + '</span></button>' +
+            '<span></span>' +
+            '<button class="helpful-btn" type="button" data-helpful="' + esc(r.id || 'r') + '">Helpful 👍 <span>' + (Number(r.helpful) || 0) + '</span></button>' +
           '</div>' +
         '</article>'
       ).join("");
@@ -1286,7 +1304,7 @@
       e.preventDefault();
       e.stopPropagation();
       const h = btn.dataset.rateModal;
-      const isPdp = window.location.pathname.includes("product.html");
+      const isPdp = /\/product(\.html)?$/.test(location.pathname);
       const currentParam = new URLSearchParams(location.search).get("p");
       const currentHandle = currentParam || (STORE.products[0] && STORE.products[0].handle);
       if (isPdp && currentHandle === h && $("#reviews-section")) {
@@ -1336,11 +1354,11 @@
       const glyphs = b.querySelector(".stars__glyphs");
       if (glyphs) glyphs.innerHTML = renderStars(stats.rating);
       const sc = b.querySelector(".rating-badge__score");
-      if (sc) sc.textContent = stats.rating.toFixed(1);
+      if (sc) sc.textContent = ratingScore(stats);
       const cnt = b.querySelector(".rating-badge__count");
-      if (cnt) cnt.textContent = "(" + stats.reviewsCount + ")";
+      if (cnt) cnt.textContent = ratingCount(stats);
     });
-    if (window.location.pathname.includes("product.html")) {
+    if (/\/product(\.html)?$/.test(location.pathname)) {
       const cur = new URLSearchParams(location.search).get("p") || (STORE.products[0] && STORE.products[0].handle);
       if (cur === handle) {
         const p = byHandle(handle) || STORE.products[0];
@@ -1692,68 +1710,8 @@
       };
     });
 
-    // UPI mode switch (QR vs ID)
-    $$(".upi-tab-btn").forEach(btn => {
-      btn.onclick = () => {
-        $$(".upi-tab-btn").forEach(b => b.classList.remove("is-active"));
-        btn.classList.add("is-active");
-        const mode = btn.dataset.upiMode;
-        const panelQr = $("#upi-panel-qr");
-        const panelId = $("#upi-panel-id");
-        if (mode === "qr") {
-          if (panelQr) panelQr.style.display = "block";
-          if (panelId) panelId.style.display = "none";
-        } else {
-          if (panelQr) panelQr.style.display = "none";
-          if (panelId) panelId.style.display = "block";
-        }
-      };
-    });
-
-    // UPI ID verify button
-    const upiVerifyBtn = $("#btn-verify-upi");
-    const upiInput = $("#upi-id-input");
-    const upiFeedback = $("#upi-verify-feedback");
-    if (upiVerifyBtn && upiInput && upiFeedback) {
-      upiVerifyBtn.onclick = () => {
-        const id = upiInput.value.trim();
-        if (!id || !id.includes("@")) {
-          upiFeedback.textContent = "⚠️ Please enter a valid UPI ID (e.g. name@okhdfcbank)";
-          upiFeedback.style.color = "#c85a32";
-        } else {
-          upiFeedback.textContent = "✓ Verified UPI account: " + id;
-          upiFeedback.style.color = "var(--leaf)";
-          toast("UPI ID verified successfully");
-        }
-      };
-    }
-
-    // Card formatters
-    const cardInput = $("#card-number");
-    if (cardInput) {
-      cardInput.oninput = () => {
-        let val = cardInput.value.replace(/\D/g, "").substring(0, 16);
-        val = val.match(/.{1,4}/g)?.join("  ") || val;
-        cardInput.value = val;
-
-        const ind = $("#card-type-indicator");
-        if (ind) {
-          if (val.startsWith("4")) ind.textContent = "💳 Visa";
-          else if (val.startsWith("5")) ind.textContent = "💳 Mastercard";
-          else if (val.startsWith("6")) ind.textContent = "💳 RuPay";
-          else ind.textContent = "💳";
-        }
-      };
-    }
-
-    const cardExp = $("#card-exp");
-    if (cardExp) {
-      cardExp.oninput = () => {
-        let val = cardExp.value.replace(/\D/g, "").substring(0, 4);
-        if (val.length >= 2) val = val.substring(0, 2) + "/" + val.substring(2);
-        cardExp.value = val;
-      };
-    }
+    // card / net banking need a payment gateway, which this static site does not have,
+    // so checkout offers UPI (matched by UTR) and Cash on Delivery only
 
     // Coupon Apply & Chips
     function applyCoupon(code) {
@@ -1856,6 +1814,13 @@
         toast("Please complete all required address fields");
         return;
       }
+      // UPI payments are matched by hand against the bank statement using the 12-digit UTR
+      const utr = ($("#upi-utr")?.value || "").replace(/\D/g, "");
+      if (selectedPayment === "upi" && utr.length !== 12) {
+        toast("Please pay via UPI and enter the 12-digit transaction ID (UTR)");
+        $("#upi-utr")?.focus();
+        return;
+      }
 
       // Show authentic Payment Gateway Handshake Modal
       const overlay = $("#gateway-overlay");
@@ -1868,8 +1833,9 @@
       let shipFee = selectedShipping === "express" ? 149 : (subtotal >= FREE_SHIP ? 0 : 99);
       const totalAmount = Math.max(0, subtotal - couponDiscount + shipFee);
 
-      // Random 5-digit order ID
-      const orderNum = "CHEK-" + Math.floor(10000 + Math.random() * 90000);
+      // Time-based ID with a random suffix: a bare 5-digit number collides and is guessable,
+      // and the tracker looks orders up by this ID
+      const orderNum = "CHEK-" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
 
       // Estimated Delivery: 4 days from today
       const today = new Date();
@@ -1879,8 +1845,8 @@
       const formattedEta = deliveryDate.toLocaleDateString("en-IN", options);
 
       setTimeout(() => {
-        if (titleEl) titleEl.textContent = "Authorizing Transaction…";
-        if (descEl) descEl.textContent = "Verifying details with CHEKORGANICS secure gateway and generating order ID…";
+        if (titleEl) titleEl.textContent = "Saving your order…";
+        if (descEl) descEl.textContent = "Generating your order ID…";
       }, 700);
 
       setTimeout(() => {
@@ -1893,7 +1859,11 @@
           customer: { name, mobile, email, sendWhatsApp },
           address: { flat, street, landmark, city, state, pincode, type: selectedAddressType },
           shipping: { method: selectedShipping, fee: shipFee, eta: formattedEta },
-          payment: { method: selectedPayment, total: totalAmount },
+          // nothing on this page confirms a UPI/card transfer, so prepaid orders start unverified
+          payment: Object.assign(
+            { method: selectedPayment, total: totalAmount, status: selectedPayment === "cod" ? "cod" : "pending" },
+            selectedPayment === "upi" ? { utr } : {}
+          ),
           coupon: appliedCoupon,
           discount: couponDiscount,
           items: items.map(x => ({
@@ -1905,11 +1875,16 @@
           }))
         };
 
-        try {
-          const orders = JSON.parse(localStorage.getItem("chek_orders_v1")) || [];
-          orders.unshift(orderData);
-          localStorage.setItem("chek_orders_v1", JSON.stringify(orders));
-        } catch (err) {}
+        // FirebaseDB.saveOrder keeps its own local backup, so only write here when it is absent
+        if (window.FirebaseDB && window.FirebaseDB.saveOrder) {
+          window.FirebaseDB.saveOrder(orderData);
+        } else {
+          try {
+            const orders = JSON.parse(localStorage.getItem("chek_orders_v1")) || [];
+            orders.unshift(orderData);
+            localStorage.setItem("chek_orders_v1", JSON.stringify(orders));
+          } catch (err) {}
+        }
 
         // Clear user cart
         Cart.clear();
@@ -1946,7 +1921,7 @@
 
       const waNote = $("#conf-whatsapp-note");
       if (waNote) {
-        waNote.innerHTML = `📲 Order confirmed! Instant SMS & WhatsApp tracking link sent to <b>+91 ${esc(order.customer.mobile)}</b> and invoice emailed to <b>${esc(order.customer.email)}</b>.`;
+        waNote.innerHTML = `📦 Save your order ID <b>${esc(order.orderId)}</b> — track it any time from "Track Order" with this ID or <b>+91 ${esc(order.customer.mobile)}</b>.`;
       }
 
       // Address box
@@ -1964,14 +1939,12 @@
       // Payment box
       const payBox = $("#conf-payment-box");
       if (payBox) {
-        let pLabel = "UPI (Verified Merchant)";
+        let pLabel = "UPI" + (order.payment.utr ? " · UTR " + esc(order.payment.utr) : "");
         if (order.payment.method === "cod") pLabel = "Cash on Delivery (Pay upon delivery)";
-        else if (order.payment.method === "card") pLabel = "Debit / Credit Card (Encrypted)";
-        else if (order.payment.method === "netbanking") pLabel = "Net Banking (Instant Settlement)";
 
         payBox.innerHTML = `
           <b>Payment Method:</b> ${pLabel}<br>
-          <b>Status:</b> ${order.payment.method === "cod" ? "<span style='color:#c29a45'>Pending Doorstep Payment</span>" : "<span style='color:var(--leaf)'>Paid &amp; Verified</span>"}<br>
+          <b>Status:</b> ${order.payment.method === "cod" ? "<span style='color:#c29a45'>Pending Doorstep Payment</span>" : "<span style='color:#c29a45'>Awaiting payment confirmation</span>"}<br>
           <b>Total Amount:</b> ${money(order.payment.total)}
         `;
       }
@@ -2005,7 +1978,7 @@
           ${order.discount ? `<div style="display:flex;justify-content:space-between;color:var(--leaf)"><span>Coupon Discount:</span><span>-${money(order.discount)}</span></div>` : ""}
           <div style="display:flex;justify-content:space-between"><span>Delivery:</span><span>${order.shipping.fee === 0 ? "FREE" : money(order.shipping.fee)}</span></div>
           <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem;border-top:1px solid rgba(16,53,31,0.12);padding-top:0.4rem;margin-top:0.2rem">
-            <span>Total Paid:</span><span style="color:var(--forest)">${money(order.payment.total)}</span>
+            <span>Order Total:</span><span style="color:var(--forest)">${money(order.payment.total)}</span>
           </div>
         `;
       }
@@ -2040,11 +2013,13 @@
     reveal();
     document.body.classList.add("page-enter");
 
-    const here = location.pathname.split("/").pop() || "index.html";
+    const name = (location.pathname.split("/").pop() || "").replace(/\.html$/, "");
+    const here = !name || name === "index" ? "./" : name;
     $$(".nav a, .mobile-nav a").forEach(a => { if (a.getAttribute("href") === here) a.setAttribute("aria-current", "page"); });
 
     // hydrate with the live products.json feed, then re-render
     refreshCatalog().then(() => { reveal(); });
+    loadRemoteReviews().catch(() => {});
     setTimeout(refreshCatalog, 60000); // keep prices/stock fresh while the tab stays open
   });
 })();

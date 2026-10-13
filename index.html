@@ -21,6 +21,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="ux.css">
+<link rel="stylesheet" href="auth.css">
 </head>
 <body>
 
@@ -43,7 +44,7 @@
 <!-- header -->
 <header class="header">
   <div class="container header__inner">
-    <a class="brand" href="index.html" aria-label="CHEKORGANICS home">
+    <a class="brand" href="./" aria-label="CHEKORGANICS home">
       <img class="brand__mark" src="assets/brand/logo.webp" alt="CHEKORGANICS logo" width="100" height="100">
       <span>
         <span class="brand__name">CHEKORGANICS</span>
@@ -52,17 +53,17 @@
     </a>
 
     <nav class="nav" aria-label="Primary">
-      <a href="index.html">Home</a>
-      <a href="shop.html">Shop</a>
-      <a href="shop.html?c=Superfoods">Superfoods</a>
-      <a href="shop.html?c=Haircare">Haircare</a>
-      <a href="shop.html?c=Skin%20Care">Skin Care</a>
+      <a href="./">Home</a>
+      <a href="shop">Shop</a>
+      <a href="shop?c=Superfoods">Superfoods</a>
+      <a href="shop?c=Haircare">Haircare</a>
+      <a href="shop?c=Skin%20Care">Skin Care</a>
       <a href="#story">Our Story</a>
     </nav>
 
     <div class="header__actions">
       <span class="sync-pill" id="sync-pill" aria-live="polite"><span class="dot"></span> Loading live catalog…</span>
-      <a class="btn btn--primary btn--sm header__cta" href="shop.html">Shop now</a>
+      <a class="btn btn--primary btn--sm header__cta" href="shop">Shop now</a>
       <button class="icon-btn" type="button" data-open-cart aria-label="Open shopping bag">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
         <span class="cart-count" data-cart-count style="display:none">0</span>
@@ -78,12 +79,12 @@
   <button class="icon-btn mobile-nav__close" type="button" data-burger-close aria-label="Close menu">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </button>
-  <a href="index.html">Home</a>
-  <a href="shop.html">Shop all</a>
-  <a href="shop.html?c=Superfoods">Superfoods</a>
-  <a href="shop.html?c=Haircare">Haircare</a>
-  <a href="shop.html?c=Skin%20Care">Skin Care</a>
-  <a href="shop.html?c=Handmade%20Soaps">Handmade Soaps</a>
+  <a href="./">Home</a>
+  <a href="shop">Shop all</a>
+  <a href="shop?c=Superfoods">Superfoods</a>
+  <a href="shop?c=Haircare">Haircare</a>
+  <a href="shop?c=Skin%20Care">Skin Care</a>
+  <a href="shop?c=Handmade%20Soaps">Handmade Soaps</a>
   <a href="#story">Our story</a>
 </nav>
 
@@ -116,7 +117,7 @@
           <h1>Ayurveda that begins <em>at the root</em>, not the shelf.</h1>
           <p class="hero__sub">Handcrafted Noni rituals for hair, skin and inner wellness — grown on our own farm, formulated with 5,000 years of Indian wisdom, and left completely free of chemicals.</p>
           <div class="hero__cta">
-            <a class="btn btn--gold" href="shop.html">Shop the apothecary</a>
+            <a class="btn btn--gold" href="shop">Shop the apothecary</a>
             <a class="btn btn--light" href="#story">Meet the founder</a>
           </div>
         </div>
@@ -129,8 +130,8 @@
           <h1>Indian summers, <em>meet your match.</em></h1>
           <p class="hero__sub">Broad-spectrum Ayurvedic sun defence with Noni extract and natural minerals. No white cast, no chemicals — just calm, protected skin from ₹350.</p>
           <div class="hero__cta">
-            <a class="btn btn--gold" href="product.html?p=chekorganics-ashyukavach-organic-noni-sun-defence-cream-spf-30-natural-ayurvedic-sunscreen-broad-spectrum-protection">Shop SPF 30+ · ₹350</a>
-            <a class="btn btn--light" href="shop.html">See all 38 products</a>
+            <a class="btn btn--gold" href="product?p=chekorganics-ashyukavach-organic-noni-sun-defence-cream-spf-30-natural-ayurvedic-sunscreen-broad-spectrum-protection">Shop SPF 30+ · ₹350</a>
+            <a class="btn btn--light" href="shop">See all 38 products</a>
           </div>
         </div>
       </div>
@@ -187,7 +188,7 @@
           <span class="eyebrow">The wellness cabinet</span>
           <h2>What are you looking for today? Explore our categories and find your perfect ritual.</h2>
         </div>
-        <a class="link-arrow" href="shop.html">View all products <span>→</span></a>
+        <a class="link-arrow" href="shop">View all products <span>→</span></a>
       </div>
       <div class="cat-grid" id="cat-grid"></div>
     </div>
@@ -304,8 +305,8 @@
           <h3>Ashyukavach Organic Noni Sun Defence Cream SPF 30+</h3>
           <p>Broad-spectrum, Ayurvedic, and completely free of the white cast. Noni extract + natural minerals guard your skin through Indian summers.</p>
           <div class="hero__cta" style="margin-top:0">
-            <a class="btn btn--gold" href="product.html?p=chekorganics-ashyukavach-organic-noni-sun-defence-cream-spf-30-natural-ayurvedic-sunscreen-broad-spectrum-protection">Shop SPF 30+ · ₹350</a>
-            <a class="btn btn--light" href="shop.html">See all 38 products</a>
+            <a class="btn btn--gold" href="product?p=chekorganics-ashyukavach-organic-noni-sun-defence-cream-spf-30-natural-ayurvedic-sunscreen-broad-spectrum-protection">Shop SPF 30+ · ₹350</a>
+            <a class="btn btn--light" href="shop">See all 38 products</a>
           </div>
         </div>
         <div class="promo__media">
@@ -487,7 +488,7 @@
             </a>
           </div>
         </div>
-        <a class="brand" href="index.html">
+        <a class="brand" href="./">
           <img class="brand__mark" src="assets/brand/logo.webp" alt="">
           <span><span class="brand__name">CHEKORGANICS</span><span class="brand__tag">Route to Roots</span></span>
         </a>
@@ -502,12 +503,12 @@
       <div>
         <h4>Shop</h4>
         <ul>
-          <li><a href="shop.html">All products</a></li>
-          <li><a href="shop.html?c=Superfoods">Superfoods</a></li>
-          <li><a href="shop.html?c=Haircare">Haircare</a></li>
-          <li><a href="shop.html?c=Skin%20Care">Skin care</a></li>
-          <li><a href="shop.html?c=Handmade%20Soaps">Handmade soaps</a></li>
-          <li><a href="shop.html?c=Men%27s%20Grooming">Men's grooming</a></li>
+          <li><a href="shop">All products</a></li>
+          <li><a href="shop?c=Superfoods">Superfoods</a></li>
+          <li><a href="shop?c=Haircare">Haircare</a></li>
+          <li><a href="shop?c=Skin%20Care">Skin care</a></li>
+          <li><a href="shop?c=Handmade%20Soaps">Handmade soaps</a></li>
+          <li><a href="shop?c=Men%27s%20Grooming">Men's grooming</a></li>
         </ul>
       </div>
 
@@ -547,10 +548,16 @@
     <div class="footer__bottom">
       <span>© 2026 CHEKORGANICS · Route to Roots</span>
       <span>Preview rebuild of chekorganics.com — all imagery and copy belong to CHEKORGANICS.</span>
+      <a href="admin" style="font-size:0.75rem;opacity:0.65;color:inherit;text-decoration:none">🔒 Admin Portal</a>
     </div>
   </div>
 </footer>
 
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="firebase-db.js"></script>
+<script src="auth.js"></script>
 <script src="data.js"></script>
 <script src="ux.js"></script>
 <script src="app.js"></script>

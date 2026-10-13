@@ -2134,7 +2134,7 @@ body.page-enter { animation: pageIn 0.45s var(--ease); }
   background: #fbfdfb;
 }
 
-.payment-method input {
+.payment-method__head input[type="radio"] {
   display: none;
 }
 

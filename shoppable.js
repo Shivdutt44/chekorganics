@@ -100,7 +100,7 @@
           "</button>" +
           '<div class="vcard__shop">' +
           (info.image ? '<img src="' + esc(thumb(info.image, 120)) + '" alt="" loading="lazy" decoding="async" width="44" height="44">' : "") +
-          '<a class="vcard__name" href="product.html?p=' + encodeURIComponent(info.handle) + '">' + esc(info.title) + "</a>" +
+          '<a class="vcard__name" href="product?p=' + encodeURIComponent(info.handle) + '">' + esc(info.title) + "</a>" +
           '<span class="vcard__price" data-price-for="' + esc(info.handle) + '">' + priceHtml(info) + "</span>" +
           '<button class="vcard__add" type="button" data-add="' + esc(info.handle) + '" aria-label="Add ' + esc(info.title) + ' to bag"' + (info.available === false ? " disabled" : "") + ">" +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>' +
@@ -326,12 +326,12 @@
         '<div class="vshop" data-handle="' + esc(info.handle) + '">' +
         (info.image ? '<img src="' + esc(thumb(info.image, 200)) + '" alt="" width="64" height="64">' : "") +
         '<div class="vshop__text"><span class="vshop__kicker">Featured in this video</span>' +
-        '<a class="vshop__name" href="product.html?p=' + encodeURIComponent(info.handle) + '">' + esc(info.title) + "</a>" +
+        '<a class="vshop__name" href="product?p=' + encodeURIComponent(info.handle) + '">' + esc(info.title) + "</a>" +
         '<span class="vshop__price" data-price-for="' + esc(info.handle) + '">' + priceHtml(info) + "</span>" +
         '<span class="vshop__stock" data-stock-for="' + esc(info.handle) + '"></span></div>' +
         '<div class="vshop__actions">' +
         '<button class="btn btn--primary vshop__add" type="button" data-add="' + esc(info.handle) + '"' + (info.available === false ? " disabled" : "") + ">Add to bag</button>" +
-        '<a class="btn btn--ghost vshop__view" href="product.html?p=' + encodeURIComponent(info.handle) + '">View product</a></div></div>'
+        '<a class="btn btn--ghost vshop__view" href="product?p=' + encodeURIComponent(info.handle) + '">View product</a></div></div>'
       )
       .join("");
     items.forEach(info =>

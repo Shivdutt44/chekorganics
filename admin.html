@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CHEKORGANICS — Super Admin Portal</title>
+<link rel="icon" type="image/jpeg" sizes="32x32" href="assets/brand/favicon-32.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ==========================================================================
+   SUPER ADMIN PORTAL STYLES
+   ========================================================================== */
+:root {
+  --admin-bg: #f5f3ee;
+  --admin-sidebar: #0a1f14;
+  --admin-sidebar-text: #e2ece5;
+  --admin-card: #ffffff;
+  --admin-border: rgba(15, 46, 29, 0.1);
+  --admin-gold: #c29a45;
+  --admin-forest: #0f2e1d;
+  --admin-leaf: #166534;
+}
+
+body.admin-body {
+  margin: 0;
+  padding: 0;
+  background: var(--admin-bg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1b1b1b;
+  min-height: 100vh;
+}
+
+/* LOGIN GATEWAY */
+.admin-gate-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: radial-gradient(circle at 50% 20%, #16462c 0%, #0a1f14 100%);
+}
+
+.admin-gate-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(194, 154, 69, 0.3);
+}
+
+.admin-gate-head {
+  background: linear-gradient(135deg, #0a1f14, #123823);
+  padding: 2.25rem 2rem 1.75rem;
+  text-align: center;
+  color: #faf8f3;
+  position: relative;
+}
+
+.admin-badge-gold {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f7d58b;
+  background: rgba(194, 154, 69, 0.2);
+  border: 1px solid rgba(194, 154, 69, 0.4);
+  padding: 0.25rem 0.8rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
+
+.admin-gate-head h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.65rem;
+  margin: 0 0 0.4rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.admin-gate-head p {
+  font-size: 0.85rem;
+  color: rgba(250, 248, 243, 0.75);
+  margin: 0;
+}
+
+.admin-gate-body {
+  padding: 2rem 2rem 2.25rem;
+}
+
+.gate-group {
+  margin-bottom: 1.25rem;
+}
+
+.gate-group label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #334155;
+  margin-bottom: 0.4rem;
+}
+
+.gate-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  border: 1.5px solid #ded8ce;
+  border-radius: 12px;
+  background: #faf8f5;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.gate-input:focus {
+  outline: none;
+  border-color: var(--admin-forest);
+  box-shadow: 0 0 0 3px rgba(15, 46, 29, 0.12);
+  background: #ffffff;
+}
+
+.gate-password-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.gate-password-wrapper .gate-input {
+  width: 100%;
+  padding-right: 3rem !important;
+}
+
+.gate-eye-btn {
+  position: absolute;
+  right: 0.65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  border-radius: 8px;
+  z-index: 5;
+  transition: all 0.2s ease;
+}
+
+.gate-eye-btn:hover {
+  color: var(--admin-forest);
+  background: rgba(15, 46, 29, 0.08);
+}
+
+.gate-eye-btn:focus-visible {
+  outline: 2px solid var(--admin-forest);
+  outline-offset: 1px;
+}
+
+.gate-btn {
+  width: 100%;
+  padding: 0.95rem;
+  background: var(--admin-forest);
+  color: #faf8f3;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.gate-btn:hover { background: #16462c; }
+.gate-btn:active { transform: scale(0.99); }
+
+/* DASHBOARD LAYOUT */
+.admin-app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  width: 270px;
+  background: var(--admin-sidebar);
+  color: var(--admin-sidebar-text);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-brand {
+  padding: 1.75rem 1.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.sidebar-brand img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.sidebar-brand h3 {
+  margin: 0;
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  color: #faf8f3;
+  font-weight: 500;
+}
+
+.sidebar-nav {
+  padding: 1.25rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.sidebar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.8rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: rgba(250, 248, 243, 0.75);
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, color 0.2s;
+  text-decoration: none;
+}
+
+.sidebar-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #faf8f3;
+}
+
+.sidebar-btn.is-active {
+  background: linear-gradient(135deg, rgba(194, 154, 69, 0.25), rgba(15, 46, 29, 0.6));
+  color: #f7d58b;
+  font-weight: 600;
+  border: 1px solid rgba(194, 154, 69, 0.3);
+}
+
+.sidebar-foot {
+  padding: 1.25rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* MAIN CONTENT */
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.admin-topbar {
+  background: #ffffff;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--admin-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.topbar-left h2 {
+  margin: 0;
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem;
+  color: var(--admin-forest);
+  font-weight: 500;
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #bbf7d0;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: pulseDot 1.8s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.admin-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.4rem 0.8rem;
+  background: #faf8f5;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  font-size: 0.82rem;
+}
+
+.admin-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--admin-forest);
+  color: #f7d58b;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.admin-content {
+  padding: 2rem;
+}
+
+/* KPI CARDS */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  background: var(--admin-card);
+  padding: 1.5rem;
+  border-radius: 18px;
+  border: 1px solid var(--admin-border);
+  box-shadow: 0 4px 18px rgba(15, 46, 29, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--admin-forest), var(--admin-gold));
+}
+
+.kpi-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-val {
+  font-family: 'Fraunces', serif;
+  font-size: 2rem;
+  color: var(--admin-forest);
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.kpi-sub {
+  font-size: 0.78rem;
+  color: #166534;
+  font-weight: 500;
+}
+
+/* SECTION TABS & PANELS */
+.admin-card {
+  background: var(--admin-card);
+  border-radius: 20px;
+  border: 1px solid var(--admin-border);
+  box-shadow: 0 6px 24px rgba(15, 46, 29, 0.04);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.card-header h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.35rem;
+  color: var(--admin-forest);
+  margin: 0;
+  font-weight: 500;
+}
+
+.table-filter-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.table-search {
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  border: 1.5px solid #ded8ce;
+  border-radius: 10px;
+  background: #faf8f5;
+  width: 240px;
+  box-sizing: border-box;
+}
+
+/* TABLES */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.86rem;
+}
+
+.admin-table th {
+  padding: 0.9rem 1rem;
+  background: #faf8f5;
+  color: #475569;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #eee8df;
+}
+
+.admin-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f1ece2;
+  vertical-align: middle;
+}
+
+.admin-table tr:hover td {
+  background: #fbfaf7;
+}
+
+.status-select {
+  padding: 0.4rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1.5px solid #ded8ce;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.status-select.status-confirmed { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+.status-select.status-batching { background: #fef9c3; color: #854d0e; border-color: #fef08a; }
+.status-select.status-dispatched { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+.status-select.status-delivered { background: #dcfce7; color: #166534; border-color: #bbf7d0; font-weight: 700; }
+.status-select.status-cancelled { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+
+.btn-detail {
+  padding: 0.45rem 0.75rem;
+  background: #faf8f5;
+  border: 1px solid #ded8ce;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--admin-forest);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-detail:hover { background: #eee8df; }
+
+/* MODAL */
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 46, 29, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s, visibility 0.25s;
+}
+
+.admin-modal-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.admin-modal {
+  background: #ffffff;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: #faf8f5;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+</style>
+</head>
+<body class="admin-body">
+
+<!-- =========================================================================
+     1. SUPER ADMIN AUTH GATE (Protected Login)
+     ========================================================================= -->
+<div class="admin-gate-wrap" id="admin-gate-wrap">
+  <div class="admin-gate-card">
+    <div class="admin-gate-head">
+      <span class="admin-badge-gold">Super Admin Access</span>
+      <h2>CHEKORGANICS</h2>
+      <p>Route to Roots · Central Command Portal</p>
+    </div>
+    <div class="admin-gate-body">
+      <div id="gate-error" style="display:none;background:#fee2e2;color:#991b1b;padding:0.75rem 1rem;border-radius:10px;font-size:0.85rem;margin-bottom:1.25rem;border:1px solid #fecaca"></div>
+
+      <form id="admin-gate-form">
+        <div class="gate-group">
+          <label for="admin-email">Super Admin Email</label>
+          <input type="email" id="admin-email" class="gate-input" value="Shivduttchauhan2@gmail.com" required autocomplete="email">
+        </div>
+        <div class="gate-group">
+          <label for="admin-password">Password</label>
+          <div class="gate-password-wrapper">
+            <input type="password" id="admin-password" class="gate-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="gate-eye-btn" id="btn-toggle-admin-pass" aria-label="Toggle password visibility" title="Show / Hide Password">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="gate-btn" id="btn-admin-login">
+          <span>Authorize &amp; Enter Dashboard 🔐</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     2. SUPER ADMIN APP SHELL (Revealed on Auth)
+     ========================================================================= -->
+<div class="admin-app" id="admin-app" style="display:none">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/brand/logo.webp" alt="ChekOrganics Logo">
+      <div>
+        <h3>CHEKORGANICS</h3>
+        <span class="admin-badge-gold" style="font-size:0.65rem;padding:2px 6px;margin:0">Super Admin</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button type="button" class="sidebar-btn is-active" data-view="dashboard">
+        <span>📊</span> Dashboard
+      </button>
+      <button type="button" class="sidebar-btn" data-view="orders">
+        <span>📦</span> Live Orders (<b id="nav-orders-count">0</b>)
+      </button>
+      <button type="button" class="sidebar-btn" data-view="reviews">
+        <span>⭐</span> Customer Reviews
+      </button>
+      <button type="button" class="sidebar-btn" data-view="subscribers">
+        <span>✉️</span> Subscribers
+      </button>
+      <a href="shop" target="_blank" class="sidebar-btn">
+        <span>🌿</span> View Products
+      </a>
+      <a href="./" target="_blank" class="sidebar-btn">
+        <span>🏪</span> Open Store
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button type="button" class="sidebar-btn" id="btn-admin-logout" style="color:#f87171;width:100%">
+        <span>🚪</span> Log Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Work Area -->
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <h2 id="page-title">Store Overview</h2>
+        <span class="live-pill"><span class="live-dot"></span> Cloud Firestore LIVE</span>
+      </div>
+      <div class="topbar-right">
+        <div class="admin-user-chip">
+          <div class="admin-avatar">S</div>
+          <div>
+            <b>Shivdutt (Super Admin)</b><br>
+            <span style="font-size:0.75rem;color:#64748b">Shivduttchauhan2@gmail.com</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="admin-content">
+
+      <!-- KPI METRIC CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-title">Total Revenue</div>
+          <div class="kpi-val" id="kpi-revenue">₹0</div>
+          <div class="kpi-sub">● All verified orders</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Total Orders</div>
+          <div class="kpi-val" id="kpi-orders">0</div>
+          <div class="kpi-sub">● Real-time Firestore sync</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Catalog Items</div>
+          <div class="kpi-val" id="kpi-products">20</div>
+          <div class="kpi-sub">● AYUSH Ayurvedic Formulations</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">Newsletter Leads</div>
+          <div class="kpi-val" id="kpi-subscribers">0</div>
+          <div class="kpi-sub">● Customer Emails</div>
+        </div>
+      </div>
+
+      <!-- VIEW: ORDERS MANAGEMENT -->
+      <section class="admin-card" id="panel-orders">
+        <div class="card-header">
+          <div>
+            <h3>Customer Orders</h3>
+            <span style="font-size:0.82rem;color:#64748b">Update order dispatch status live for customer tracking</span>
+          </div>
+          <div class="table-filter-wrap">
+            <input type="text" id="order-search" class="table-search" placeholder="🔍 Search Order ID, Name, Phone…">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Contact</th>
+                <th>Destination</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Live Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body">
+              <tr>
+                <td colspan="9" style="text-align:center;padding:2rem;color:#64748b">Loading orders from Cloud Firestore…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW: REVIEWS MANAGEMENT -->
+      <section class="admin-card" id="panel-reviews" style="display:none">
+        <div class="card-header">
+          <div>
+            <h3>Customer Reviews</h3>
+            <span style="font-size:0.82rem;color:#64748b">Moderation and real-time customer feedback</span>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Author</th>
+                <th>Rating</th>
+                <th>Review Title &amp; Text</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="reviews-table-body">
+              <tr>
+                <td colspan="6" style="text-align:center;padding:2rem;color:#64748b">Loading customer reviews…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW: SUBSCRIBERS -->
+      <section class="admin-card" id="panel-subscribers" style="display:none">
+        <div class="card-header">
+          <div>
+            <h3>Newsletter Subscribers</h3>
+            <span style="font-size:0.82rem;color:#64748b">Export and reach out with Ayurvedic wellness updates</span>
+          </div>
+          <button type="button" class="btn-detail" id="btn-export-subscribers">📥 Export CSV</button>
+        </div>
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Email Address</th>
+                <th>Subscribed On</th>
+              </tr>
+            </thead>
+            <tbody id="subscribers-table-body">
+              <tr>
+                <td colspan="2" style="text-align:center;padding:2rem;color:#64748b">Loading subscribers…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- =========================================================================
+     3. ORDER DETAILS & INVOICE MODAL
+     ========================================================================= -->
+<div class="admin-modal-backdrop" id="order-modal-backdrop">
+  <div class="admin-modal" id="order-modal">
+    <button type="button" class="modal-close" id="order-modal-close">✕</button>
+    <div id="order-modal-content"></div>
+  </div>
+</div>
+
+<!-- FIREBASE SCRIPTS -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="firebase-db.js"></script>
+<script src="data.js"></script>
+
+<script>
+(function() {
+  "use strict";
+
+  const SUPER_ADMIN_EMAIL = "shivduttchauhan2@gmail.com";
+  let ALL_ORDERS = [];
+  let ALL_REVIEWS = [];
+  let ALL_SUBSCRIBERS = [];
+
+  const $id = id => document.getElementById(id);
+  // Orders, reviews and subscribers are written by the public, so escape everything before innerHTML:
+  // unescaped, a review body like <img onerror=…> would run with the admin's session
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // 1. AUTH GATEWAY
+  const gateForm = $id("admin-gate-form");
+  const gateError = $id("gate-error");
+  const gateWrap = $id("admin-gate-wrap");
+  const adminApp = $id("admin-app");
+
+  // Eye Toggle Button for Password
+  const togglePassBtn = $id("btn-toggle-admin-pass");
+  const passInput = $id("admin-password");
+  if (togglePassBtn && passInput) {
+    togglePassBtn.onclick = () => {
+      const isPass = passInput.type === "password";
+      passInput.type = isPass ? "text" : "password";
+      togglePassBtn.setAttribute("aria-label", isPass ? "Hide password" : "Show password");
+      togglePassBtn.setAttribute("title", isPass ? "Hide password" : "Show password");
+      togglePassBtn.innerHTML = isPass
+        ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f2e1d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>`
+        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    };
+  }
+
+  function showError(msg) {
+    if (!gateError) return;
+    gateError.textContent = msg;
+    gateError.style.display = "block";
+  }
+
+  gateForm.onsubmit = async (e) => {
+    e.preventDefault();
+    gateError.style.display = "none";
+    const email = $id("admin-email").value.trim().toLowerCase();
+    const password = $id("admin-password").value;
+    const btn = $id("btn-admin-login");
+
+    if (email !== SUPER_ADMIN_EMAIL.toLowerCase()) {
+      showError("Access Denied: Only Super Admin (" + SUPER_ADMIN_EMAIL + ") is authorized.");
+      return;
+    }
+
+    try {
+      btn.disabled = true;
+      btn.innerHTML = "<span>Authenticating…</span>";
+      await window.FirebaseDB.signIn(email, password);
+    } catch (err) {
+      showError(err.message || "Invalid credentials.");
+      btn.disabled = false;
+      btn.innerHTML = "<span>Authorize &amp; Enter Dashboard 🔐</span>";
+    }
+  };
+
+  // Logout
+  $id("btn-admin-logout").onclick = async () => {
+    if (confirm("Are you sure you want to log out of Super Admin?")) {
+      await window.FirebaseDB.signOut();
+      location.reload();
+    }
+  };
+
+  // Auth State Listener
+  if (window.FirebaseDB && window.FirebaseDB.onAuthStateChanged) {
+    window.FirebaseDB.onAuthStateChanged((user) => {
+      if (user && user.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
+        gateWrap.style.display = "none";
+        adminApp.style.display = "flex";
+        initDashboard();
+      } else {
+        gateWrap.style.display = "flex";
+        adminApp.style.display = "none";
+      }
+    });
+  }
+
+  // 2. DASHBOARD INITIALIZATION & REAL-TIME FIRESTORE LISTENER
+  let dashboardStarted = false;
+  function initDashboard() {
+    // onAuthStateChanged can fire more than once; attach the listeners only once
+    if (dashboardStarted) return;
+    dashboardStarted = true;
+    const db = window.FirebaseDB.getFirestore();
+    if (!db) {
+      loadLocalStorageFallback();
+      return;
+    }
+
+    // Real-time listener for ORDERS
+    db.collection("orders").onSnapshot((snapshot) => {
+      ALL_ORDERS = [];
+      snapshot.forEach(doc => {
+        ALL_ORDERS.push({ id: doc.id, ...doc.data() });
+      });
+      // Sort newest first
+      ALL_ORDERS.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      renderOrders(ALL_ORDERS);
+      updateKPIs();
+    }, (err) => {
+      console.warn("Firestore orders listener err:", err);
+      loadLocalStorageFallback();
+    });
+
+    // Real-time listener for REVIEWS
+    db.collection("reviews").onSnapshot((snapshot) => {
+      ALL_REVIEWS = [];
+      snapshot.forEach(doc => {
+        ALL_REVIEWS.push({ id: doc.id, ...doc.data() });
+      });
+      renderReviews(ALL_REVIEWS);
+    });
+
+    // Real-time listener for SUBSCRIBERS
+    db.collection("subscribers").onSnapshot((snapshot) => {
+      ALL_SUBSCRIBERS = [];
+      snapshot.forEach(doc => {
+        ALL_SUBSCRIBERS.push({ id: doc.id, ...doc.data() });
+      });
+      renderSubscribers(ALL_SUBSCRIBERS);
+      updateKPIs();
+    });
+  }
+
+  function loadLocalStorageFallback() {
+    ALL_ORDERS = JSON.parse(localStorage.getItem("chek_orders_v1")) || [];
+    renderOrders(ALL_ORDERS);
+    updateKPIs();
+  }
+
+  function updateKPIs() {
+    const totalRev = ALL_ORDERS
+      .filter(o => !String(o.deliveryStatus || "").includes("Cancelled"))
+      .reduce((s, o) => s + (o.payment ? Number(o.payment.total) || 0 : 0), 0);
+    $id("kpi-revenue").textContent = "₹" + totalRev.toLocaleString("en-IN");
+    $id("kpi-orders").textContent = ALL_ORDERS.length;
+    $id("kpi-subscribers").textContent = ALL_SUBSCRIBERS.length;
+    const navCount = $id("nav-orders-count");
+    if (navCount) navCount.textContent = ALL_ORDERS.length;
+  }
+
+  // 3. RENDER ORDERS TABLE
+  function renderOrders(list) {
+    const tbody = $id("orders-table-body");
+    if (!tbody) return;
+
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2.5rem;color:#64748b">No customer orders placed yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = list.map(o => {
+      const oId = o.orderId || (o.id ? o.id.slice(0, 8) : "CHEK-ORDER");
+      const d = o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-IN", { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : "Recent";
+      const custName = o.customer ? o.customer.name : "Guest Customer";
+      const custPhone = o.customer ? o.customer.mobile : "—";
+      const dest = o.address ? `${o.address.city}, ${o.address.state}` : "India";
+      const amount = o.payment ? "₹" + Number(o.payment.total).toLocaleString("en-IN") : "₹0";
+      const pMethod = o.payment ? (o.payment.method === "cod" ? "COD" : o.payment.status === "pending" ? "UPI · verify" : "Prepaid UPI") : "UPI";
+      const status = String(o.deliveryStatus || "Confirmed & Batched");
+
+      let statusClass = "status-confirmed";
+      if (status.includes("Batching")) statusClass = "status-batching";
+      if (status.includes("Dispatched")) statusClass = "status-dispatched";
+      if (status.includes("Delivered")) statusClass = "status-delivered";
+      if (status.includes("Cancelled")) statusClass = "status-cancelled";
+
+      return `
+        <tr data-order-id="${esc(o.id || oId)}">
+          <td><b style="color:var(--admin-forest)">#${esc(oId)}</b></td>
+          <td style="color:#64748b;font-size:0.8rem">${d}</td>
+          <td><b>${esc(custName)}</b></td>
+          <td><a href="tel:${esc(String(custPhone).replace(/[^\d+]/g, ""))}" style="color:var(--admin-forest);text-decoration:none">${esc(custPhone)}</a></td>
+          <td style="color:#475569">${esc(dest)}</td>
+          <td><b style="color:var(--admin-forest)">${amount}</b></td>
+          <td><span style="font-size:0.75rem;padding:3px 7px;background:#eee8df;border-radius:6px;font-weight:600">${pMethod}</span></td>
+          <td>
+            <select class="status-select ${statusClass}" onchange="window.updateOrderStatus('${esc(o.id)}', this.value)">
+              <option value="Confirmed &amp; Batched" ${status.includes("Confirmed") ? "selected" : ""}>Confirmed &amp; Batched</option>
+              <option value="Farm Batching (Telangana)" ${status.includes("Batching") ? "selected" : ""}>Farm Batching (Telangana)</option>
+              <option value="Dispatched &amp; In Transit" ${status.includes("Dispatched") ? "selected" : ""}>Dispatched &amp; In Transit</option>
+              <option value="Out for Delivery" ${status.includes("Out for") ? "selected" : ""}>Out for Delivery</option>
+              <option value="Delivered" ${status === "Delivered" ? "selected" : ""}>Delivered</option>
+              <option value="Cancelled" ${status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+            </select>
+          </td>
+          <td>
+            <button type="button" class="btn-detail" onclick="window.viewOrderDetail('${esc(o.id || oId)}')">Invoice 📄</button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  // Live Status Updater
+  window.updateOrderStatus = async function(docId, newStatus) {
+    const db = window.FirebaseDB.getFirestore();
+    if (!db || !docId) return;
+
+    try {
+      await db.collection("orders").doc(docId).update({
+        deliveryStatus: newStatus,
+        updatedAt: new Date().toISOString()
+      });
+      alert("✅ Status updated to: " + newStatus);
+    } catch (err) {
+      alert("Failed to update status: " + err.message);
+    }
+  };
+
+  // After matching the shopper's UTR against the bank/PhonePe statement
+  window.markOrderPaid = async function(docId) {
+    const db = window.FirebaseDB.getFirestore();
+    if (!db || !docId) return;
+    if (!confirm("Confirm you have received this UPI payment?")) return;
+    try {
+      await db.collection("orders").doc(docId).update({
+        "payment.status": "paid",
+        "payment.verifiedAt": new Date().toISOString()
+      });
+      $id("order-modal-backdrop").classList.remove("is-open");
+    } catch (err) {
+      alert("Failed to update payment: " + err.message);
+    }
+  };
+
+  // View Order Details Modal
+  window.viewOrderDetail = function(id) {
+    const order = ALL_ORDERS.find(o => o.id === id || o.orderId === id);
+    if (!order) return;
+
+    const modalWrap = $id("order-modal-backdrop");
+    const content = $id("order-modal-content");
+    const oId = order.orderId || (order.id ? order.id.slice(0, 8) : "CHEK-ORDER");
+    const d = order.createdAt ? new Date(order.createdAt).toLocaleString("en-IN") : "";
+
+    content.innerHTML = `
+      <div style="border-bottom:1px solid #eee8df;padding-bottom:1rem;margin-bottom:1.25rem">
+        <span class="admin-badge-gold">Official Invoice</span>
+        <h2 style="font-family:'Fraunces',serif;margin:0.25rem 0 0.2rem;color:var(--admin-forest)">Order #${esc(oId)}</h2>
+        <span style="font-size:0.8rem;color:#64748b">${d}</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;font-size:0.85rem;margin-bottom:1.5rem">
+        <div>
+          <b style="color:var(--admin-forest)">Customer Info:</b><br>
+          ${order.customer ? esc(order.customer.name) : "Customer"}<br>
+          📞 ${order.customer ? esc(order.customer.mobile) : "—"}<br>
+          ✉️ ${order.customer ? esc(order.customer.email) : "—"}
+        </div>
+        <div>
+          <b style="color:var(--admin-forest)">Shipping Destination:</b><br>
+          ${order.address ? esc(order.address.flat + ", " + order.address.street) : ""}<br>
+          ${order.address && order.address.landmark ? esc(order.address.landmark) + "<br>" : ""}
+          ${order.address ? esc(order.address.city + ", " + order.address.state + " — " + order.address.pincode) : ""}
+        </div>
+      </div>
+
+      <h4 style="margin:0 0 0.5rem;font-size:0.85rem;text-transform:uppercase;color:var(--admin-forest)">Items Purchased:</h4>
+      <div style="border:1px solid #eee8df;border-radius:12px;padding:0.75rem;margin-bottom:1.25rem;background:#faf8f5">
+        ${(order.items || []).map(it => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;font-size:0.85rem;border-bottom:1px solid #f1ece2">
+            <div><b>${esc(it.title)}</b> × ${Number(it.qty) || 0}</div>
+            <b>₹${((Number(it.price) || 0) * (Number(it.qty) || 0)).toLocaleString("en-IN")}</b>
+          </div>
+        `).join("")}
+        <div style="display:flex;justify-content:space-between;padding-top:0.75rem;font-size:1.05rem;font-weight:700;color:var(--admin-forest)">
+          <span>${order.payment && order.payment.status === "pending" ? "Total (payment to verify):" : order.payment && order.payment.method === "cod" ? "Total (COD):" : "Total Paid:"}</span>
+          <span>₹${order.payment ? Number(order.payment.total).toLocaleString("en-IN") : 0}</span>
+        </div>
+      </div>
+
+      ${order.payment && order.payment.method === "upi" ? `
+        <div style="font-size:0.85rem;margin-bottom:1rem">
+          <b style="color:var(--admin-forest)">UPI UTR:</b> ${order.payment.utr ? esc(order.payment.utr) : "— (not given)"} ·
+          <b>${order.payment.status === "paid" ? "✅ Payment received" : "⏳ Match this UTR in your PhonePe business app"}</b>
+        </div>` : ""}
+
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem">
+        ${order.payment && order.payment.status === "pending" && order.id ? `<button type="button" class="btn-detail" onclick="window.markOrderPaid('${esc(order.id)}')">✅ Mark payment received</button>` : ""}
+        <button type="button" class="btn-detail" onclick="window.print()">🖨️ Print Invoice</button>
+      </div>
+    `;
+
+    modalWrap.classList.add("is-open");
+  };
+
+  $id("order-modal-close").onclick = () => {
+    $id("order-modal-backdrop").classList.remove("is-open");
+  };
+
+  // Search filter
+  $id("order-search").addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    if (!q) {
+      renderOrders(ALL_ORDERS);
+      return;
+    }
+    const filtered = ALL_ORDERS.filter(o => {
+      const oId = (o.orderId || "").toLowerCase();
+      const name = (o.customer && o.customer.name ? o.customer.name : "").toLowerCase();
+      const phone = (o.customer && o.customer.mobile ? o.customer.mobile : "").toLowerCase();
+      const city = (o.address && o.address.city ? o.address.city : "").toLowerCase();
+      return oId.includes(q) || name.includes(q) || phone.includes(q) || city.includes(q);
+    });
+    renderOrders(filtered);
+  });
+
+  // 4. RENDER REVIEWS TABLE
+  function renderReviews(list) {
+    const tbody = $id("reviews-table-body");
+    if (!tbody) return;
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#64748b">No customer reviews yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(r => `
+      <tr>
+        <td><b>${esc(r.productHandle || "General")}</b></td>
+        <td>${esc(r.author || "Customer")} (${esc(r.city || "India")})</td>
+        <td><span style="color:#c29a45">★</span> ${Number(r.rating) || 5}/5</td>
+        <td><b>${esc(r.title)}</b><br><span style="color:#64748b;font-size:0.8rem">${esc(r.body)}</span></td>
+        <td style="color:#64748b;font-size:0.8rem">${r.createdAt ? new Date(r.createdAt).toLocaleDateString("en-IN") : ""}</td>
+        <td>
+          <button type="button" class="btn-detail" style="color:#b91c1c" onclick="window.deleteReview('${esc(r.id)}')">Delete ✕</button>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+  window.deleteReview = async function(id) {
+    if (!confirm("Are you sure you want to delete this review?")) return;
+    const db = window.FirebaseDB.getFirestore();
+    if (db && id) {
+      await db.collection("reviews").doc(id).delete();
+    }
+  };
+
+  // 5. RENDER SUBSCRIBERS
+  function renderSubscribers(list) {
+    const tbody = $id("subscribers-table-body");
+    if (!tbody) return;
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:2rem;color:#64748b">No subscribers yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(s => `
+      <tr>
+        <td><b>${esc(s.email)}</b></td>
+        <td style="color:#64748b;font-size:0.8rem">${s.subscribedAt ? new Date(s.subscribedAt).toLocaleString("en-IN") : ""}</td>
+      </tr>
+    `).join("");
+  }
+
+  // Export CSV
+  $id("btn-export-subscribers").onclick = () => {
+    if (!ALL_SUBSCRIBERS.length) return alert("No subscribers to export.");
+    // quote-escape, and neutralise leading = + - @ so Excel doesn't run a subscriber-typed formula
+    const cell = v => '"' + String(v == null ? "" : v).replace(/^[=+\-@]/, "'$&").replace(/"/g, '""') + '"';
+    let csv = "Email,SubscribedAt\n" + ALL_SUBSCRIBERS.map(s => cell(s.email) + "," + cell(s.subscribedAt)).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "chekorganics_subscribers.csv";
+    a.click();
+  };
+
+  // 6. SIDEBAR NAVIGATION SWITCHING
+  document.querySelectorAll(".sidebar-btn[data-view]").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".sidebar-btn[data-view]").forEach(b => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      const v = btn.dataset.view;
+
+      const pOrders = $id("panel-orders");
+      const pReviews = $id("panel-reviews");
+      const pSubs = $id("panel-subscribers");
+      const title = $id("page-title");
+
+      if (v === "dashboard" || v === "orders") {
+        pOrders.style.display = "block";
+        pReviews.style.display = "none";
+        pSubs.style.display = "none";
+        title.textContent = v === "dashboard" ? "Store Overview" : "Customer Orders";
+      } else if (v === "reviews") {
+        pOrders.style.display = "none";
+        pReviews.style.display = "block";
+        pSubs.style.display = "none";
+        title.textContent = "Customer Reviews";
+      } else if (v === "subscribers") {
+        pOrders.style.display = "none";
+        pReviews.style.display = "none";
+        pSubs.style.display = "block";
+        title.textContent = "Newsletter Leads";
+      }
+    };
+  });
+
+})();
+</script>
+</body>
+</html>
