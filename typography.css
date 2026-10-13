@@ -1,0 +1,84 @@
+/* ==========================================================================
+   CHEKORGANICS — type system modelled on vilvah.com (load last)
+   Measured on vilvah.com (desktop / phone):
+     body text      Fira Sans 14px / 15px
+     section titles Peachi 700, 36px / 24px, tracking -0.02em
+     sub-headings   Peachi 600, 24px
+     card titles    Fira Sans 500, 16px / 14px
+     prices         Peachi 600, 20px / 16px (compare-at 13–14px)
+     buttons        Fira Sans 600, 16px / 14px
+     announcement   Fira Sans 12px
+   Peachi is a licensed font, so headings use Fraunces with its "SOFT" axis at
+   100 — the closest free match (rounded, heavy soft-serif). Colours unchanged.
+   ========================================================================== */
+:root {
+  --font-body: "Fira Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+}
+
+/* soft terminals for every Fraunces heading (other fonts ignore the axis) */
+html { font-variation-settings: "SOFT" 100, "WONK" 0; }
+
+body { font-size: 14px; line-height: 1.6; }
+
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+h3 { font-weight: 600; }
+h4 { font-weight: 600; }
+
+/* ---------------------------------------------------------- headings */
+.hero h1 { font-size: 48px; line-height: 1.08; letter-spacing: -0.02em; }
+.hero__sub { font-size: 16px; }
+.section-head h2,
+.newsletter h2 { font-size: 36px; line-height: 1.1; }
+.section-head p { font-size: 15px; }
+.page-hero h1 { font-size: 40px; }
+.pdp__info h1 { font-size: 30px; line-height: 1.15; }
+.promo h3 { font-size: 32px; }
+.founder blockquote { font-size: 24px; font-weight: 500; }
+
+/* small uppercase labels: Vilvah keeps these short and lightly tracked */
+.eyebrow { font-size: 12px; letter-spacing: 0.14em; }
+.announce { font-size: 12px; letter-spacing: 0.02em; }
+
+/* ---------------------------------------------------- product cards */
+.card__eyebrow { font-size: 12px; letter-spacing: 0.08em; }
+.card__title {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+.price {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.price s { font-size: 14px; font-weight: 400; }
+.price--lg { font-size: 28px; }
+
+/* ----------------------------------------------------------- buttons */
+.btn { font-size: 16px; font-weight: 600; letter-spacing: 0; }
+.btn--sm { font-size: 14px; }
+
+/* ------------------------------------------------------------ phones */
+@media (max-width: 767px) {
+  body { font-size: 15px; }
+  .hero h1 { font-size: 32px; }
+  .hero__sub { font-size: 15px; }
+  .section-head h2,
+  .newsletter h2 { font-size: 24px; }
+  .section-head p { font-size: 14px; }
+  .page-hero h1 { font-size: 28px; }
+  .pdp__info h1 { font-size: 24px; }
+  .promo h3 { font-size: 24px; }
+  .founder blockquote { font-size: 19px; }
+  .card__title { font-size: 14px; line-height: 1.3; }
+  .card__eyebrow { font-size: 11px; }
+  .price { font-size: 16px; }
+  .price s { font-size: 13px; }
+  .price--lg { font-size: 24px; }
+  .btn { font-size: 14px; }
+  .btn--sm { font-size: 13px; }
+}
