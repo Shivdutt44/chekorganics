@@ -105,9 +105,8 @@ service cloud.firestore {
       allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
     }
 
-    // 6. ADMIN SECURITY (OTP verification):
-    match /admin_security/{docId} {
-      allow read, write: if true;
-    }
+    // (No admin_security collection: admin password resets use Firebase's own reset email,
+    //  and a world-readable/writable OTP store let anyone read or forge reset codes.
+    //  Anything not matched above is denied by default.)
   }
 }

@@ -733,7 +733,7 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
 
         <div style="margin-top:1.25rem;text-align:center">
           <button type="button" id="btn-gate-forgot" style="background:none;border:none;color:#475569;font-size:0.84rem;font-weight:600;cursor:pointer;text-decoration:underline;font-family:inherit">
-            Forgot Password? Reset via Email OTP 🔑
+            Forgot password? Email me a reset link 🔑
           </button>
         </div>
       </div>
@@ -743,7 +743,7 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
         <div style="text-align:center;margin-bottom:1.25rem">
           <span class="admin-badge-gold" style="font-size:0.7rem;padding:2px 8px">Security Recovery</span>
           <h3 style="font-family:'Fraunces',serif;margin:0.5rem 0 0.25rem;color:var(--admin-forest)">Reset Password</h3>
-          <p style="font-size:0.82rem;color:#64748b;margin:0">Enter your authorized email to receive a password reset link &amp; OTP.</p>
+          <p style="font-size:0.82rem;color:#64748b;margin:0">Enter your admin / staff email. We'll email you a secure link to set a new password.</p>
         </div>
 
         <div id="reset-status" style="display:none;padding:0.75rem 1rem;border-radius:10px;font-size:0.85rem;margin-bottom:1.25rem"></div>
@@ -755,19 +755,13 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
             <input type="email" id="admin-reset-email" class="gate-input" value="Shivduttchauhan2@gmail.com" placeholder="Enter your registered email" required>
           </div>
           <button type="button" class="gate-btn" id="btn-send-admin-otp">
-            <span>Send OTP / Reset Link to Email ✉️</span>
+            <span>Send Password Reset Link ✉️</span>
           </button>
         </div>
 
-        <!-- Step 2: Validate OTP & Set New Password -->
+        <!-- Step 2: set a new password (opened from the emailed reset link: ?mode=resetPassword&oobCode=…) -->
         <div id="reset-step-2" style="display:none">
-          <div class="gate-group">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
-              <label for="admin-input-otp" style="margin:0">Enter 6-Digit OTP</label>
-              <span id="otp-timer" style="font-size:0.75rem;color:#dc2626;font-weight:600">Expires in 10:00</span>
-            </div>
-            <input type="text" id="admin-input-otp" class="gate-input" placeholder="e.g. 123456" maxlength="6" inputmode="numeric" style="letter-spacing:0.25em;font-size:1.15rem;text-align:center;font-weight:700">
-          </div>
+          <input type="hidden" id="admin-input-otp">
 
           <div class="gate-group">
             <label for="admin-new-pass">New Password</label>
@@ -790,11 +784,8 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
           </div>
 
           <button type="button" class="gate-btn" id="btn-validate-otp-reset">
-            <span>Validate OTP &amp; Reset Password 🔐</span>
+            <span>Set New Password 🔐</span>
           </button>
-          <div style="margin-top:0.6rem;text-align:center">
-            <button type="button" id="btn-resend-otp" style="background:none;border:none;color:#64748b;font-size:0.8rem;cursor:pointer;text-decoration:underline">Resend OTP</button>
-          </div>
         </div>
 
         <div style="margin-top:1.25rem;text-align:center">
@@ -1231,14 +1222,13 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     };
   });
 
-  // FORGOT / RESET VIA EMAIL OTP LOGIC
+  // FORGOT PASSWORD: Firebase's own reset email (free plan: 150/day). The emailed link is the
+  // only proof of mailbox ownership; nothing secret is generated or stored in the browser.
   const gateLoginView = $id("gate-login-view");
   const gateResetView = $id("gate-reset-view");
   const resetStatus = $id("reset-status");
   const resetStep1 = $id("reset-step-1");
   const resetStep2 = $id("reset-step-2");
-  let activeOtpCode = null;
-  let otpTimerInterval = null;
 
   if ($id("btn-gate-forgot")) {
     $id("btn-gate-forgot").onclick = () => {
@@ -1254,7 +1244,6 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     $id("btn-back-to-login").onclick = () => {
       gateResetView.style.display = "none";
       gateLoginView.style.display = "block";
-      if (otpTimerInterval) clearInterval(otpTimerInterval);
     };
   }
 
@@ -1267,91 +1256,48 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     resetStatus.style.border = isErr ? "1px solid #fecaca" : "1px solid #bbf7d0";
   }
 
-  function startOtpTimer(expiry) {
-    if (otpTimerInterval) clearInterval(otpTimerInterval);
-    const timerEl = $id("otp-timer");
-    const update = () => {
-      const remaining = Math.max(0, Math.floor((expiry - Date.now()) / 1000));
-      const m = Math.floor(remaining / 60);
-      const s = remaining % 60;
-      if (timerEl) timerEl.textContent = `Expires in ${m}:${s < 10 ? '0' : ''}${s}`;
-      if (remaining <= 0) {
-        clearInterval(otpTimerInterval);
-        if (timerEl) timerEl.textContent = "OTP Expired";
-      }
-    };
-    update();
-    otpTimerInterval = setInterval(update, 1000);
-  }
-
-  async function sendAdminOtp() {
+  async function sendResetLink() {
     const btn = $id("btn-send-admin-otp");
     const targetEmail = ($id("admin-reset-email") ? $id("admin-reset-email").value : "").trim().toLowerCase();
-
     if (!targetEmail || !targetEmail.includes("@")) {
       showResetStatus("Please enter a valid email address.", true);
       return;
     }
-
     btn.disabled = true;
-    btn.innerHTML = "<span>Sending OTP &amp; Reset Link…</span>";
-
-    activeOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = Date.now() + 10 * 60 * 1000;
-    sessionStorage.setItem("chek_admin_otp", JSON.stringify({ otp: activeOtpCode, exp: expiry, email: targetEmail }));
-
+    btn.innerHTML = "<span>Sending reset link…</span>";
     try {
-      // 1. Send official Firebase password reset email to the requested account
-      if (window.FirebaseDB && window.FirebaseDB.sendPasswordReset) {
-        await window.FirebaseDB.sendPasswordReset(targetEmail);
-      }
-
-      // 2. Also record OTP in Firestore if Super Admin
-      const db = window.FirebaseDB ? window.FirebaseDB.getFirestore() : null;
-      if (db) {
-        db.collection("admin_security").doc("otp_reset").set({
-          otp: activeOtpCode,
-          email: targetEmail,
-          expiresAt: expiry,
-          createdAt: new Date().toISOString()
-        }).catch(() => {});
-      }
-
-      // 3. Dispatch OTP notification email via FormSubmit
-      try {
-        fetch("https://formsubmit.co/ajax/" + targetEmail, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({
-            _subject: "CHEKORGANICS Portal Access OTP: " + activeOtpCode,
-            message: "Your Admin / Staff password reset OTP is: " + activeOtpCode + ".\n\nThis verification OTP is valid for 10 minutes.\n\nAccount: " + targetEmail
-          })
-        }).catch(() => {});
-      } catch (e) {}
-
-      showResetStatus("✅ 6-digit OTP & Reset Link sent to " + targetEmail + ". Check your email!");
-      resetStep1.style.display = "none";
-      resetStep2.style.display = "block";
-      startOtpTimer(expiry);
+      await window.FirebaseDB.sendPasswordReset(targetEmail);
+      showResetStatus("✅ If " + targetEmail + " has an admin or staff account, a password reset link is on its way. Open it, set a new password, then log in here.");
     } catch (err) {
-      showResetStatus("Failed to send OTP: " + err.message, true);
-      btn.disabled = false;
-      btn.innerHTML = "<span>Send OTP / Reset Link to Email ✉️</span>";
+      const code = (err && err.code) || "";
+      // don't reveal whether an account exists for this email
+      if (/user-not-found/.test(code)) {
+        showResetStatus("✅ If " + targetEmail + " has an admin or staff account, a password reset link is on its way. Open it, set a new password, then log in here.");
+      } else if (/too-many-requests/.test(code)) {
+        showResetStatus("Too many requests. Please wait a few minutes and try again.", true);
+      } else {
+        showResetStatus("Couldn't send the reset link: " + (err.message || "please try again."), true);
+      }
+    } finally {
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = "<span>Send Password Reset Link ✉️</span>";
+      }, 30000);
     }
   }
 
-  if ($id("btn-send-admin-otp")) $id("btn-send-admin-otp").onclick = sendAdminOtp;
-  if ($id("btn-resend-otp")) $id("btn-resend-otp").onclick = sendAdminOtp;
+  if ($id("btn-send-admin-otp")) $id("btn-send-admin-otp").onclick = sendResetLink;
 
+  // Step 2 only opens from the emailed link (admin.html?mode=resetPassword&oobCode=…)
   if ($id("btn-validate-otp-reset")) {
     $id("btn-validate-otp-reset").onclick = async () => {
-      const inputOtp = $id("admin-input-otp").value.trim();
+      const oobCode = $id("admin-input-otp").value.trim();
       const newPass = $id("admin-new-pass").value;
       const confirmPass = $id("admin-confirm-pass").value;
       const btn = $id("btn-validate-otp-reset");
 
-      if (!inputOtp) {
-        showResetStatus("Please enter the 6-digit OTP received on email.", true);
+      if (!oobCode) {
+        showResetStatus("Open the password reset link from your email to set a new password.", true);
         return;
       }
       if (!newPass || newPass.length < 6) {
@@ -1363,47 +1309,23 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
         return;
       }
 
-      let stored = null;
-      try { stored = JSON.parse(sessionStorage.getItem("chek_admin_otp")); } catch (e) {}
-      const isOtpValid = (stored && stored.otp === inputOtp && Date.now() < stored.exp) ||
-                         (activeOtpCode && activeOtpCode === inputOtp);
-
-      if (!isOtpValid && inputOtp.length === 6) {
-        showResetStatus("Invalid or expired OTP. Please check your email or click Resend.", true);
-        return;
-      }
-
       try {
         btn.disabled = true;
         btn.innerHTML = "<span>Resetting Password…</span>";
-
-        // If user entered Firebase oobCode
-        if (inputOtp.length > 10 && window.FirebaseDB && window.FirebaseDB.confirmPasswordReset) {
-          await window.FirebaseDB.confirmPasswordReset(inputOtp, newPass);
-        } else {
-          const db = window.FirebaseDB ? window.FirebaseDB.getFirestore() : null;
-          if (db) {
-            await db.collection("admin_security").doc("credentials").set({
-              email: SUPER_ADMIN_EMAIL,
-              updatedAt: new Date().toISOString(),
-              status: "reset_verified"
-            }, { merge: true }).catch(() => {});
-          }
-        }
-
-        sessionStorage.removeItem("chek_admin_otp");
-        showResetStatus("✅ Password reset successfully! Redirecting to login...");
+        await window.FirebaseDB.confirmPasswordReset(oobCode, newPass);
+        showResetStatus("✅ Password changed. You can log in with your new password now.");
+        history.replaceState(null, "", location.pathname);
         setTimeout(() => {
           gateResetView.style.display = "none";
           gateLoginView.style.display = "block";
-          $id("admin-password").value = newPass;
-          if (gateError) gateError.style.display = "none";
-          alert("✅ Super Admin password reset successfully! You can now log in.");
-        }, 1200);
+        }, 1500);
       } catch (err) {
-        showResetStatus("Error resetting password: " + err.message, true);
+        const code = (err && err.code) || "";
+        showResetStatus(/expired-action-code|invalid-action-code/.test(code)
+          ? "This reset link has expired or was already used. Request a new one."
+          : "Error resetting password: " + (err.message || "please try again."), true);
         btn.disabled = false;
-        btn.innerHTML = "<span>Validate OTP &amp; Reset Password 🔐</span>";
+        btn.innerHTML = "<span>Set New Password 🔐</span>";
       }
     };
   }
@@ -1486,7 +1408,7 @@ textarea.pm-input { resize: vertical; line-height: 1.55; }
     if (resetStep1) resetStep1.style.display = "none";
     if (resetStep2) resetStep2.style.display = "block";
     if ($id("admin-input-otp")) $id("admin-input-otp").value = oobCode;
-    showResetStatus("✅ Verified reset action code detected! Enter your new password below.");
+    showResetStatus("✅ Reset link verified. Choose your new password below.");
   }
 
   function showError(msg) {
