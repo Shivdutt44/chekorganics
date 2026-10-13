@@ -10,16 +10,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=202610130839">
-<link rel="stylesheet" href="auth.css?v=202610130839">
-<link rel="stylesheet" href="typography.css?v=202610130839">
+<link rel="stylesheet" href="styles.css?v=202610131004">
+<link rel="stylesheet" href="auth.css?v=202610131004">
+<link rel="stylesheet" href="typography.css?v=202610131004">
 </head>
 <body class="checkout-page">
 
 <!-- Top minimal security banner -->
 <div class="checkout-topbar">
   <div class="container checkout-topbar__inner">
-    <span>🔒 Secure HTTPS checkout · UPI &amp; Cash on Delivery</span>
+    <span style="display:inline-flex;align-items:center;gap:0.35rem"><svg class="ico ico--sm ico--gold" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Secure HTTPS checkout · UPI &amp; Cash on Delivery</span>
     <span class="checkout-topbar__support">Need help? <b>hello@chekorganics.com</b></span>
   </div>
 </div>
@@ -37,7 +37,7 @@
 
     <!-- Step Breadcrumb -->
     <div class="checkout-steps">
-      <span class="step step--done"><span class="step__num">✓</span> Bag</span>
+      <span class="step step--done"><span class="step__num"><svg class="ico ico--sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Bag</span>
       <span class="step__divider">›</span>
       <span class="step step--active" id="crumb-shipping"><span class="step__num">2</span> Shipping</span>
       <span class="step__divider">›</span>
@@ -201,9 +201,9 @@
             <div class="form-row form-row--inline">
               <span class="label-inline">Save Address As:</span>
               <div class="pill-group" id="addr-type-group">
-                <button type="button" class="pill-btn is-active" data-addr-type="Home">🏠 Home</button>
-                <button type="button" class="pill-btn" data-addr-type="Work">💼 Work / Office</button>
-                <button type="button" class="pill-btn" data-addr-type="Other">📍 Other</button>
+                <button type="button" class="pill-btn is-active" data-addr-type="Home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Home</button>
+                <button type="button" class="pill-btn" data-addr-type="Work"><svg class="ico" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Work / Office</button>
+                <button type="button" class="pill-btn" data-addr-type="Other"><svg class="ico" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Other</button>
               </div>
             </div>
           </div>
@@ -298,8 +298,8 @@
                             <button type="button" class="btn-copy-vpa" id="btn-copy-vpa" title="Copy UPI ID">Copy</button>
                           </div>
                           <div class="upi-intent-wrap">
-                            <a href="#" id="upi-intent-link" class="btn btn--sm btn--upi-app" target="_blank" rel="noopener">
-                              📱 Tap to Pay on Mobile UPI App
+                            <a href="#" id="upi-intent-link" class="btn btn--sm btn--upi-app" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.35rem">
+                              <svg class="ico ico--sm" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Tap to Pay on Mobile UPI App
                             </a>
                           </div>
                           <p class="upi-timer-text">After paying, enter the UPI transaction ID (UTR) below so we can match your payment</p>
@@ -335,7 +335,7 @@
 
                 <div class="payment-method__body" id="pay-body-cod" style="display:none">
                   <div class="cod-box">
-                    <div class="cod-icon">📦</div>
+                    <div class="cod-icon"><svg class="ico ico--xl ico--gold" viewBox="0 0 24 24"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
                     <div class="cod-text">
                       <b>Pay ₹<span class="cod-amount-val">0</span> upon delivery</b>
                       <p>You can pay cash or scan the delivery agent's UPI QR at your doorstep.</p>
@@ -349,12 +349,12 @@
 
           <!-- Final Place Order Button -->
           <div class="checkout-actions">
-            <button type="submit" class="btn btn--primary btn--block btn--checkout-submit" id="btn-place-order">
-              <span class="lock-icon">🔒</span>
+            <button type="submit" class="btn btn--primary btn--block btn--checkout-submit" id="btn-place-order" style="display:flex;align-items:center;justify-content:center;gap:0.5rem">
+              <span class="lock-icon"><svg class="ico ico--sm" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
               <span id="btn-place-order-text">Place Order · ₹0</span>
             </button>
             <p class="checkout-guarantee-note">
-              🛡️ <b>CHEKORGANICS Buyer Protection</b>: 100% Genuine Ayurvedic Formulations · 7-Day Easy Replacement · Safe &amp; Contactless Delivery
+              <span style="display:inline-flex;align-items:center;gap:0.35rem"><svg class="ico ico--sm ico--leaf" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> <b>CHEKORGANICS Buyer Protection</b>: 100% Genuine Ayurvedic Formulations · 7-Day Easy Replacement · Safe &amp; Contactless Delivery</span>
             </p>
           </div>
 
@@ -363,15 +363,15 @@
         <!-- Trust Badges Row -->
         <div class="checkout-assurances">
           <div class="c-assurance">
-            <span class="c-assurance__icon">🌿</span>
+            <span class="c-assurance__icon"><svg class="ico ico--leaf ico--lg" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span>
             <div><b>Farm to Bottle</b><span>Organic Noni grown on our farm in Telangana</span></div>
           </div>
           <div class="c-assurance">
-            <span class="c-assurance__icon">🏛️</span>
+            <span class="c-assurance__icon"><svg class="ico ico--gold ico--lg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
             <div><b>AYUSH Certified</b><span>Govt. of India approved therapeutic formulation</span></div>
           </div>
           <div class="c-assurance">
-            <span class="c-assurance__icon">🚚</span>
+            <span class="c-assurance__icon"><svg class="ico ico--leaf ico--lg" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>
             <div><b>Safe Express Courier</b><span>Tamper-proof sanitized packaging</span></div>
           </div>
         </div>
@@ -398,13 +398,13 @@
               <button type="button" class="btn btn--sm btn--primary" id="btn-apply-coupon">Apply</button>
             </div>
             <div class="coupon-chips">
-              <button type="button" class="coupon-chip" data-coupon="WELCOME10">🏷️ WELCOME10 (10% OFF)</button>
-              <button type="button" class="coupon-chip" data-coupon="CHEK100">🏷️ CHEK100 (₹100 OFF)</button>
-              <button type="button" class="coupon-chip" data-coupon="AYURVEDA">🏷️ AYURVEDA (15% OFF)</button>
+              <button type="button" class="coupon-chip" data-coupon="WELCOME10"><svg class="ico ico--sm ico--gold" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> WELCOME10 (10% OFF)</button>
+              <button type="button" class="coupon-chip" data-coupon="CHEK100"><svg class="ico ico--sm ico--gold" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> CHEK100 (₹100 OFF)</button>
+              <button type="button" class="coupon-chip" data-coupon="AYURVEDA"><svg class="ico ico--sm ico--gold" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> AYURVEDA (15% OFF)</button>
             </div>
             <div class="coupon-applied-badge" id="coupon-applied-badge" style="display:none">
               <span class="badge-text" id="coupon-applied-text"></span>
-              <button type="button" class="coupon-remove-btn" id="btn-remove-coupon">✕</button>
+              <button type="button" class="coupon-remove-btn" id="btn-remove-coupon" aria-label="Remove coupon"><svg class="ico ico--xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
             </div>
           </div>
 
@@ -435,15 +435,15 @@
               <b class="calc-total" id="calc-total">₹0</b>
             </div>
             <div class="savings-banner" id="savings-banner" style="display:none">
-              🌿 <span id="savings-text">You are saving ₹0 on this Ayurvedic order!</span>
+              <span style="display:inline-flex;align-items:center;gap:0.4rem"><svg class="ico ico--leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> <span id="savings-text">You are saving ₹0 on this Ayurvedic order!</span></span>
             </div>
           </div>
 
           <!-- Sidebar Reassurance -->
           <div class="summary-trust">
-            <div class="trust-item"><span class="check">✓</span> 100% Herbal &amp; Chemical Free</div>
-            <div class="trust-item"><span class="check">✓</span> 7-Day Hassle-Free Replacement</div>
-            <div class="trust-item"><span class="check">✓</span> Direct from Manufacturer</div>
+            <div class="trust-item"><span class="check"><svg class="ico ico--sm ico--leaf" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> 100% Herbal &amp; Chemical Free</div>
+            <div class="trust-item"><span class="check"><svg class="ico ico--sm ico--leaf" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> 7-Day Hassle-Free Replacement</div>
+            <div class="trust-item"><span class="check"><svg class="ico ico--sm ico--leaf" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Direct from Manufacturer</div>
           </div>
         </div>
       </aside>
@@ -453,7 +453,7 @@
     <!-- Empty Bag State (displayed if cart is empty) -->
     <div class="checkout-empty" id="checkout-empty" style="display:none">
       <div class="empty-box">
-        <div class="empty-icon">🌿</div>
+        <div class="empty-icon"><svg class="ico ico--xl ico--leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div>
         <h2>Your Ayurvedic bag is currently empty</h2>
         <p>Explore our farm-fresh Noni herbal formulations, cold-pressed oils and Ayurvedic remedies.</p>
         <a class="btn btn--primary" href="shop.html">Explore Products</a>
@@ -464,7 +464,7 @@
     <div class="order-confirmation" id="order-confirmation" style="display:none">
       <div class="order-success-card">
         <div class="order-success-badge">
-          <div class="success-icon-animated">✓</div>
+          <div class="success-icon-animated"><svg class="ico ico--lg" viewBox="0 0 24 24" style="color:#ffffff"><polyline points="20 6 9 17 4 12"/></svg></div>
         </div>
         <span class="eyebrow eyebrow--center">Ayurvedic Order Confirmed</span>
         <h2 class="order-success-title">Thank You, <span id="conf-customer-name">Customer</span>!</h2>
@@ -479,13 +479,13 @@
             <span class="tracker-eta">Estimated Delivery: <b id="conf-delivery-date">In 3-4 Days</b></span>
           </div>
           <div class="tracker-steps">
-            <div class="t-step t-step--done"><div class="t-dot">✓</div><span>Order Placed</span></div>
+            <div class="t-step t-step--done"><div class="t-dot"><svg class="ico ico--sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span>Order Placed</span></div>
             <div class="t-step"><div class="t-dot"></div><span>Farm Batching</span></div>
             <div class="t-step"><div class="t-dot"></div><span>Dispatched</span></div>
             <div class="t-step"><div class="t-dot"></div><span>Out for Delivery</span></div>
           </div>
           <p class="tracker-note" id="conf-whatsapp-note">
-            📦 Save your order ID to track it any time from "Track Order".
+            <span style="display:inline-flex;align-items:center;gap:0.4rem"><svg class="ico ico--gold" viewBox="0 0 24 24"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Save your order ID to track it any time from "Track Order".</span>
           </p>
         </div>
 
@@ -517,8 +517,8 @@
 
         <!-- Action buttons -->
         <div class="confirmation-actions">
-          <button type="button" class="btn btn--outline" id="btn-print-receipt">
-            🖨️ Download / Print Invoice
+          <button type="button" class="btn btn--outline" id="btn-print-receipt" style="display:inline-flex;align-items:center;gap:0.5rem">
+            <svg class="ico" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Download / Print Invoice
           </button>
           <a class="btn btn--primary" href="shop.html">
             Continue Shopping
@@ -539,7 +539,7 @@
   <div class="gateway-modal">
     <div class="gateway-spinner">
       <div class="spinner-circle"></div>
-      <span class="spinner-leaf">🌿</span>
+      <span class="spinner-leaf"><svg class="ico ico--leaf ico--lg" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span>
     </div>
     <h3 id="gateway-status-title">Placing your order…</h3>
     <p id="gateway-status-desc">Saving your order details. Please do not refresh or close this window.</p>
@@ -548,6 +548,12 @@
 
 <footer class="footer footer--checkout">
   <div class="container">
+    <div style="display:flex;flex-wrap:wrap;gap:1.25rem;justify-content:center;margin-bottom:0.75rem;font-size:0.82rem;">
+      <a href="shipping-policy.html" style="color:inherit;opacity:0.85;text-decoration:none">Shipping Policy</a>
+      <a href="refund-policy.html" style="color:inherit;opacity:0.85;text-decoration:none">Refund Policy</a>
+      <a href="privacy-policy.html" style="color:inherit;opacity:0.85;text-decoration:none">Privacy Policy</a>
+      <a href="contact.html" style="color:inherit;opacity:0.85;text-decoration:none">Contact Support</a>
+    </div>
     <div class="footer__bottom">
       <span>© 2026 CHEKORGANICS · Route to Roots · All Rights Reserved</span>
       <span>Secure HTTPS checkout · UPI &amp; Cash on Delivery</span>
@@ -558,10 +564,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script src="firebase-db.js?v=202610130839"></script>
-<script src="auth.js?v=202610130839"></script>
-<script src="data.js?v=202610130839"></script>
+<script src="firebase-db.js?v=202610131004"></script>
+<script src="auth.js?v=202610131004"></script>
+<script src="data.js?v=202610131004"></script>
 <script src="qrcode.min.js"></script>
-<script src="app.js?v=202610130839"></script>
+<script src="app.js?v=202610131004"></script>
 </body>
 </html>

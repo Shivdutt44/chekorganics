@@ -40,7 +40,7 @@
     const modalHTML = `
       <div class="auth-modal-backdrop" id="auth-modal-backdrop" aria-hidden="true">
         <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
-          <button type="button" class="auth-modal__close" id="auth-modal-close" aria-label="Close dialog">✕</button>
+          <button type="button" class="auth-modal__close" id="auth-modal-close" aria-label="Close dialog"><svg class="ico ico--xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           
           <div class="auth-modal__header">
             <span class="auth-modal__badge">Ayurvedic Member Portal</span>
@@ -164,7 +164,7 @@
                   <input type="text" id="track-query" class="auth-input" placeholder="e.g. CHEK-00123 or 9876543210" required>
                 </div>
                 <button type="submit" class="auth-btn-submit" id="btn-submit-track">
-                  <span>Track Live Order 🚚</span>
+                  <svg class="ico ico--sm ico--white" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> <span>Track Live Order</span>
                 </button>
               </form>
 
@@ -495,7 +495,7 @@
         } finally {
           if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = "<span>Track Live Order 🚚</span>";
+            submitBtn.innerHTML = '<svg class="ico ico--sm ico--white" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> <span>Track Live Order</span>';
           }
         }
       };
@@ -539,7 +539,7 @@
       const next = !cancelled && i === stage + 1;
       const color = done ? "#166534" : next ? "#c29a45" : "#94a3b8";
       const dot = done
-        ? `<span style="background:#166534;color:#fff;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:0.7rem">✓</span>`
+        ? `<span style="background:#166534;color:#fff;width:20px;height:20px;border-radius:50%;display:grid;place-items:center"><svg class="ico ico--xs ico--white" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>`
         : next
           ? `<span style="background:#c29a45;color:#fff;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:0.7rem">●</span>`
           : `<span style="border:1.5px solid #cbd5e1;color:#94a3b8;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:0.7rem">○</span>`;

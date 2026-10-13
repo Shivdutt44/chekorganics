@@ -34,6 +34,30 @@
 
 * { box-sizing: border-box; }
 
+.ico {
+  display: inline-block;
+  vertical-align: -0.15em;
+  width: 1em;
+  height: 1em;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.ico--fill {
+  fill: currentColor;
+  stroke: none;
+}
+.ico--gold { color: #c29a45; }
+.ico--leaf { color: #166534; }
+.ico--muted { color: #64748b; }
+.ico--sm { width: 14px; height: 14px; }
+.ico--md { width: 18px; height: 18px; }
+.ico--lg { width: 22px; height: 22px; }
+.ico--xl { width: 32px; height: 32px; }
+
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {

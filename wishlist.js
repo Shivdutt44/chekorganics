@@ -123,16 +123,41 @@
 
   /* ------------------------------------------------------- header button */
   function headerButton() {
+    const amzTop = $(".amz-top__inner");
+    if (amzTop && !$(".amz-wishlist", amzTop)) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "amz-wishlist amz-hit";
+      b.setAttribute("data-wishlist-open", "");
+      b.setAttribute("aria-label", "Open wishlist");
+      b.setAttribute("aria-haspopup", "dialog");
+      b.innerHTML = `
+        <span class="amz-wishlist__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span class="amz-wishlist__count" data-wishlist-count style="display:none">0</span>
+        </span>
+        <span class="amz-two amz-wishlist__text">
+          <span class="amz-two__sm">Your</span>
+          <b>Wishlist</b>
+        </span>
+      `;
+      const cart = $(".amz-cart", amzTop);
+      amzTop.insertBefore(b, cart || null);
+    }
+
     const actions = $(".header__actions");
-    if (!actions || $(".wl-btn", actions)) return;
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "icon-btn wl-btn";
-    b.setAttribute("data-wishlist-open", "");
-    b.setAttribute("aria-haspopup", "dialog");
-    b.innerHTML = HEART + '<span class="cart-count wl-count" data-wishlist-count style="display:none">0</span>';
-    const before = $(".acct-btn", actions) || $("[data-open-cart]", actions);
-    actions.insertBefore(b, before || null);
+    if (actions && !$(".wl-btn", actions)) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "icon-btn wl-btn";
+      b.setAttribute("data-wishlist-open", "");
+      b.setAttribute("aria-haspopup", "dialog");
+      b.innerHTML = HEART + '<span class="cart-count wl-count" data-wishlist-count style="display:none">0</span>';
+      const before = $(".acct-btn", actions) || $("[data-open-cart]", actions);
+      actions.insertBefore(b, before || null);
+    }
   }
 
   /* ------------------------------------------------------- product page */

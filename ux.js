@@ -144,11 +144,11 @@
           '<div class="acct-pop__head"><span class="acct-pop__avatar" style="font-weight:700;font-size:1.1rem;background:var(--forest);color:#c29a45">' + esc(initial) + '</span>' +
           '<div><b>Namaste, ' + esc(name) + '!</b><span style="font-size:0.75rem;color:var(--muted)">' + esc(user.email) + '</span></div></div>' +
           '<div class="acct-pop__actions" style="grid-template-columns:1fr;margin-bottom:0.6rem">' +
-          '<button type="button" class="btn btn--primary" data-auth-action="orders" style="justify-content:center">📦 My Orders &amp; Profile</button></div>' +
+          '<button type="button" class="btn btn--primary" data-auth-action="orders" style="justify-content:center;display:flex;align-items:center;gap:0.5rem">' + ICON.box + ' My Orders &amp; Profile</button></div>' +
           '<ul class="acct-pop__list">' +
           '<li><a href="#orders" data-auth-action="orders">' + ICON.box + "My orders</a></li>" +
           '<li><a href="#track" data-auth-action="track">' + ICON.truck + "Track an order</a></li>" +
-          '<li><a href=\"https://www.chekorganics.com/pages/contact\" target=\"_blank\" rel=\"noopener\">' + ICON.help + "Help &amp; support</a></li>" +
+          '<li><a href="contact.html">' + ICON.help + "Help &amp; support</a></li>" +
           '<li><button type=\"button\" data-auth-action=\"logout\" style=\"display:flex;align-items:center;gap:0.7rem;min-height:44px;width:100%;border:none;background:none;font-size:0.92rem;color:#b91c1c;cursor:pointer;padding:0 0.5rem;font-family:inherit;border-radius:12px\">' + ICON.lock + "Sign Out</button></li></ul>" +
           '<p class="acct-pop__note">' + ICON.lock + "Signed in with ChekOrganics Cloud Account.</p>";
       } else {
@@ -161,7 +161,7 @@
           '<ul class="acct-pop__list">' +
           '<li><a href="#orders" data-auth-action="orders">' + ICON.box + "My orders</a></li>" +
           '<li><a href="#track" data-auth-action="track">' + ICON.truck + "Track an order</a></li>" +
-          '<li><a href=\"https://www.chekorganics.com/pages/contact\" target=\"_blank\" rel=\"noopener\">' + ICON.help + "Help &amp; support</a></li></ul>" +
+          '<li><a href="contact.html">' + ICON.help + "Help &amp; support</a></li></ul>" +
           '<p class="acct-pop__note">' + ICON.lock + "Your account is secured by ChekOrganics. 100% private &amp; safe.</p>";
       }
     }

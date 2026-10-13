@@ -29,11 +29,11 @@
   ];
 
   const CONCERNS = [
-    { label: "🌿 Hair Fall & Dandruff", term: "Hair Fall" },
-    { label: "✨ Natural Detox & Immunity", term: "Detox" },
-    { label: "🌸 Skin Glow & Tan Removal", term: "Glow" },
-    { label: "🍃 Dental & Oral Detox", term: "Mulika Manjan" },
-    { label: "💪 Stress Relief & Vitality", term: "Ashwagandha" }
+    { label: "Hair Fall & Dandruff", term: "Hair Fall" },
+    { label: "Natural Detox & Immunity", term: "Detox" },
+    { label: "Skin Glow & Tan Removal", term: "Glow" },
+    { label: "Dental & Oral Care", term: "Mulika Manjan" },
+    { label: "Stress Relief & Vitality", term: "Ashwagandha" }
   ];
 
   /* Read recent searches from localStorage */
@@ -215,7 +215,7 @@
             spellcheck="false"
             aria-label="Search remedies and products"
           >
-          <button type="button" id="adv-search-clear" class="adv-search-clear" aria-label="Clear search query" style="display:none;">✕</button>
+          <button type="button" id="adv-search-clear" class="adv-search-clear" aria-label="Clear search query" style="display:none;"><svg class="ico ico--xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           <button type="button" class="adv-search-close" id="adv-search-close" aria-label="Close search">
             Close <kbd>ESC</kbd>
           </button>
@@ -256,7 +256,7 @@
 
         <!-- Foot -->
         <div class="adv-search-foot">
-          <span>🌿 100% Genuine Ayurvedic Formulations · Farm to Formula</span>
+          <span style="display:inline-flex;align-items:center;gap:0.4rem"><svg class="ico ico--leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> 100% Genuine Ayurvedic Formulations · Farm to Formula</span>
           <a href="shop.html" id="adv-view-all-link">Browse Full Shop Catalog (38 products) →</a>
         </div>
       </div>
@@ -485,7 +485,7 @@
 
         btn.classList.add("is-added");
         const prevText = btn.innerHTML;
-        btn.innerHTML = "✓ Added";
+        btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.3rem"><svg class="ico ico--sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Added</span>`;
         setTimeout(() => {
           btn.classList.remove("is-added");
           btn.innerHTML = prevText;
@@ -508,7 +508,7 @@
     // Trending Searches
     html += `
       <div class="adv-idle-section">
-        <h4>🔥 Trending Ayurvedic Searches</h4>
+        <h4 style="display:flex;align-items:center;gap:0.4rem"><svg class="ico ico--gold" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> Trending Ayurvedic Searches</h4>
         <div class="adv-pills-wrap">
           ${TRENDING_QUERIES.map(q => `<button type="button" class="adv-quick-pill" data-search-term="${escapeHtml(q)}">${escapeHtml(q)}</button>`).join("")}
         </div>
@@ -518,7 +518,7 @@
     // Browse by Concern
     html += `
       <div class="adv-idle-section">
-        <h4>🌿 Browse by Health & Skin Concern</h4>
+        <h4 style="display:flex;align-items:center;gap:0.4rem"><svg class="ico ico--leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Browse by Health &amp; Skin Concern</h4>
         <div class="adv-pills-wrap">
           ${CONCERNS.map(c => `<button type="button" class="adv-quick-pill" data-search-term="${escapeHtml(c.term)}">${escapeHtml(c.label)}</button>`).join("")}
         </div>
@@ -530,7 +530,7 @@
       html += `
         <div class="adv-idle-section">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.65rem;">
-            <h4 style="margin:0;">🕒 Recent Searches</h4>
+            <h4 style="margin:0;display:flex;align-items:center;gap:0.4rem"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Recent Searches</h4>
             <button type="button" id="adv-clear-recent" style="font-size:0.74rem;background:none;border:none;color:#94a3b8;cursor:pointer;text-decoration:underline;">Clear</button>
           </div>
           <div class="adv-pills-wrap">

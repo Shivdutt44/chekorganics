@@ -12,7 +12,7 @@
   --amz-gold: var(--gold-2, #e3c47c);
   --amz-gold-deep: var(--gold, #c29a45);
   position: relative;
-  z-index: 60;
+  z-index: 120;
   font-family: var(--font-body, "Inter", Arial, sans-serif);
   color: var(--amz-text);
 }
@@ -138,6 +138,69 @@
 .amz-acct__icon { display: none; }
 .amz-acct__mobile { display: none; }
 
+/* wishlist */
+.amz-wishlist {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #ffffff;
+  position: relative;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0.4rem 0.55rem;
+}
+.amz-wishlist:hover {
+  border-color: var(--amz-gold, #c29a45);
+  color: #ffffff;
+}
+.amz-wishlist__icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.amz-wishlist__icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.2s, fill 0.2s;
+}
+.amz-wishlist:hover .amz-wishlist__icon svg {
+  transform: scale(1.12);
+  stroke: var(--amz-gold, #f7d58b);
+  fill: rgba(194, 154, 69, 0.18);
+}
+.amz-wishlist__count {
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: var(--amz-gold, #c29a45);
+  color: #0d2416;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+.amz-wishlist__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
 /* cart */
 .amz-cart { display: flex; align-items: flex-end; gap: 0.1rem; }
 .amz-cart__icon { position: relative; display: block; width: 40px; height: 34px; }
@@ -152,15 +215,41 @@
 .amz-cart__label { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; }
 
 /* --------------------------------------------------------- category bar */
-.amz-nav { background: var(--amz-nav); }
+.amz-nav { background: var(--amz-nav); position: relative; }
 .amz-nav__inner {
   max-width: 1500px; margin: 0 auto;
-  display: flex; align-items: center; gap: 0.15rem;
+  display: flex; align-items: center; gap: 0.25rem;
   padding: 0.2rem 1rem;
   min-height: 40px;
 }
 .amz-all { display: flex; align-items: center; gap: 0.35rem; font-weight: 700; font-size: 0.9rem; }
 .amz-all svg { width: 20px; height: 20px; }
+
+/* Categories Trigger Button with Animated Chevron */
+.amz-cat-trigger {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-weight: 700; font-size: 0.88rem;
+  color: #ffffff; cursor: pointer;
+  background: none; border: 1px solid transparent;
+  padding: 0.35rem 0.65rem; border-radius: 4px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.amz-cat-trigger:hover,
+.amz-cat-trigger.is-active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--amz-gold, #c29a45);
+  color: var(--amz-gold, #f7d58b);
+}
+.amz-cat-trigger .amz-chevron {
+  width: 13px; height: 13px;
+  stroke: currentColor;
+  transition: transform 0.25s ease;
+}
+.amz-cat-trigger.is-active .amz-chevron {
+  transform: rotate(180deg);
+}
+
 .amz-nav__links { display: flex; align-items: center; gap: 0.1rem; flex: 1; min-width: 0; overflow: hidden; }
 .amz-header .amz-nav__links > * { font-size: 0.88rem; white-space: nowrap; padding: 0.35rem 0.55rem; }
 .amz-nav__links a[aria-current="page"] { border-color: var(--amz-gold-deep); }
@@ -178,6 +267,405 @@
   white-space: nowrap;
 }
 .amz-promo svg { width: 20px; height: 20px; }
+
+/* ==========================================================================
+   AMAZON-STYLE MEGA MENU WITH CIRCLE COLLECTIONS
+   ========================================================================== */
+.amz-megamenu-scrim {
+  position: fixed; inset: 0;
+  top: 96px;
+  z-index: 109;
+  background: rgba(10, 31, 20, 0.48);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.amz-megamenu-scrim.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.amz-megamenu {
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  background: #ffffff;
+  color: #1b1b1b;
+  border-bottom: 3.5px solid #c29a45;
+  box-shadow: 0 24px 60px rgba(10, 31, 20, 0.28);
+  z-index: 115;
+  display: none;
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.amz-megamenu.is-open {
+  display: block;
+  animation: amzMegaSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes amzMegaSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.amz-megamenu__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1.35rem 1.5rem 1.15rem;
+}
+
+/* 1. CIRCLE COLLECTIONS ROW */
+.amz-megamenu__circles-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.65rem;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid #f0eae1;
+}
+.amz-megamenu__circles-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #0f2e1d;
+}
+.amz-megamenu__circles-title small {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.78rem;
+  color: #78716c;
+  font-weight: 400;
+  margin-left: 0.5rem;
+}
+.amz-megamenu__all-link {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #166534;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color 0.2s ease;
+}
+.amz-megamenu__all-link:hover {
+  color: #c29a45;
+  text-decoration: underline;
+}
+
+.amz-megamenu__circles-row {
+  display: flex;
+  gap: 1.1rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #f0eae1;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #dcd3be #faf8f5;
+  -webkit-overflow-scrolling: touch;
+}
+.amz-megamenu__circles-row::-webkit-scrollbar {
+  height: 4px;
+}
+.amz-megamenu__circles-row::-webkit-scrollbar-thumb {
+  background: #dcd3be;
+  border-radius: 99px;
+}
+
+.amz-circle-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.35rem 0.2rem;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+  flex: 0 0 calc(10% - 1rem);
+  min-width: 86px;
+}
+.amz-circle-card:hover {
+  transform: translateY(-4px);
+}
+
+.amz-circle-card__img-wrap {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 2.5px solid #ded6c4;
+  background: radial-gradient(circle at 50% 35%, #ffffff 0%, #f7f4ed 100%);
+  padding: 3px;
+  box-shadow: 0 4px 12px rgba(15, 46, 29, 0.08);
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.amz-circle-card:hover .amz-circle-card__img-wrap {
+  border-color: #c29a45;
+  box-shadow: 0 6px 20px rgba(194, 154, 69, 0.4);
+}
+
+.amz-circle-card__img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.amz-circle-card:hover .amz-circle-card__img {
+  transform: scale(1.1);
+}
+
+.amz-circle-card__title {
+  margin-top: 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0f2e1d;
+  text-align: center;
+  line-height: 1.25;
+  transition: color 0.2s ease;
+}
+.amz-circle-card:hover .amz-circle-card__title {
+  color: #c29a45;
+}
+
+.amz-circle-card__count {
+  font-size: 0.68rem;
+  color: #78716c;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* 2. CATEGORIZED COLUMNS GRID */
+.amz-megamenu__cols {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) 280px;
+  gap: 1.5rem;
+  padding-bottom: 1.15rem;
+}
+
+.amz-mega-col {
+  display: flex;
+  flex-direction: column;
+}
+.amz-mega-col__head {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f2e1d;
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid #e7ded0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.amz-mega-col__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+}
+.amz-mega-col__list a {
+  font-size: 0.82rem;
+  color: #334155;
+  text-decoration: none;
+  line-height: 1.35;
+  display: inline-block;
+  padding: 0.2rem 0;
+  transition: all 0.15s ease;
+}
+.amz-mega-col__list a:hover {
+  color: #166534;
+  padding-left: 4px;
+}
+.amz-mega-col__viewall {
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #c29a45;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.amz-mega-col__viewall:hover {
+  text-decoration: underline;
+  color: #9c772b;
+}
+
+/* 5th Column: Spotlight Featured Card */
+.amz-mega-spotlight {
+  background: linear-gradient(145deg, #0a1f14, #123823);
+  border-radius: 14px;
+  padding: 1.15rem;
+  color: #faf8f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(194, 154, 69, 0.4);
+  box-shadow: 0 10px 24px rgba(10, 31, 20, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+.amz-mega-spotlight__badge {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f7d58b;
+  background: rgba(194, 154, 69, 0.25);
+  border: 1px solid rgba(194, 154, 69, 0.5);
+  padding: 2px 7px;
+  border-radius: 99px;
+  margin-bottom: 0.5rem;
+}
+.amz-mega-spotlight__img {
+  width: 100%;
+  height: 105px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+}
+.amz-mega-spotlight__title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.95rem;
+  margin: 0 0 0.2rem;
+  color: #ffffff;
+  line-height: 1.25;
+}
+.amz-mega-spotlight__desc {
+  font-size: 0.73rem;
+  color: rgba(250, 248, 245, 0.8);
+  margin: 0 0 0.65rem;
+  line-height: 1.35;
+}
+.amz-mega-spotlight__btn {
+  background: #c29a45;
+  color: #0f2e1d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.2s ease;
+  display: block;
+}
+.amz-mega-spotlight__btn:hover {
+  background: #f7d58b;
+}
+
+/* 3. MEGA MENU TRUST & LINKS FOOTER */
+.amz-megamenu__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #faf8f5;
+  margin: 0 -1.5rem -1.15rem;
+  padding: 0.85rem 1.5rem;
+  border-top: 1px solid #f0eae1;
+  font-size: 0.8rem;
+}
+.amz-megamenu__trust-items {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.amz-megamenu__trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #0f2e1d;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+.amz-megamenu__foot-links {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+}
+.amz-megamenu__foot-links a {
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.78rem;
+}
+.amz-megamenu__foot-links a:hover {
+  color: #0f2e1d;
+  text-decoration: underline;
+}
+
+/* 4. MOBILE DRAWER CIRCLE BUBBLES */
+.amz-drawer__circles-sec {
+  padding: 0.85rem 1.1rem;
+  background: #faf8f5;
+  border-bottom: 1px solid #e7ded0;
+}
+.amz-drawer__circles-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0f2e1d;
+  margin-bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.amz-drawer__circles-scroll {
+  display: flex;
+  gap: 0.85rem;
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.amz-drawer__circles-scroll::-webkit-scrollbar {
+  display: none;
+}
+.amz-drawer__circle-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  min-width: 62px;
+}
+.amz-drawer__circle-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1.8px solid #c29a45;
+  object-fit: cover;
+  background: #fff;
+  padding: 2px;
+  box-shadow: 0 2px 6px rgba(15, 46, 29, 0.1);
+}
+.amz-drawer__circle-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+  margin-top: 0.3rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 1100px) {
+  .amz-megamenu__cols {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .amz-mega-spotlight {
+    grid-column: 1 / -1;
+  }
+}
 
 /* ------------------------------------------- "Deliver to" PIN popover */
 .amz-loc-pop {
@@ -279,10 +767,10 @@
 @media (max-width: 767px) {
   .amz-top__inner {
     display: grid;
-    grid-template-columns: auto auto 1fr auto auto;
+    grid-template-columns: auto auto 1fr auto auto auto;
     grid-template-areas:
-      "burger logo . acct cart"
-      "search search search search search";
+      "burger logo . acct wishlist cart"
+      "search search search search search search";
     gap: 0.25rem 0.1rem;
     padding: 0.35rem 0.6rem 0.6rem;
   }
@@ -296,6 +784,10 @@
   .amz-acct .amz-two { display: none; }
   .amz-acct__mobile { display: inline; font-size: 0.84rem; white-space: nowrap; }
   .amz-acct__icon { display: block; width: 26px; height: 26px; }
+  .amz-wishlist { grid-area: wishlist; padding: 0.3rem 0.4rem; }
+  .amz-wishlist .amz-two { display: none; }
+  .amz-wishlist__icon { width: 26px; height: 26px; }
+  .amz-wishlist__icon svg { width: 22px; height: 22px; }
   .amz-cart { grid-area: cart; padding: 0.3rem 0.4rem; }
   .amz-cart__label { display: none; }
   .amz-search { grid-area: search; margin: 0.25rem 0 0; height: 44px; }

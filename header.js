@@ -41,7 +41,7 @@
     locPop.setAttribute("aria-labelledby", "amz-loc-title");
     locPop.innerHTML =
       '<div class="amz-loc-pop__head"><span id="amz-loc-title">Choose your location</span>' +
-        '<button type="button" data-loc-close aria-label="Close">✕</button></div>' +
+        '<button type="button" data-loc-close aria-label="Close"><svg class="ico ico--xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>' +
       '<form class="amz-loc-pop__body" data-loc-form>' +
         "Delivery options and speeds vary by location. Enter the 6-digit PIN code you want your order delivered to." +
         '<div class="amz-loc-pop__row">' +
@@ -189,11 +189,377 @@
     $$("[data-acct-mobile]").forEach(el => (el.textContent = user ? first + " ›" : "Sign in ›"));
   }
 
+  /* ------------------------------------------------------------- mega menu */
+  const COLLECTIONS_DATA = [
+    {
+      name: "Superfoods",
+      url: "shop.html?c=Superfoods",
+      image: "assets/products/chekorganics-noni-fruit-juice-ayush-certified-ayurvedic-wellness-elixir-0.webp",
+      count: "6 Remedies",
+      badge: "AYUSH Certified",
+      tagline: "Immunity & Detox",
+      top: [
+        { name: "Pure Noni Fruit Juice 800ml (AYUSH)", url: "product.html?p=chekorganics-noni-fruit-juice-ayush-certified-ayurvedic-wellness-elixir" },
+        { name: "Organic Spirulina Powder (100g)", url: "shop.html?c=Superfoods" },
+        { name: "Organic Moringa Powder (100g)", url: "shop.html?c=Superfoods" }
+      ]
+    },
+    {
+      name: "Haircare",
+      url: "shop.html?c=Haircare",
+      image: "assets/products/chekorganics-bodyhues-noni-herbal-hair-oil-200ml-0.webp",
+      count: "9 Remedies",
+      badge: "Bestseller",
+      tagline: "Fall Control & Dandruff",
+      top: [
+        { name: "Noni Herbal Hair Oil 200ml", url: "product.html?p=chekorganics-bodyhues-noni-herbal-hair-oil-200ml" },
+        { name: "Noni Herbal Shampoo 500ml", url: "product.html?p=noni-herbal-shampoo-500ml" },
+        { name: "Noni Herbal Shampoo 200ml", url: "shop.html?c=Haircare" }
+      ]
+    },
+    {
+      name: "Skin Care",
+      url: "shop.html?c=Skin%20Care",
+      image: "assets/products/chekorganics-bodyhues-noni-herbal-bath-powder-250g-0.webp",
+      count: "7 Remedies",
+      badge: "100% Herbal",
+      tagline: "Radiance & Glow",
+      top: [
+        { name: "Noni Herbal Bath Powder (Ubtan)", url: "product.html?p=chekorganics-bodyhues-noni-herbal-bath-powder-250g" },
+        { name: "Organic Noni Body Butter 100g", url: "shop.html?c=Skin%20Care" },
+        { name: "Taruna Gulab Body Milk 250g", url: "shop.html?c=Skin%20Care" }
+      ]
+    },
+    {
+      name: "Handmade Soaps",
+      url: "shop.html?c=Handmade%20Soaps",
+      image: "assets/products/chekorganics-bodyhues-noni-turmeric-soap-100gm-0.webp",
+      count: "5 Remedies",
+      badge: "Cold-Pressed",
+      tagline: "Gentle Herbal Cleansing",
+      top: [
+        { name: "Noni Turmeric Soap (100g)", url: "shop.html?c=Handmade%20Soaps" },
+        { name: "Pulpy Papaya De-Tan Bar", url: "shop.html?c=Handmade%20Soaps" },
+        { name: "Pure Noni Fruit Bath Bar", url: "shop.html?c=Handmade%20Soaps" }
+      ]
+    },
+    {
+      name: "Moisturisers",
+      url: "shop.html?c=Moisturisers",
+      image: "assets/products/chekorganics-bodyhues-organic-noni-body-butter-50g-copy-0.webp",
+      count: "5 Remedies",
+      badge: "Deep Hydration",
+      tagline: "Nourishing Body Butters",
+      top: [
+        { name: "Organic Noni Body Butter 100g", url: "shop.html?c=Moisturisers" },
+        { name: "Organic Noni Body Butter 50g", url: "shop.html?c=Moisturisers" },
+        { name: "Taruna Gulab Body Milk 250g", url: "shop.html?c=Moisturisers" }
+      ]
+    },
+    {
+      name: "Men's Grooming",
+      url: "shop.html?c=Men%27s%20Grooming",
+      image: "assets/products/chekorganics-bodyhues-instarang-noni-herbal-hair-color-0.webp",
+      count: "5 Remedies",
+      badge: "Active Care",
+      tagline: "Beard & Hair Styling",
+      top: [
+        { name: "Men Hair & Beard Styling Cream", url: "shop.html?c=Men%27s%20Grooming" },
+        { name: "Men DUDE Herbal Shampoo 100ml", url: "shop.html?c=Men%27s%20Grooming" },
+        { name: "Instarang Natural Black Color", url: "shop.html?c=Men%27s%20Grooming" }
+      ]
+    },
+    {
+      name: "Herbal Hair Colours",
+      url: "shop.html?c=Herbal%20Hair%20Colours",
+      image: "assets/products/chekorganics-bodyhues-instarang-noni-herbal-hair-color-0.webp",
+      count: "3 Remedies",
+      badge: "Zero Chemical",
+      tagline: "Natural Black & Henna",
+      top: [
+        { name: "INSTARANG Herbal Hair Color 100g", url: "shop.html?c=Herbal%20Hair%20Colours" },
+        { name: "Noni Herbal Hair Pack 100g", url: "shop.html?c=Herbal%20Hair%20Colours" },
+        { name: "Noni Herbal Hair Pack 250g", url: "shop.html?c=Herbal%20Hair%20Colours" }
+      ]
+    },
+    {
+      name: "Lip Care",
+      url: "shop.html?c=Lip%20Care",
+      image: "assets/products/chekorganics-bodyhues-passion-fruit-lip-balm-0.webp",
+      count: "2 Remedies",
+      badge: "Natural Gloss",
+      tagline: "Chapped Lip Relief",
+      top: [
+        { name: "Passion Fruit Herbal Lip Balm", url: "shop.html?c=Lip%20Care" },
+        { name: "Clear Noni Gloss Lip Balm", url: "shop.html?c=Lip%20Care" }
+      ]
+    },
+    {
+      name: "Oral Care",
+      url: "shop.html?c=Oral%20Care",
+      image: "assets/products/chekorganics-mulika-manjan-ayurvedic-herbal-tooth-paste-18-herbs-fluoride-free-0.webp",
+      count: "1 Remedy",
+      badge: "18+ Herbs",
+      tagline: "Fluoride-Free Gum Care",
+      top: [
+        { name: "MULIKA MANJAN Toothpaste 50g", url: "shop.html?c=Oral%20Care" }
+      ]
+    },
+    {
+      name: "Eye Care",
+      url: "shop.html?c=Eye%20Care",
+      image: "assets/products/chekorganics-ashyukajal-noni-kajal-0.webp",
+      count: "1 Remedy",
+      badge: "32 Herbs",
+      tagline: "Cooling Noni Kajal",
+      top: [
+        { name: "AshyuKajal Traditional Noni Kajal 2g", url: "shop.html?c=Eye%20Care" }
+      ]
+    }
+  ];
+
+  function setupMegaMenu() {
+    const nav = $(".amz-nav");
+    if (!nav) return;
+    const navInner = $(".amz-nav__inner", nav);
+    if (!navInner) return;
+
+    // 1. Ensure trigger button in the sub-bar
+    let trigger = $("#amz-mega-trigger");
+    if (!trigger) {
+      trigger = document.createElement("button");
+      trigger.id = "amz-mega-trigger";
+      trigger.className = "amz-cat-trigger amz-hit";
+      trigger.type = "button";
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-haspopup", "true");
+      trigger.innerHTML = '<span>Categories</span> <svg class="amz-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
+      const allBtn = $(".amz-all", navInner);
+      if (allBtn && allBtn.nextSibling) {
+        navInner.insertBefore(trigger, allBtn.nextSibling);
+      } else {
+        navInner.prepend(trigger);
+      }
+    }
+
+    // 2. Build Scrim & Mega Menu Container if not present
+    let scrim = $("#amz-megamenu-scrim");
+    if (!scrim) {
+      scrim = document.createElement("div");
+      scrim.id = "amz-megamenu-scrim";
+      scrim.className = "amz-megamenu-scrim";
+      document.body.appendChild(scrim);
+    }
+
+    let menu = $("#amz-megamenu");
+    if (!menu) {
+      menu = document.createElement("div");
+      menu.id = "amz-megamenu";
+      menu.className = "amz-megamenu";
+      menu.setAttribute("role", "region");
+      menu.setAttribute("aria-label", "Collections and Categories Mega Menu");
+
+      const circlesHtml = COLLECTIONS_DATA.map(c => `
+        <a href="${c.url}" class="amz-circle-card" title="Explore ${esc(c.name)} (${esc(c.count)})">
+          <div class="amz-circle-card__img-wrap">
+            <img src="${esc(c.image)}" alt="${esc(c.name)}" class="amz-circle-card__img" loading="lazy">
+          </div>
+          <span class="amz-circle-card__title">${esc(c.name)}</span>
+          <span class="amz-circle-card__count">${esc(c.count)}</span>
+        </a>
+      `).join("");
+
+      menu.innerHTML = `
+        <div class="amz-megamenu__inner">
+          <!-- 1. CIRCULAR COLLECTION IMAGES ROW (AMAZON STYLE) -->
+          <div class="amz-megamenu__circles-head">
+            <div class="amz-megamenu__circles-title">
+              <svg class="ico ico--sm ico--gold" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span>Explore Ayurvedic Collections</span>
+              <small>Click any circle to browse authentic remedies</small>
+            </div>
+            <a href="shop.html" class="amz-megamenu__all-link">Browse Full Catalog (38) →</a>
+          </div>
+
+          <div class="amz-megamenu__circles-row">
+            ${circlesHtml}
+          </div>
+
+          <!-- 2. CATEGORIZED COLUMNS GRID -->
+          <div class="amz-megamenu__cols">
+            <!-- Column 1: Superfoods -->
+            <div class="amz-mega-col">
+              <h4 class="amz-mega-col__head">
+                <svg class="ico ico--xs ico--leaf" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Superfoods &amp; Detox
+              </h4>
+              <ul class="amz-mega-col__list">
+                <li><a href="product.html?p=chekorganics-noni-fruit-juice-ayush-certified-ayurvedic-wellness-elixir">Pure Noni Fruit Juice 800ml (AYUSH)</a></li>
+                <li><a href="shop.html?c=Superfoods">Organic Spirulina Powder (100g)</a></li>
+                <li><a href="shop.html?c=Superfoods">Organic Moringa Powder (100g)</a></li>
+                <li><a href="shop.html?c=Superfoods">Noni Triphala Immunity Mix</a></li>
+              </ul>
+              <a href="shop.html?c=Superfoods" class="amz-mega-col__viewall">View all Superfoods (6) →</a>
+            </div>
+
+            <!-- Column 2: Haircare -->
+            <div class="amz-mega-col">
+              <h4 class="amz-mega-col__head">
+                <svg class="ico ico--xs ico--leaf" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Haircare &amp; Scalp
+              </h4>
+              <ul class="amz-mega-col__list">
+                <li><a href="product.html?p=chekorganics-bodyhues-noni-herbal-hair-oil-200ml">Noni Herbal Hair Oil (Fall Control)</a></li>
+                <li><a href="product.html?p=noni-herbal-shampoo-500ml">Noni Herbal Shampoo 500ml</a></li>
+                <li><a href="shop.html?c=Herbal%20Hair%20Colours">Instarang Noni Hair Color 100g</a></li>
+                <li><a href="shop.html?c=Haircare">Noni Herbal Hair Pack (Anti-Dandruff)</a></li>
+              </ul>
+              <a href="shop.html?c=Haircare" class="amz-mega-col__viewall">View all Haircare (9) →</a>
+            </div>
+
+            <!-- Column 3: Skincare & Soaps -->
+            <div class="amz-mega-col">
+              <h4 class="amz-mega-col__head">
+                <svg class="ico ico--xs ico--leaf" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Skincare &amp; Soaps
+              </h4>
+              <ul class="amz-mega-col__list">
+                <li><a href="product.html?p=chekorganics-bodyhues-noni-herbal-bath-powder-250g">Noni Herbal Bath Powder (Ubtan)</a></li>
+                <li><a href="shop.html?c=Moisturisers">Organic Noni Body Butter 100g</a></li>
+                <li><a href="shop.html?c=Handmade%20Soaps">Noni Turmeric Bath Soap 100g</a></li>
+                <li><a href="shop.html?c=Handmade%20Soaps">Pulpy Papaya De-Tan Bath Bar</a></li>
+                <li><a href="shop.html?c=Moisturisers">Taruna Gulab Body Milk (250g)</a></li>
+              </ul>
+              <a href="shop.html?c=Skin%20Care" class="amz-mega-col__viewall">View all Skincare (12) →</a>
+            </div>
+
+            <!-- Column 4: Personal Rituals -->
+            <div class="amz-mega-col">
+              <h4 class="amz-mega-col__head">
+                <svg class="ico ico--xs ico--leaf" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Speciality &amp; Men
+              </h4>
+              <ul class="amz-mega-col__list">
+                <li><a href="shop.html?c=Eye%20Care">AshyuKajal Traditional Noni Kajal (32 Herbs)</a></li>
+                <li><a href="shop.html?c=Oral%20Care">Mulika Manjan Herbal Toothpaste (18+ Herbs)</a></li>
+                <li><a href="shop.html?c=Lip%20Care">Passion Fruit &amp; Noni Lip Balm</a></li>
+                <li><a href="shop.html?c=Men%27s%20Grooming">Men DUDE Beard Styling Cream</a></li>
+              </ul>
+              <a href="shop.html?c=Men%27s%20Grooming" class="amz-mega-col__viewall">Explore Speciality Care →</a>
+            </div>
+
+            <!-- Column 5: Ayurvedic Spotlight Card -->
+            <div class="amz-mega-spotlight">
+              <div>
+                <span class="amz-mega-spotlight__badge">AYUSH Certified Bestseller</span>
+                <img src="assets/products/chekorganics-noni-fruit-juice-ayush-certified-ayurvedic-wellness-elixir-0.webp" alt="Chek Noni Juice" class="amz-mega-spotlight__img" loading="lazy">
+                <h4 class="amz-mega-spotlight__title">Pure Noni Fruit Juice 800ml</h4>
+                <p class="amz-mega-spotlight__desc">Traditional fermentation from our Telangana organic farm. Zero added sugar or chemicals.</p>
+              </div>
+              <a href="product.html?p=chekorganics-noni-fruit-juice-ayush-certified-ayurvedic-wellness-elixir" class="amz-mega-spotlight__btn">Shop Elixir (₹899) →</a>
+            </div>
+          </div>
+
+          <!-- 3. TRUST & COMPANY FOOTER -->
+          <div class="amz-megamenu__foot">
+            <div class="amz-megamenu__trust-items">
+              <span class="amz-megamenu__trust-item"><svg class="ico ico--xs ico--gold" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> AYUSH Certified · Govt. of India</span>
+              <span class="amz-megamenu__trust-item"><svg class="ico ico--xs ico--gold" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> Free Shipping Above ₹3,000</span>
+              <span class="amz-megamenu__trust-item"><svg class="ico ico--xs ico--gold" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Safe UPI &amp; Cash on Delivery</span>
+              <span class="amz-megamenu__trust-item"><svg class="ico ico--xs ico--gold" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Telangana Farm &amp; Secunderabad LLP</span>
+            </div>
+            <div class="amz-megamenu__foot-links">
+              <a href="story.html">Our Story</a>
+              <a href="about.html">About Us</a>
+              <a href="contact.html">Contact Us</a>
+              <a href="shipping-policy.html">Shipping Policy</a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      nav.appendChild(menu);
+    }
+
+    // 3. Inject circular bubbles into Mobile Drawer (.amz-drawer)
+    const drawer = $(".mobile-nav.amz-drawer");
+    if (drawer && !$(".amz-drawer__circles-sec", drawer)) {
+      const head = $(".amz-drawer__head", drawer);
+      if (head) {
+        const sec = document.createElement("div");
+        sec.className = "amz-drawer__circles-sec";
+        sec.innerHTML = `
+          <div class="amz-drawer__circles-title">
+            <svg class="ico ico--xs ico--gold" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span>Shop By Collection</span>
+          </div>
+          <div class="amz-drawer__circles-scroll">
+            ${COLLECTIONS_DATA.map(c => `
+              <a href="${c.url}" class="amz-drawer__circle-item">
+                <img src="${esc(c.image)}" alt="${esc(c.name)}" class="amz-drawer__circle-img" loading="lazy">
+                <span class="amz-drawer__circle-label">${esc(c.name)}</span>
+              </a>
+            `).join("")}
+          </div>
+        `;
+        head.insertAdjacentElement("afterend", sec);
+      }
+    }
+
+    // 4. Interactive Open / Close Logic with Hover & Click
+    let closeTimer = null;
+
+    function openMega() {
+      if (closeTimer) clearTimeout(closeTimer);
+      trigger.classList.add("is-active");
+      trigger.setAttribute("aria-expanded", "true");
+      menu.classList.add("is-open");
+      menu.scrollTop = 0;
+      scrim.classList.add("is-open");
+    }
+
+    function closeMega() {
+      if (closeTimer) clearTimeout(closeTimer);
+      trigger.classList.remove("is-active");
+      trigger.setAttribute("aria-expanded", "false");
+      menu.classList.remove("is-open");
+      scrim.classList.remove("is-open");
+    }
+
+    function scheduleClose() {
+      if (closeTimer) clearTimeout(closeTimer);
+      closeTimer = setTimeout(closeMega, 240);
+    }
+
+    // Hover interactions (desktop)
+    trigger.addEventListener("mouseenter", openMega);
+    trigger.addEventListener("mouseleave", scheduleClose);
+    menu.addEventListener("mouseenter", openMega);
+    menu.addEventListener("mouseleave", scheduleClose);
+
+    // Click interactions
+    trigger.addEventListener("click", e => {
+      e.preventDefault();
+      if (menu.classList.contains("is-open")) {
+        closeMega();
+      } else {
+        openMega();
+      }
+    });
+
+    scrim.addEventListener("click", closeMega);
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && menu.classList.contains("is-open")) closeMega();
+    });
+
+    menu.addEventListener("click", e => {
+      if (e.target.closest("a")) closeMega();
+    });
+  }
+
   /* ------------------------------------------------------------------ boot */
   function init() {
     if (!$(".amz-header")) return;
     paintLocation();
     setupSearch();
+    setupMegaMenu();
 
     document.addEventListener("click", e => {
       const loc = e.target.closest("[data-loc-open]");

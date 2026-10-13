@@ -522,7 +522,7 @@
     bar.style.display = items.length ? "block" : "none";
     $(".ship-bar__fill", bar).style.width = pct + "%";
     if (!items.length) text.textContent = "";
-    else if (total >= FREE_SHIP) { text.innerHTML = '🎉 You\'ve unlocked <b>free shipping</b>'; bar.classList.add("is-done"); }
+    else if (total >= FREE_SHIP) { text.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.35rem"><svg class="ico ico--gold" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> You\'ve unlocked <b>free shipping</b></span>'; bar.classList.add("is-done"); }
     else { text.innerHTML = 'Add <b>' + money(FREE_SHIP - total) + "</b> more for free shipping"; bar.classList.remove("is-done"); }
     cost.textContent = total >= FREE_SHIP ? "FREE" : "Calculated at checkout";
 
@@ -664,7 +664,7 @@
     try { pin = localStorage.getItem("chek_delivery_pin") || ""; } catch (e) {}
     const fmt = d => d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
     const from = addBusinessDays(new Date(), 3), to = addBusinessDays(new Date(), 5);
-    el.innerHTML = '<span aria-hidden="true">🚚</span> ' +
+    el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.35rem"><svg class="ico ico--leaf" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> ' +
       (/^\d{6}$/.test(pin)
         ? "Estimated delivery to <b>" + esc(pin) + "</b>: <b>" + fmt(from) + " – " + fmt(to) + "</b>"
         : "Usually delivered in <b>3–5 business days</b>") +
@@ -736,7 +736,7 @@
           '<div class="sreview__stars" aria-label="' + r.rating + ' out of 5 stars">' + renderStars(r.rating) + "</div>" +
           (r.title ? "<h4>" + esc(r.title) + "</h4>" : "") +
           "<p>" + esc(r.body) + "</p>" +
-          '<div class="sreview__meta"><b>' + esc(r.author) + "</b>" + (r.verified ? ' <span class="verified-tag">✓ Verified buyer</span>' : "") + "<span>" + esc(reviewDate(r)) + "</span></div>" +
+          '<div class="sreview__meta"><b>' + esc(r.author) + "</b>" + (r.verified ? ' <span class="verified-tag"><svg class="ico ico--xs ico--leaf" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Verified buyer</span>' : "") + "<span>" + esc(reviewDate(r)) + "</span></div>" +
           '<a class="sreview__product" href="product.html?p=' + encodeURIComponent(p.handle) + '"><img src="' + esc(p.images[0]) + '" alt="" loading="lazy"><span>' + esc(t.name) + "</span></a>" +
         "</div></article>";
     }).join("");
@@ -1068,7 +1068,7 @@
           '<span class="pdp-rating-count">' + (rStats.reviewsCount ? '(' + rStats.reviewsCount + ' customer review' + (rStats.reviewsCount === 1 ? '' : 's') + ')' : 'No reviews yet') + '</span>' +
         '</button>' +
         '<span class="pdp-rating-sep">·</span>' +
-        '<button class="pdp-rate-btn" type="button" id="pdp-hero-rate-btn">✍️ Write a review</button>' +
+        '<button class="pdp-rate-btn" type="button" id="pdp-hero-rate-btn" style="display:inline-flex;align-items:center;gap:0.3rem"><svg class="ico ico--sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Write a review</button>' +
       '</div>' +
       '<span class="stock ' + (p.available ? "in" : "out") + '">' + (p.available ? "● In stock · dispatched in 24 hrs" : "● Currently sold out") + "</span>";
     $("#pdp-price").innerHTML = money(p.price) + (p.compareAt ? "<s>" + money(p.compareAt) + "</s>" : "");
@@ -1325,7 +1325,7 @@
           '<div class="rate-modal__actions">' +
             '<button class="btn btn--gold btn--block" type="submit">Submit Rating &amp; Review</button>' +
           '</div>' +
-          '<p class="rate-modal__footer-note">🌿 Your review is shown publicly on this product</p>' +
+          '<p class="rate-modal__footer-note"><svg class="ico ico--leaf ico--sm" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Your review is shown publicly on this product</p>' +
         '</form>' +
       '</div>';
     document.body.appendChild(overlay);
@@ -1349,7 +1349,7 @@
 
         Ratings.submit(activeModalHandle, { name, city, rating, title, body });
         closeRateModal();
-        toast("✨ Thank you! Your " + rating + "★ review has been recorded.");
+        toast("Thank you! Your " + rating + "★ review has been recorded.");
       });
     }
   }
@@ -1409,7 +1409,7 @@
     const recEl = $("#summary-recommend");
     if (recEl) {
       recEl.style.display = stats.hasBreakdown ? "" : "none";
-      recEl.textContent = stats.hasBreakdown ? "🌿 " + (stats.breakdown[5] + stats.breakdown[4]) + "% of rated reviews are 4★ or 5★" : "";
+      recEl.textContent = stats.hasBreakdown ? (stats.breakdown[5] + stats.breakdown[4]) + "% of rated reviews are 4★ or 5★" : "";
     }
 
     const barsEl = $("#summary-bars");
@@ -1465,7 +1465,7 @@
                 // "Verified buyer" only where Judge.me verified the purchase; reviews written on
                 // this site aren't linked to orders (and older ones carry a meaningless verified:true)
                 esc(r.author) +
-                (r.source === "judgeme" && r.verified ? ' <span class="verified-tag">✓ Verified buyer</span>' : '') +
+                (r.source === "judgeme" && r.verified ? ' <span class="verified-tag"><svg class="ico ico--xs ico--leaf" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Verified buyer</span>' : '') +
               '</div>' +
               (r.city || r.location ? '<span class="review-card__city">' + esc(r.city || r.location) + '</span>' : '') +
             '</div>' +
@@ -1481,7 +1481,7 @@
           (r.reply ? '<div class="review-card__reply"><b>Reply from CHEKORGANICS</b><p>' + esc(r.reply) + '</p></div>' : '') +
           '<div class="review-card__footer">' +
             '<span></span>' +
-            '<button class="helpful-btn" type="button" data-helpful="' + esc(r.id || 'r') + '">Helpful 👍 <span>' + (Number(r.helpful) || 0) + '</span></button>' +
+            '<button class="helpful-btn" type="button" data-helpful="' + esc(r.id || 'r') + '"><svg class="ico ico--sm" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> Helpful <span>' + (Number(r.helpful) || 0) + '</span></button>' +
           '</div>' +
         '</article>'
       ).join("");
@@ -1501,7 +1501,7 @@
         form.reset();
         closeForm();
         renderPdpReviews(p);
-        toast("✨ Thank you, " + (name || "valued customer") + "! Your review has been added.");
+        toast("Thank you, " + (name || "valued customer") + "! Your review has been added.");
       });
     }
   }
@@ -1808,7 +1808,7 @@
       copyVpaBtn.onclick = () => {
         if (navigator.clipboard) {
           navigator.clipboard.writeText("Q20988719@ybl").then(() => {
-            copyVpaBtn.textContent = "Copied! ✓";
+            copyVpaBtn.textContent = "Copied!";
             toast("UPI ID copied: Q20988719@ybl");
             setTimeout(() => { copyVpaBtn.textContent = "Copy"; }, 2500);
           }).catch(() => {
@@ -1865,9 +1865,9 @@
           if (match) {
             if (cityInput && !cityInput.value) cityInput.value = match.city;
             if (stateSelect) stateSelect.value = match.state;
-            if (pinHint) pinHint.textContent = `✓ ${match.city}, ${match.state}`;
+            if (pinHint) pinHint.innerHTML = `<svg class="ico ico--xs ico--leaf" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ${match.city}, ${match.state}`;
           } else {
-            if (pinHint) pinHint.textContent = "✓ PIN verified";
+            if (pinHint) pinHint.innerHTML = '<svg class="ico ico--xs ico--leaf" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> PIN verified';
           }
         } else {
           if (pinHint) pinHint.textContent = "";
@@ -1936,7 +1936,7 @@
         const badgeText = $("#coupon-applied-text");
         if (badge && badgeText) {
           badge.style.display = "flex";
-          badgeText.innerHTML = `🎉 Coupon <b>${clean}</b> applied! (${VALID_COUPONS[clean].label})`;
+          badgeText.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.35rem"><svg class="ico ico--leaf ico--sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Coupon <b>${clean}</b> applied! (${VALID_COUPONS[clean].label})</span>`;
         }
         toast("Coupon " + clean + " applied!");
         renderSummary();
@@ -2132,11 +2132,11 @@
 
       if (stepsView) {
         stepsView.innerHTML = `
-          <span class="step step--done"><span class="step__num">✓</span> Bag</span>
+          <span class="step step--done"><span class="step__num"><svg class="ico ico--xs ico--white" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Bag</span>
           <span class="step__divider">›</span>
-          <span class="step step--done"><span class="step__num">✓</span> Shipping</span>
+          <span class="step step--done"><span class="step__num"><svg class="ico ico--xs ico--white" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Shipping</span>
           <span class="step__divider">›</span>
-          <span class="step step--done"><span class="step__num">✓</span> Confirmed</span>
+          <span class="step step--done"><span class="step__num"><svg class="ico ico--xs ico--white" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Confirmed</span>
         `;
       }
 
@@ -2172,10 +2172,10 @@
       if (waNote) {
         // COD orders are confirmed by the admin on WhatsApp before dispatch (admin.html)
         waNote.innerHTML = (order.payment.method === "cod"
-          ? `📲 We'll WhatsApp you at <b>+91 ${esc(order.customer.mobile)}</b> to confirm this Cash on Delivery order before we dispatch it. `
+          ? `<span style="display:inline-flex;align-items:center;gap:0.35rem"><svg class="ico ico--sm ico--leaf" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> We'll WhatsApp you at <b>+91 ${esc(order.customer.mobile)}</b> to confirm this Cash on Delivery order before dispatch.</span> `
           : "") +
-          `✉️ Order details are on their way to <b>${esc(order.customer.email)}</b>, and we'll email you at every step until delivery. ` +
-          `📦 Save your order ID <b>${esc(order.orderId)}</b> — track it any time from "Track Order" with this ID or <b>+91 ${esc(order.customer.mobile)}</b>.`;
+          `<span style="display:inline-flex;align-items:center;gap:0.35rem"><svg class="ico ico--sm ico--gold" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Order details are sent to <b>${esc(order.customer.email)}</b>.</span> ` +
+          `<span style="display:inline-flex;align-items:center;gap:0.35rem"><svg class="ico ico--sm ico--gold" viewBox="0 0 24 24"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Save your order ID <b>${esc(order.orderId)}</b> — track it any time from "Track Order".</span>`;
       }
 
       // Address box
@@ -2186,7 +2186,7 @@
           ${esc(order.address.flat)}, ${esc(order.address.street)}<br>
           ${order.address.landmark ? esc(order.address.landmark) + "<br>" : ""}
           ${esc(order.address.city)}, ${esc(order.address.state)} — <b>${esc(order.address.pincode)}</b><br>
-          📞 +91 ${esc(order.customer.mobile)}
+          <span style="display:inline-flex;align-items:center;gap:0.35rem"><svg class="ico ico--sm ico--leaf" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +91 ${esc(order.customer.mobile)}</span>
         `;
       }
 
