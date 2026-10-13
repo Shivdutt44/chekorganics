@@ -93,6 +93,14 @@
     .filter(p => Number(p.rating) > 0 && Number(p.reviews) > 0)
     .map(p => [p.handle, { rating: Number(p.rating), count: Number(p.reviews) }]));
 
+  // The same store reviews with their text, photos and replies (reviews-data.js, pulled from
+  // Judge.me by .build/fetch-reviews.mjs). Where present they replace the bare averages above.
+  const STORE_REVIEWS = window.CHEK_REVIEWS || {};
+  Object.keys(STORE_REVIEWS).forEach(h => {
+    const s = STORE_REVIEWS[h];
+    if (s && s.count > 0) REAL_RATINGS[h] = { rating: Number(s.rating), count: Number(s.count), histogram: s.histogram || null };
+  });
+
   // handle -> reviews other shoppers submitted (Firestore), filled by loadRemoteReviews()
   let REMOTE_REVIEWS = {};
 
@@ -124,17 +132,23 @@
       const count = (real ? real.count : 0) + written.length;
       const points = (real ? real.rating * real.count : 0) + written.reduce((s, r) => s + (Number(r.rating) || 0), 0);
 
-      // star-by-star split is only known for written reviews (the store widget gave averages)
+      // star-by-star split: the store's Judge.me histogram plus reviews written on this site
+      const tally = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      if (real && real.histogram) Object.keys(tally).forEach(k => { tally[k] += Number(real.histogram[k]) || 0; });
+      written.forEach(r => { const s = Math.round(Number(r.rating)); if (s in tally) tally[s]++; });
+      const known = Object.values(tally).reduce((a, b) => a + b, 0);
       const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-      written.forEach(r => { const s = Math.round(Number(r.rating)); if (s in breakdown) breakdown[s]++; });
-      if (written.length) Object.keys(breakdown).forEach(k => { breakdown[k] = Math.round(breakdown[k] * 100 / written.length); });
+      if (known) Object.keys(breakdown).forEach(k => { breakdown[k] = Math.round(tally[k] * 100 / known); });
+
+      // store reviews (counted in `real`) are listed after this site's newer ones
+      const storeList = (STORE_REVIEWS[handle] && STORE_REVIEWS[handle].reviews) || [];
 
       return {
         rating: count ? Math.round((points / count) * 10) / 10 : 0,
         reviewsCount: count,
-        reviews: written,
+        reviews: written.concat(storeList.slice().sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))),
         breakdown,
-        hasBreakdown: written.length > 0
+        hasBreakdown: known > 0
       };
     },
 
@@ -634,7 +648,103 @@
   }
 
   /* ----------------------------------------------------------- home page */
+  /* ------------------------------------------- delivery estimate (PDP) */
+  // Standard delivery is 3–5 business days (checkout's shipping option); Sundays skipped.
+  // Uses the PIN chosen in the header's "Deliver to" (header.js, chek_delivery_pin).
+  function addBusinessDays(from, n) {
+    const d = new Date(from);
+    while (n > 0) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0) n--; }
+    return d;
+  }
+  function paintDeliveryEstimate(p) {
+    const el = $("#pdp-delivery");
+    if (!el) return;
+    if (!p || p.available === false) { el.innerHTML = ""; return; }
+    let pin = "";
+    try { pin = localStorage.getItem("chek_delivery_pin") || ""; } catch (e) {}
+    const fmt = d => d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+    const from = addBusinessDays(new Date(), 3), to = addBusinessDays(new Date(), 5);
+    el.innerHTML = '<span aria-hidden="true">🚚</span> ' +
+      (/^\d{6}$/.test(pin)
+        ? "Estimated delivery to <b>" + esc(pin) + "</b>: <b>" + fmt(from) + " – " + fmt(to) + "</b>"
+        : "Usually delivered in <b>3–5 business days</b>") +
+      ' <button type="button" class="pdp__delivery-pin" data-loc-open>' + (pin ? "Change" : "Enter PIN") + "</button>";
+  }
+  window.addEventListener("chek:pin-changed", () => {
+    const h = new URLSearchParams(location.search).get("p");
+    paintDeliveryEstimate(h ? (byHandle(h) || localByHandle(h)) : STORE.products[0]);
+  });
+
+  /* ------------------------------------------------- shop by concern */
+  // Ayurveda shoppers search by problem, not by range. A product belongs to a concern when its
+  // own title, type, collections or tags mention one of the concern's words.
+  const CONCERNS = [
+    { key: "hair-fall", title: "Hair Fall & Growth", line: "Stronger roots, thicker hair", words: ["hair fall", "hair growth", "hair oil", "hair pack", "hairfall"] },
+    { key: "dandruff", title: "Dandruff & Itchy Scalp", line: "A calm, flake-free scalp", words: ["dandruff", "scalp"] },
+    { key: "grey-hair", title: "Grey Hair", line: "Natural colour, zero ammonia", words: ["hair colo", "grey", "gray", "henna", "instarang"] },
+    { key: "glow", title: "Glow & Tan Removal", line: "Even, radiant skin", words: ["tan", "glow", "brighten", "radiance", "face pack", "mukha", "complexion"] },
+    { key: "dry-skin", title: "Dry Skin & Lips", line: "Deep, lasting moisture", words: ["moistur", "body milk", "body butter", "hydrat", "dry skin", "lip balm"] },
+    { key: "immunity", title: "Immunity & Energy", line: "Everyday Ayurvedic superfoods", words: ["immun", "energy", "juice", "spirulina", "moringa", "amla", "ashwagandha", "superfood"] },
+    { key: "oral", title: "Gums & Oral Care", line: "Herbal, fluoride-free care", words: ["tooth", "manjan", "gum bleeding", "oral"] },
+    { key: "men", title: "Men's Grooming", line: "Hair, beard and body", words: ["men's grooming", "dude", "beard"] }
+  ];
+  const concernHas = (c, p) => {
+    const hay = (p.title + " " + (p.type || "") + " " + (p.collections || []).join(" ") + " " + (p.tags || []).join(" ")).toLowerCase();
+    return c.words.some(w => hay.includes(w));
+  };
+
+  function concernGrid() {
+    const grid = $("#concern-grid");
+    if (!grid) return;
+    const usedFaces = new Set();
+    grid.innerHTML = CONCERNS.map(c => {
+      const list = STORE.products.filter(p => concernHas(c, p) && p.images && p.images[0]);
+      if (!list.length) return "";
+      // the face of the concern: a product not already shown on another card, best reviewed first
+      const ranked = list.slice().sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
+      const face = ranked.find(p => !usedFaces.has(p.images[0])) || ranked[0];
+      usedFaces.add(face.images[0]);
+      return '<a class="concern reveal" href="shop.html?concern=' + c.key + '">' +
+        '<div class="concern__media"><img src="' + esc(face.images[0]) + '" alt="" loading="lazy" decoding="async"></div>' +
+        '<div class="concern__body"><h3>' + esc(c.title) + "</h3><p>" + esc(c.line) + "</p>" +
+        '<span class="concern__count">' + list.length + (list.length === 1 ? " product" : " products") + " →</span></div></a>";
+    }).join("");
+  }
+
+  /* ------------------------------------- real store reviews (home) */
+  // Reviews customers left on the store (reviews-data.js, from Judge.me): photo reviews first
+  function storeReviewsRail() {
+    const rail = $("#store-reviews");
+    if (!rail) return;
+    const byHandle = h => STORE.products.find(p => p.handle === h) || localByHandle(h);
+    const all = [];
+    Object.keys(window.CHEK_REVIEWS || {}).forEach(h => {
+      const p = byHandle(h);
+      if (!p) return;
+      (window.CHEK_REVIEWS[h].reviews || []).forEach(r => { if (r.body && r.body.length >= 12) all.push({ r, p }); });
+    });
+    all.sort((a, b) => (b.r.photos.length > 0) - (a.r.photos.length > 0) || String(b.r.createdAt).localeCompare(String(a.r.createdAt)));
+    const section = rail.closest("section");
+    if (!all.length) { if (section) section.hidden = true; return; }
+    const okUrl = u => /^https:\/\/[^"'<>\s]+$/.test(u || "");
+    rail.innerHTML = all.slice(0, 16).map(({ r, p }) => {
+      const t = splitTitle(p.title);
+      const photo = (r.photos || []).find(ph => okUrl(ph.large) && okUrl(ph.small));
+      return '<article class="sreview">' +
+        (photo ? '<a class="sreview__photo" href="' + esc(photo.large) + '" target="_blank" rel="noopener"><img src="' + esc(photo.large) + '" alt="Photo from ' + esc(r.author) + '" loading="lazy"></a>' : "") +
+        '<div class="sreview__body">' +
+          '<div class="sreview__stars" aria-label="' + r.rating + ' out of 5 stars">' + renderStars(r.rating) + "</div>" +
+          (r.title ? "<h4>" + esc(r.title) + "</h4>" : "") +
+          "<p>" + esc(r.body) + "</p>" +
+          '<div class="sreview__meta"><b>' + esc(r.author) + "</b>" + (r.verified ? ' <span class="verified-tag">✓ Verified buyer</span>' : "") + "<span>" + esc(reviewDate(r)) + "</span></div>" +
+          '<a class="sreview__product" href="product.html?p=' + encodeURIComponent(p.handle) + '"><img src="' + esc(p.images[0]) + '" alt="" loading="lazy"><span>' + esc(t.name) + "</span></a>" +
+        "</div></article>";
+    }).join("");
+  }
+
   function homePage() {
+    concernGrid();
+    storeReviewsRail();
     const cats = $("#cat-grid");
     if (cats) {
       cats.innerHTML = STORE.collections.map(c =>
@@ -743,7 +853,7 @@
     if (!grid) return;
     const params = new URLSearchParams(location.search);
     // ?q= comes from the header search, ?deals=1 from "Today's Deals" (products with a compare-at price)
-    window.__shopState = window.__shopState || { c: params.get("c") || "All Products", q: (params.get("q") || "").trim(), sort: "featured", deals: params.get("deals") === "1" };
+    window.__shopState = window.__shopState || { c: params.get("c") || "All Products", q: (params.get("q") || "").trim(), sort: "featured", deals: params.get("deals") === "1", concern: CONCERNS.find(c => c.key === params.get("concern")) || null };
     const state = window.__shopState;
     const chips = $("#chips");
     const countEl = $("#result-count"), search = $("#shop-search"), sort = $("#shop-sort");
@@ -758,6 +868,7 @@
       let list = STORE.products.slice();
       if (state.c && state.c !== "All Products") list = list.filter(p => p.collections.includes(state.c));
       if (state.deals) list = list.filter(p => p.compareAt && p.compareAt > p.price);
+      if (state.concern) list = list.filter(p => concernHas(state.concern, p));
       if (state.q) {
         const q = state.q.toLowerCase();
         list = list.filter(p => (p.title + " " + p.type + " " + p.collections.join(" ") + " " + p.tags.join(" ")).toLowerCase().includes(q));
@@ -771,7 +882,7 @@
       countEl.textContent = list.length + (list.length === 1 ? " product" : " products");
       const empty = $("#empty"); if (empty) empty.style.display = list.length ? "none" : "block";
       const heading = $("#active-col");
-      if (heading) heading.textContent = state.deals ? "Today's Deals" : state.q ? "Results for “" + state.q + "”" : state.c;
+      if (heading) heading.textContent = state.deals ? "Today's Deals" : state.concern ? state.concern.title : state.q ? "Results for “" + state.q + "”" : state.c;
     }
 
     if (!grid.dataset.bound) {
@@ -961,6 +1072,7 @@
       '</div>' +
       '<span class="stock ' + (p.available ? "in" : "out") + '">' + (p.available ? "● In stock · dispatched in 24 hrs" : "● Currently sold out") + "</span>";
     $("#pdp-price").innerHTML = money(p.price) + (p.compareAt ? "<s>" + money(p.compareAt) + "</s>" : "");
+    paintDeliveryEstimate(p);
     const save = $("#pdp-save");
     if (p.compareAt) { save.style.display = "inline-block"; save.textContent = "Save " + money(p.compareAt - p.price); }
     $("#pdp-benefit").textContent = t.benefit || p.excerpt.slice(0, 90);
@@ -1297,7 +1409,7 @@
     const recEl = $("#summary-recommend");
     if (recEl) {
       recEl.style.display = stats.hasBreakdown ? "" : "none";
-      recEl.textContent = stats.hasBreakdown ? "🌿 " + (stats.breakdown[5] + stats.breakdown[4]) + "% of written reviews are 4★ or 5★" : "";
+      recEl.textContent = stats.hasBreakdown ? "🌿 " + (stats.breakdown[5] + stats.breakdown[4]) + "% of rated reviews are 4★ or 5★" : "";
     }
 
     const barsEl = $("#summary-bars");
@@ -1350,17 +1462,23 @@
           '<div class="review-card__header">' +
             '<div class="review-card__user">' +
               '<div class="review-card__name">' +
-                // no "Verified Buyer" tag: reviews aren't linked to orders, and older saved
-                // reviews carry verified:true from a version that set it on every review
+                // "Verified buyer" only where Judge.me verified the purchase; reviews written on
+                // this site aren't linked to orders (and older ones carry a meaningless verified:true)
                 esc(r.author) +
+                (r.source === "judgeme" && r.verified ? ' <span class="verified-tag">✓ Verified buyer</span>' : '') +
               '</div>' +
-              (r.city ? '<span class="review-card__city">' + esc(r.city) + '</span>' : '') +
+              (r.city || r.location ? '<span class="review-card__city">' + esc(r.city || r.location) + '</span>' : '') +
             '</div>' +
             '<span class="review-card__date">' + esc(reviewDate(r)) + '</span>' +
           '</div>' +
           '<div class="stars__glyphs" aria-label="' + (Number(r.rating) || 0) + ' stars">' + renderStars(r.rating) + '</div>' +
           (r.title ? '<h4 class="review-card__title">' + esc(r.title) + '</h4>' : '') +
           (r.body ? '<p class="review-card__body">' + esc(r.body) + '</p>' : '') +
+          (Array.isArray(r.photos) && r.photos.length
+            ? '<div class="review-card__photos">' + r.photos.filter(ph => /^https:\/\/[^"'<>\s]+$/.test(ph.small) && /^https:\/\/[^"'<>\s]+$/.test(ph.large)).map(ph =>
+                '<a href="' + esc(ph.large) + '" target="_blank" rel="noopener"><img src="' + esc(ph.small) + '" alt="Photo from ' + esc(r.author) + '" loading="lazy"></a>').join("") + "</div>"
+            : '') +
+          (r.reply ? '<div class="review-card__reply"><b>Reply from CHEKORGANICS</b><p>' + esc(r.reply) + '</p></div>' : '') +
           '<div class="review-card__footer">' +
             '<span></span>' +
             '<button class="helpful-btn" type="button" data-helpful="' + esc(r.id || 'r') + '">Helpful 👍 <span>' + (Number(r.helpful) || 0) + '</span></button>' +

@@ -19,12 +19,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="ux.css">
-<link rel="stylesheet" href="auth.css">
-<link rel="stylesheet" href="header.css">
-<link rel="stylesheet" href="search.css">
-<link rel="stylesheet" href="typography.css">
+<link rel="stylesheet" href="styles.css?v=202610130839">
+<link rel="stylesheet" href="ux.css?v=202610130839">
+<link rel="stylesheet" href="auth.css?v=202610130839">
+<link rel="stylesheet" href="header.css?v=202610130839">
+<link rel="stylesheet" href="search.css?v=202610130839">
+<link rel="stylesheet" href="typography.css?v=202610130839">
 </head>
 <body>
 
@@ -32,11 +32,13 @@
 <div class="announce">
   <div class="announce__track">
     <span>Free shipping on domestic orders above ₹3,000</span>
+    <span>First order? Use code WELCOME10 for 10% off</span>
     <span>AYUSH certified · Govt. of India approved</span>
     <span>10,000+ happy customers and counting</span>
     <span>100% natural · chemical free · cruelty free</span>
     <span>Grown on our own farm — USDA certified Noni</span>
     <span>Free shipping on domestic orders above ₹3,000</span>
+    <span>First order? Use code WELCOME10 for 10% off</span>
     <span>AYUSH certified · Govt. of India approved</span>
     <span>10,000+ happy customers and counting</span>
     <span>100% natural · chemical free · cruelty free</span>
@@ -243,6 +245,20 @@
     </div>
   </section>
 
+  <!-- shop by concern (app.js concernGrid) -->
+  <section class="section section--tight" id="concerns" aria-labelledby="concerns-title">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-head__text">
+          <span class="eyebrow">Shop by concern</span>
+          <h2 id="concerns-title">What does your body need today?</h2>
+          <p>Pick a concern and see every CHEKORGANICS ritual made for it.</p>
+        </div>
+      </div>
+      <div class="concern-grid" id="concern-grid"></div>
+    </div>
+  </section>
+
   <!-- icons rail -->
   <section class="section section--sand">
     <div class="container">
@@ -407,6 +423,24 @@
     </div>
   </section>
 
+  <!-- store reviews (app.js storeReviewsRail, data: reviews-data.js) -->
+  <section class="section section--sand" id="store-reviews-section" aria-labelledby="store-reviews-title">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-head__text">
+          <span class="eyebrow">Product reviews</span>
+          <h2 id="store-reviews-title">What customers say after using them.</h2>
+          <p>Reviews and photos customers left on our store, unedited.</p>
+        </div>
+        <div class="rail-nav" data-rail="store-reviews">
+          <button class="rail-btn" type="button" data-prev aria-label="Previous review">←</button>
+          <button class="rail-btn" type="button" data-next aria-label="Next review">→</button>
+        </div>
+      </div>
+      <div class="rail-wrap"><div class="rail sreviews" id="store-reviews"></div></div>
+    </div>
+  </section>
+
   <!-- reviews -->
   <section class="section section--dark" id="testimonials" aria-labelledby="testimonials-title">
     <div class="container">
@@ -488,6 +522,48 @@
           </div>
         </div>
         <div class="igg" data-ig-grid aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section--tight" id="faq" aria-labelledby="faq-title">
+    <div class="container container--narrow">
+      <div class="section-head section-head--center">
+        <div class="section-head__text">
+          <span class="eyebrow eyebrow--center">Good to know</span>
+          <h2 id="faq-title">Frequently asked questions</h2>
+        </div>
+      </div>
+      <div class="faq">
+        <details class="faq__item">
+          <summary>How long does delivery take?</summary>
+          <p>Standard delivery takes 3–5 business days. Express delivery (₹149) is dispatched with priority and usually arrives in 1–2 business days. Set your PIN code with “Deliver to” at the top of the page to see an estimated date on every product.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Is shipping free?</summary>
+          <p>Standard shipping is free on orders above ₹3,000. Below that, it costs ₹99.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Can I pay Cash on Delivery?</summary>
+          <p>Yes. Choose Cash on Delivery at checkout. We confirm COD orders with you on WhatsApp before dispatching them, and you pay in cash or UPI when the parcel arrives.</p>
+        </details>
+        <details class="faq__item">
+          <summary>How do I pay by UPI?</summary>
+          <p>At checkout, scan our PhonePe merchant QR or tap “Pay on Mobile UPI App”, pay the amount shown, then enter the 12-digit UPI transaction ID (UTR). We start preparing your order once the payment is matched.</p>
+        </details>
+        <details class="faq__item">
+          <summary>How can I track my order?</summary>
+          <p>Use “Track Order” in the account menu with your order ID or mobile number. We also email you when your order is confirmed, dispatched, out for delivery and delivered, with courier tracking details once it ships.</p>
+        </details>
+        <details class="faq__item">
+          <summary>What if my product arrives damaged or wrong?</summary>
+          <p>Write to us within 7 days of delivery at <a href="mailto:hello@chekorganics.com">hello@chekorganics.com</a> (or reply to your order email) with your order ID and a photo, and we'll arrange a replacement.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Do you have a first-order offer?</summary>
+          <p>Yes — use code <b>WELCOME10</b> at checkout for 10% off your first order.</p>
+        </details>
       </div>
     </div>
   </section>
@@ -605,17 +681,18 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script src="firebase-db.js"></script>
-<script src="auth.js"></script>
-<script src="data.js"></script>
-<script src="ux.js"></script>
-<script src="app.js"></script>
-<script src="header.js"></script>
-<script src="wishlist.js"></script>
-<script src="quickbuy.js"></script>
-<script src="search.js"></script>
-<script src="videos.js"></script>
-<script src="shoppable.js"></script>
-<script src="instagram.js"></script>
+<script src="firebase-db.js?v=202610130839"></script>
+<script src="auth.js?v=202610130839"></script>
+<script src="data.js?v=202610130839"></script>
+<script src="ux.js?v=202610130839"></script>
+<script src="reviews-data.js?v=202610130839"></script>
+<script src="app.js?v=202610130839"></script>
+<script src="header.js?v=202610130839"></script>
+<script src="wishlist.js?v=202610130839"></script>
+<script src="quickbuy.js?v=202610130839"></script>
+<script src="search.js?v=202610130839"></script>
+<script src="videos.js?v=202610130839"></script>
+<script src="shoppable.js?v=202610130839"></script>
+<script src="instagram.js?v=202610130839"></script>
 </body>
 </html>

@@ -63,6 +63,7 @@
       try { localStorage.setItem(PIN_KEY, pin); } catch (err) {}
       paintLocation();
       closeLocation();
+      window.dispatchEvent(new CustomEvent("chek:pin-changed", { detail: { pin } })); // PDP delivery estimate
     });
   }
 
